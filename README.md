@@ -1,2 +1,2 @@
 # cda2fhir
-HL7 CDA to FHIR maps for HL7 Italy documents
+This guide collect the  CDA to FHIR maps intended to be used for the  HL7 Italy CDA documents
