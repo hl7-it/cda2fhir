@@ -1,0 +1,2153 @@
+<StructureMap xmlns="http://hl7.org/fhir">
+   <id value="CdaToFhirDataTypes"/>
+   <text>
+      <status value="generated"/>
+      <div xmlns="http://www.w3.org/1999/xhtml">
+         <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/CdaToFhirDataTypes&quot; = &quot;CdaToFhirDataTypes&quot;
+
+// Adapted from https://github.com/HL7/ccda-to-fhir/tree/master/mappings
+// CDA:  http://build.fhir.org/ig/ahdis/cda-core-2.0/branches/master/index.html
+// FHIR: http://hl7.org/fhir/r4/
+
+conceptmap &quot;addressUse&quot; {
+  prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-AddressUse&quot;
+  prefix t = &quot;http://hl7.org/fhir/valueset-address-use.html&quot;
+
+  s:H == t:home
+  s:HP == t:home
+  s:HV == t:home
+  s:WP == t:work
+  s:DIR == t:work
+  s:PUB == t:work
+  s:TMP == t:temp
+  s:OLD == t:old
+  s:BAD == t:old
+}
+
+uses &quot;http://hl7.org/fhir/cda/StructureDefinition/ED&quot; alias ED as source
+uses &quot;http://hl7.org/fhir/cda/StructureDefinition/INT&quot; alias IMT as source
+uses &quot;http://hl7.org/fhir/cda/StructureDefinition/II&quot; as source
+uses &quot;http://hl7.org/fhir/StructureDefinition/Identifier&quot; as target
+uses &quot;http://hl7.org/fhir/cda/StructureDefinition/TS&quot; as source
+uses &quot;http://hl7.org/fhir/StructureDefinition/instant&quot; as target
+uses &quot;http://hl7.org/fhir/cda/StructureDefinition/CS&quot; as source
+uses &quot;http://hl7.org/fhir/StructureDefinition/code&quot; as target
+uses &quot;http://hl7.org/fhir/cda/StructureDefinition/CE&quot; as source
+uses &quot;http://hl7.org/fhir/StructureDefinition/CodeableConcept&quot; as target
+uses &quot;http://hl7.org/fhir/cda/StructureDefinition/ST&quot; as source
+uses &quot;http://hl7.org/fhir/StructureDefinition/string&quot; as target
+uses &quot;http://hl7.org/fhir/cda/StructureDefinition/EN&quot; as source
+uses &quot;http://hl7.org/fhir/StructureDefinition/HumanName&quot; as target
+uses &quot;http://hl7.org/fhir/cda/StructureDefinition/AD&quot; as source
+uses &quot;http://hl7.org/fhir/StructureDefinition/Address&quot; as target
+uses &quot;http://hl7.org/fhir/cda/StructureDefinition/TEL&quot; as source
+uses &quot;http://hl7.org/fhir/StructureDefinition/ContactPoint&quot; as target
+uses &quot;http://hl7.org/fhir/cda/StructureDefinition/BL&quot; as source
+uses &quot;http://hl7.org/fhir/StructureDefinition/boolean&quot; as target
+uses &quot;http://hl7.org/fhir/cda/StructureDefinition/IVL-TS&quot; as source
+uses &quot;http://hl7.org/fhir/StructureDefinition/Period&quot; as target
+
+group Any(source src, target tgt) {
+}
+
+group II(source src : II, target tgt : Identifier) extends Any &lt;&lt;types&gt;&gt; {
+  src.root as r where src.extension.exists() -&gt; tgt.system = translate(r, &apos;http://hl7.org/fhir/ConceptMap/special-oid2uri&apos;, &apos;uri&apos;) &quot;root1&quot;;
+  src.root as r where src.extension.empty() and src.root.matches(&apos;[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}&apos;) -&gt;  tgt.system = &apos;urn:ietf:rfc:3986&apos;,  tgt.value = (&apos;urn:uuid:&apos; + r.lower()) &quot;rootuuid&quot;;
+  src.root as r where src.extension.empty() and src.root.contains(&apos;.&apos;) -&gt;  tgt.system = &apos;urn:ietf:rfc:3986&apos;,  tgt.value = append(&apos;urn:oid:&apos;, r) &quot;rootoid&quot;;
+  src.extension as e -&gt; tgt.value = e;
+  src.assigningAuthorityName as s -&gt;  tgt.assigner as a,  a.display = s;
+}
+
+group INT(source src : INT, target tgt : integer) extends Any &lt;&lt;types&gt;&gt; {
+  src.value as v -&gt; tgt.value = cast(v, &apos;string&apos;);
+}
+
+group TemplateID(source template : II, target tgt) {
+  template -&gt; tgt.extension as ext then {
+    template -&gt; ext.url = &apos;http://hl7.org/fhir/cda/StructureDefinition/templateID&apos; &quot;url&quot;;
+    template -&gt; ext.value = create(&apos;Identifier&apos;) as value then II(template, value) &quot;value&quot;;
+  } &quot;templateId&quot;;
+}
+
+group Negation(source negation : BL, target tgt) {
+  negation -&gt; tgt.modifierExtension as ext then {
+    negation -&gt; ext.url = &apos;http://hl7.org/fhir/cda/StructureDefinition/negationIndicator&apos; &quot;url&quot;;
+    negation as neg -&gt;  ext.value = create(&apos;boolean&apos;),  ext.value = neg &quot;value&quot;;
+  } &quot;negation&quot;;
+}
+
+group TSInstant(source src : TS, target tgt : instant) extends Any &lt;&lt;types&gt;&gt; {
+  src.value as v -&gt; tgt.value = cast(v, &apos;string&apos;);
+}
+
+group TSDateTime(source src : TS, target tgt : dateTime) extends TSInstant &lt;&lt;types&gt;&gt; {
+  src where (value.contains(&apos;+&apos;)) then {
+    src.value as v -&gt; tgt.value = cast(v, &apos;string&apos;);
+  } &quot;eff&quot;;
+  src where (value.contains(&apos;-&apos;)) then {
+    src.value as v -&gt; tgt.value = cast(v, &apos;string&apos;);
+  } &quot;eff&quot;;
+  src.value where (value.matches(&apos;^\\d{4}(\\-\\d{2}){2}T\\d{2}(:\\d{2}){2}$&apos;)) then {
+    src.value as v -&gt; tgt.value = append(v, &apos;Z&apos;) &quot;date&quot;;
+  } &quot;eff&quot;;
+}
+
+group TSDate(source src : TS, target tgt : date) extends TSInstant &lt;&lt;types&gt;&gt; {
+}
+
+group IVLTSPeriod(source src : IVL_TS, target tgt : Period) extends Any &lt;&lt;types&gt;&gt; {
+  src.low -&gt; tgt.start;
+  src.high -&gt; tgt.end;
+}
+
+group IVLTSDateTime(source src : IVL_TS, target tgt : dateTime) extends Any &lt;&lt;types&gt;&gt; {
+  src.low as s then TSDateTime(s, tgt);
+}
+
+group STstring(source src : ST, target tgt : string) extends Any &lt;&lt;types&gt;&gt; {
+  src as v -&gt; tgt.value = cast(v, &apos;string&apos;) &quot;value&quot;;
+}
+
+group EDstring(source src : ED, target tgt : string) extends STstring &lt;&lt;types&gt;&gt; {
+}
+
+group INTstring(source src : INT, target tgt : string) extends STstring &lt;&lt;types&gt;&gt; {
+}
+
+group ONstring(source src : ON, target tgt : string) extends STstring &lt;&lt;types&gt;&gt; {
+}
+
+group CSCode(source src : CS, target tgt : code) extends Any &lt;&lt;types&gt;&gt; {
+  src.code as c -&gt; tgt.value = cast(c, &apos;string&apos;);
+}
+
+group CECode(source src : CE, target tgt : code) extends CSCode &lt;&lt;types&gt;&gt; {
+}
+
+group CDCode(source src : CD, target tgt : code) extends CSCode &lt;&lt;types&gt;&gt; {
+}
+
+group CECodeableConcept(source src : CE, target tgt : CodeableConcept) extends Any &lt;&lt;types&gt;&gt; {
+  src.originalText as originalText then {
+    originalText.reference as reference -&gt; tgt.text = (reference.value);
+  } &quot;originltext&quot;;
+  src -&gt; tgt.coding as coding then {
+    src.code as code -&gt; coding.code = cast(code, &apos;string&apos;);
+    src.codeSystem as system -&gt; coding.system = translate(system, &apos;http://hl7.org/fhir/ConceptMap/special-oid2uri&apos;, &apos;uri&apos;);
+    src.displayName as display -&gt; coding.display = cast(display, &apos;string&apos;);
+    src.codeSystemVersion as version -&gt; coding.version = cast(version, &apos;string&apos;);
+  } &quot;code&quot;;
+  src.translation as translation -&gt; tgt.coding as coding then {
+    translation.code as code -&gt; coding.code = cast(code, &apos;string&apos;);
+    translation.codeSystem as system -&gt; coding.system = translate(system, &apos;http://hl7.org/fhir/ConceptMap/special-oid2uri&apos;, &apos;uri&apos;);
+    translation.displayName as display -&gt; coding.display = cast(display, &apos;string&apos;);
+    translation.codeSystemVersion as version -&gt; coding.version = cast(version, &apos;string&apos;);
+    translation.qualifier as qualifier then {
+      qualifier.value as value -&gt; tgt.coding as coding then {
+        value.code as code -&gt; coding.code = cast(code, &apos;string&apos;);
+        value.codeSystem as system -&gt; coding.system = translate(system, &apos;http://hl7.org/fhir/ConceptMap/special-oid2uri&apos;, &apos;uri&apos;);
+        value.displayName as display -&gt; coding.display = cast(display, &apos;string&apos;);
+        value.codeSystemVersion as version -&gt; coding.version = cast(version, &apos;string&apos;);
+      };
+    };
+  };
+}
+
+group CSCodeableConcept(source src : CS, target tgt : CodeableConcept) extends CECodeableConcept &lt;&lt;types&gt;&gt; {
+}
+
+group CDCodeableConcept(source src : CD, target tgt : CodeableConcept) extends CECodeableConcept &lt;&lt;types&gt;&gt; {
+}
+
+group ENHumanName(source src : EN, target tgt : HumanName) extends Any &lt;&lt;types&gt;&gt; {
+  src.family as v -&gt; tgt.family = (v.dataString);
+  src.given as v -&gt; tgt.given = (v.dataString);
+  src.prefix as v -&gt; tgt.prefix = (v.dataString);
+  src.suffix as v -&gt; tgt.suffix = (v.dataString);
+  // src.use as c -&gt; tgt.use = translate(c, &apos;http://hl7.org/fhir/ConceptMap/cm-name-use-v3&apos;, &apos;code&apos;);
+  src.validTime -&gt; tgt.period;
+}
+
+group ADAddress(source src : AD, target tgt : Address) extends Any &lt;&lt;types&gt;&gt; {
+  src.country as v -&gt; tgt.country = (v.dataString);
+  src.state as v -&gt; tgt.state = (v.dataString);
+  src.county as v -&gt; tgt.district = (v.dataString);
+  src.city as v -&gt; tgt.city = (v.dataString);
+  src.postalCode as v -&gt; tgt.postalCode = (v.dataString);
+  src.streetAddressLine as v -&gt; tgt.line = (v.dataString) as line then {
+    src.censusTract as v -&gt; line.extension as ext1 then CensusTract(v, ext1) &quot;line&quot;;
+  } &quot;CensusTract&quot;;
+  // share firstline &quot;streetAddress&quot;;
+  src.streetName as v -&gt; tgt.line = (v.dataString);
+  src.houseNumber as v -&gt; tgt.line = (v.dataString);
+  src.use as c -&gt; tgt.use = translate(c, &apos;#addressUse&apos;, &apos;code&apos;) &quot;addressUse&quot;;
+  src.useablePeriod -&gt; tgt.period;
+}
+
+group TELContactPoint(source src : TEL, target tgt : ContactPoint) extends Any &lt;&lt;types&gt;&gt; {
+  src.value as v where (src.value.startsWith(&apos;tel:&apos;)) -&gt;  tgt.value = (v.substring(4)),  tgt.system = &apos;phone&apos; &quot;valuetel&quot;;
+  src.value as v where (src.value.startsWith(&apos;fax:&apos;)) -&gt;  tgt.value = (v.substring(4)),  tgt.system = &apos;fax&apos; &quot;valuefax&quot;;
+  src.value as v where (src.value.startsWith(&apos;mailto:&apos;)) -&gt;  tgt.value = (v.substring(7)),  tgt.system = &apos;email&apos; &quot;valuemail&quot;;
+  src.value as v where (src.value.startsWith(&apos;http:&apos;)) -&gt;  tgt.value = (v.substring(5)),  tgt.system = &apos;url&apos; &quot;valuehttp&quot;;
+  src.use where (src.use.startsWith(&apos;H&apos;)) -&gt; tgt.use = &apos;home&apos; &quot;usehome&quot;;
+  src.use where ((src.use = &apos;WP&apos;) or (src.use = &apos;DIR&apos;) or (src.use = &apos;PUB&apos;)) -&gt; tgt.use = &apos;work&apos; &quot;usework&quot;;
+  src.use where (src.use = &apos;BAD&apos;) -&gt; tgt.use = &apos;old&apos; &quot;usebad&quot;;
+  src.use where (src.use = &apos;TMP&apos;) -&gt; tgt.use = &apos;temp&apos; &quot;usetmp&quot;;
+  src.use where (src.use = &apos;MC&apos;) -&gt; tgt.use = &apos;mobile&apos; &quot;usemobile&quot;;
+  src.useablePeriod -&gt; tgt.period;
+}
+
+group PQQuantity(source src : PQ, target tgt : Quantity) extends Any &lt;&lt;types&gt;&gt; {
+  // src.unit as unit -&gt; tgt.code = unit;
+  src.unit as unit -&gt; tgt.unit = unit;
+  src.value as value -&gt; tgt.value = value;
+}
+
+group RTOPQPQRatio(source src : RTO_PQ_PQ, target tgt : Ratio) extends Any &lt;&lt;types&gt;&gt; {
+  src.numerator as numerator -&gt; tgt.numerator as targetNumerator then PQQuantity(numerator, targetNumerator);
+  src.denominator as denominator -&gt; tgt.denominator as targetDenominator then PQQuantity(denominator, targetDenominator);
+}
+
+group CensusTract(source src : ST, target ext : Extension) {
+  src -&gt; ext.url = &apos;http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-censusTract&apos; &quot;url&quot;;
+  src -&gt;  ext.value = create(&apos;string&apos;),  ext.value = (src.dataString) &quot;value&quot;;
+}
+
+</pre>
+      </div>
+   </text>
+   <contained>
+      <ConceptMap xmlns="http://hl7.org/fhir">
+         <id value="addressUse"/>
+         <status value="draft"/>
+         <group>
+            <source value="http://terminology.hl7.org/ValueSet/v3-AddressUse"/>
+            <target value="http://hl7.org/fhir/valueset-address-use.html"/>
+            <element>
+               <code value="H"/>
+               <target>
+                  <code value="home"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="HP"/>
+               <target>
+                  <code value="home"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="HV"/>
+               <target>
+                  <code value="home"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="WP"/>
+               <target>
+                  <code value="work"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="DIR"/>
+               <target>
+                  <code value="work"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="PUB"/>
+               <target>
+                  <code value="work"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="TMP"/>
+               <target>
+                  <code value="temp"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="OLD"/>
+               <target>
+                  <code value="old"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="BAD"/>
+               <target>
+                  <code value="old"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+         </group>
+      </ConceptMap>
+   </contained>
+   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/CdaToFhirDataTypes"/>
+   <name value="CdaToFhirDataTypes"/>
+   <description value="Adapted from https://github.com/HL7/ccda-to-fhir/tree/master/mappings&#xd;&#xa;CDA:  http://build.fhir.org/ig/ahdis/cda-core-2.0/branches/master/index.html&#xd;&#xa;FHIR: http://hl7.org/fhir/r4/"/>
+   <structure>
+      <url value="http://hl7.org/fhir/cda/StructureDefinition/ED"/>
+      <mode value="source"/>
+      <alias value="ED"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/cda/StructureDefinition/INT"/>
+      <mode value="source"/>
+      <alias value="IMT"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/cda/StructureDefinition/II"/>
+      <mode value="source"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/StructureDefinition/Identifier"/>
+      <mode value="target"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/cda/StructureDefinition/TS"/>
+      <mode value="source"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/StructureDefinition/instant"/>
+      <mode value="target"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/cda/StructureDefinition/CS"/>
+      <mode value="source"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/StructureDefinition/code"/>
+      <mode value="target"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/cda/StructureDefinition/CE"/>
+      <mode value="source"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/StructureDefinition/CodeableConcept"/>
+      <mode value="target"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/cda/StructureDefinition/ST"/>
+      <mode value="source"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/StructureDefinition/string"/>
+      <mode value="target"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/cda/StructureDefinition/EN"/>
+      <mode value="source"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/StructureDefinition/HumanName"/>
+      <mode value="target"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/cda/StructureDefinition/AD"/>
+      <mode value="source"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/StructureDefinition/Address"/>
+      <mode value="target"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/cda/StructureDefinition/TEL"/>
+      <mode value="source"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/StructureDefinition/ContactPoint"/>
+      <mode value="target"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/cda/StructureDefinition/BL"/>
+      <mode value="source"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/StructureDefinition/boolean"/>
+      <mode value="target"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/cda/StructureDefinition/IVL-TS"/>
+      <mode value="source"/>
+   </structure>
+   <structure>
+      <url value="http://hl7.org/fhir/StructureDefinition/Period"/>
+      <mode value="target"/>
+   </structure>
+   <group>
+      <name value="Any"/>
+      <typeMode value="none"/>
+      <input>
+         <name value="src"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <mode value="target"/>
+      </input>
+   </group>
+   <group>
+      <name value="II"/>
+      <extends value="Any"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="II"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="Identifier"/>
+         <mode value="target"/>
+      </input>
+      <rule>
+         <name value="root1"/>
+         <source>
+            <context value="src"/>
+            <element value="root"/>
+            <variable value="r"/>
+            <condition value="src.extension.exists()"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="system"/>
+            <transform value="translate"/>
+            <parameter>
+               <valueId value="r"/>
+            </parameter>
+            <parameter>
+               <valueString value="http://hl7.org/fhir/ConceptMap/special-oid2uri"/>
+            </parameter>
+            <parameter>
+               <valueString value="uri"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="rootuuid"/>
+         <source>
+            <context value="src"/>
+            <element value="root"/>
+            <variable value="r"/>
+            <condition value="src.extension.empty() and src.root.matches('[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}')"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="system"/>
+            <transform value="copy"/>
+            <parameter>
+               <valueString value="urn:ietf:rfc:3986"/>
+            </parameter>
+         </target>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="value"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="'urn:uuid:' + r.lower()"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="rootoid"/>
+         <source>
+            <context value="src"/>
+            <element value="root"/>
+            <variable value="r"/>
+            <condition value="src.extension.empty() and src.root.contains('.')"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="system"/>
+            <transform value="copy"/>
+            <parameter>
+               <valueString value="urn:ietf:rfc:3986"/>
+            </parameter>
+         </target>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="value"/>
+            <transform value="append"/>
+            <parameter>
+               <valueString value="urn:oid:"/>
+            </parameter>
+            <parameter>
+               <valueId value="r"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="extension"/>
+         <source>
+            <context value="src"/>
+            <element value="extension"/>
+            <variable value="e"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="value"/>
+            <transform value="copy"/>
+            <parameter>
+               <valueId value="e"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="assigningAuthorityName"/>
+         <source>
+            <context value="src"/>
+            <element value="assigningAuthorityName"/>
+            <variable value="s"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="assigner"/>
+            <variable value="a"/>
+         </target>
+         <target>
+            <context value="a"/>
+            <contextType value="variable"/>
+            <element value="display"/>
+            <transform value="copy"/>
+            <parameter>
+               <valueId value="s"/>
+            </parameter>
+         </target>
+      </rule>
+   </group>
+   <group>
+      <name value="INT"/>
+      <extends value="Any"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="INT"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="integer"/>
+         <mode value="target"/>
+      </input>
+      <rule>
+         <name value="value"/>
+         <source>
+            <context value="src"/>
+            <element value="value"/>
+            <variable value="v"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="value"/>
+            <transform value="cast"/>
+            <parameter>
+               <valueId value="v"/>
+            </parameter>
+            <parameter>
+               <valueString value="string"/>
+            </parameter>
+         </target>
+      </rule>
+   </group>
+   <group>
+      <name value="TemplateID"/>
+      <typeMode value="none"/>
+      <input>
+         <name value="template"/>
+         <type value="II"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <mode value="target"/>
+      </input>
+      <rule>
+         <name value="templateId"/>
+         <source>
+            <context value="template"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="extension"/>
+            <variable value="ext"/>
+         </target>
+         <rule>
+            <name value="url"/>
+            <source>
+               <context value="template"/>
+            </source>
+            <target>
+               <context value="ext"/>
+               <contextType value="variable"/>
+               <element value="url"/>
+               <transform value="copy"/>
+               <parameter>
+                  <valueString value="http://hl7.org/fhir/cda/StructureDefinition/templateID"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="value"/>
+            <source>
+               <context value="template"/>
+            </source>
+            <target>
+               <context value="ext"/>
+               <contextType value="variable"/>
+               <element value="value"/>
+               <variable value="value"/>
+               <transform value="create"/>
+               <parameter>
+                  <valueString value="Identifier"/>
+               </parameter>
+            </target>
+            <dependent>
+               <name value="II"/>
+               <variable value="template">
+                  <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                     <valueUrl value="id"/>
+                  </extension>
+               </variable>
+               <variable value="value">
+                  <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                     <valueUrl value="id"/>
+                  </extension>
+               </variable>
+            </dependent>
+         </rule>
+      </rule>
+   </group>
+   <group>
+      <name value="Negation"/>
+      <typeMode value="none"/>
+      <input>
+         <name value="negation"/>
+         <type value="BL"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <mode value="target"/>
+      </input>
+      <rule>
+         <name value="negation"/>
+         <source>
+            <context value="negation"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="modifierExtension"/>
+            <variable value="ext"/>
+         </target>
+         <rule>
+            <name value="url"/>
+            <source>
+               <context value="negation"/>
+            </source>
+            <target>
+               <context value="ext"/>
+               <contextType value="variable"/>
+               <element value="url"/>
+               <transform value="copy"/>
+               <parameter>
+                  <valueString value="http://hl7.org/fhir/cda/StructureDefinition/negationIndicator"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="value"/>
+            <source>
+               <context value="negation"/>
+               <variable value="neg"/>
+            </source>
+            <target>
+               <context value="ext"/>
+               <contextType value="variable"/>
+               <element value="value"/>
+               <transform value="create"/>
+               <parameter>
+                  <valueString value="boolean"/>
+               </parameter>
+            </target>
+            <target>
+               <context value="ext"/>
+               <contextType value="variable"/>
+               <element value="value"/>
+               <transform value="copy"/>
+               <parameter>
+                  <valueId value="neg"/>
+               </parameter>
+            </target>
+         </rule>
+      </rule>
+   </group>
+   <group>
+      <name value="TSInstant"/>
+      <extends value="Any"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="TS"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="instant"/>
+         <mode value="target"/>
+      </input>
+      <rule>
+         <name value="value"/>
+         <source>
+            <context value="src"/>
+            <element value="value"/>
+            <variable value="v"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="value"/>
+            <transform value="cast"/>
+            <parameter>
+               <valueId value="v"/>
+            </parameter>
+            <parameter>
+               <valueString value="string"/>
+            </parameter>
+         </target>
+      </rule>
+   </group>
+   <group>
+      <name value="TSDateTime"/>
+      <extends value="TSInstant"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="TS"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="dateTime"/>
+         <mode value="target"/>
+      </input>
+      <rule>
+         <name value="eff"/>
+         <source>
+            <context value="src"/>
+            <condition value="(value.contains('+'))"/>
+         </source>
+         <rule>
+            <name value="value"/>
+            <source>
+               <context value="src"/>
+               <element value="value"/>
+               <variable value="v"/>
+            </source>
+            <target>
+               <context value="tgt"/>
+               <contextType value="variable"/>
+               <element value="value"/>
+               <transform value="cast"/>
+               <parameter>
+                  <valueId value="v"/>
+               </parameter>
+               <parameter>
+                  <valueString value="string"/>
+               </parameter>
+            </target>
+         </rule>
+      </rule>
+      <rule>
+         <name value="eff"/>
+         <source>
+            <context value="src"/>
+            <condition value="(value.contains('-'))"/>
+         </source>
+         <rule>
+            <name value="value"/>
+            <source>
+               <context value="src"/>
+               <element value="value"/>
+               <variable value="v"/>
+            </source>
+            <target>
+               <context value="tgt"/>
+               <contextType value="variable"/>
+               <element value="value"/>
+               <transform value="cast"/>
+               <parameter>
+                  <valueId value="v"/>
+               </parameter>
+               <parameter>
+                  <valueString value="string"/>
+               </parameter>
+            </target>
+         </rule>
+      </rule>
+      <rule>
+         <name value="eff"/>
+         <source>
+            <context value="src"/>
+            <element value="value"/>
+            <condition value="(value.matches('^\\d{4}(\\-\\d{2}){2}T\\d{2}(:\\d{2}){2}$'))"/>
+         </source>
+         <rule>
+            <name value="date"/>
+            <source>
+               <context value="src"/>
+               <element value="value"/>
+               <variable value="v"/>
+            </source>
+            <target>
+               <context value="tgt"/>
+               <contextType value="variable"/>
+               <element value="value"/>
+               <transform value="append"/>
+               <parameter>
+                  <valueId value="v"/>
+               </parameter>
+               <parameter>
+                  <valueString value="Z"/>
+               </parameter>
+            </target>
+         </rule>
+      </rule>
+   </group>
+   <group>
+      <name value="TSDate"/>
+      <extends value="TSInstant"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="TS"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="date"/>
+         <mode value="target"/>
+      </input>
+   </group>
+   <group>
+      <name value="IVLTSPeriod"/>
+      <extends value="Any"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="IVL_TS"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="Period"/>
+         <mode value="target"/>
+      </input>
+      <rule>
+         <name value="low"/>
+         <source>
+            <context value="src"/>
+            <element value="low"/>
+            <variable value="vvv"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="start"/>
+            <variable value="vvv"/>
+            <transform value="create"/>
+         </target>
+      </rule>
+      <rule>
+         <name value="high"/>
+         <source>
+            <context value="src"/>
+            <element value="high"/>
+            <variable value="vvv"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="end"/>
+            <variable value="vvv"/>
+            <transform value="create"/>
+         </target>
+      </rule>
+   </group>
+   <group>
+      <name value="IVLTSDateTime"/>
+      <extends value="Any"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="IVL_TS"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="dateTime"/>
+         <mode value="target"/>
+      </input>
+      <rule>
+         <name value="low"/>
+         <source>
+            <context value="src"/>
+            <element value="low"/>
+            <variable value="s"/>
+         </source>
+         <dependent>
+            <name value="TSDateTime"/>
+            <variable value="s">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+            <variable value="tgt">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+         </dependent>
+      </rule>
+   </group>
+   <group>
+      <name value="STstring"/>
+      <extends value="Any"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="ST"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="string"/>
+         <mode value="target"/>
+      </input>
+      <rule>
+         <name value="value"/>
+         <source>
+            <context value="src"/>
+            <variable value="v"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="value"/>
+            <transform value="cast"/>
+            <parameter>
+               <valueId value="v"/>
+            </parameter>
+            <parameter>
+               <valueString value="string"/>
+            </parameter>
+         </target>
+      </rule>
+   </group>
+   <group>
+      <name value="EDstring"/>
+      <extends value="STstring"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="ED"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="string"/>
+         <mode value="target"/>
+      </input>
+   </group>
+   <group>
+      <name value="INTstring"/>
+      <extends value="STstring"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="INT"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="string"/>
+         <mode value="target"/>
+      </input>
+   </group>
+   <group>
+      <name value="ONstring"/>
+      <extends value="STstring"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="ON"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="string"/>
+         <mode value="target"/>
+      </input>
+   </group>
+   <group>
+      <name value="CSCode"/>
+      <extends value="Any"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="CS"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="code"/>
+         <mode value="target"/>
+      </input>
+      <rule>
+         <name value="code"/>
+         <source>
+            <context value="src"/>
+            <element value="code"/>
+            <variable value="c"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="value"/>
+            <transform value="cast"/>
+            <parameter>
+               <valueId value="c"/>
+            </parameter>
+            <parameter>
+               <valueString value="string"/>
+            </parameter>
+         </target>
+      </rule>
+   </group>
+   <group>
+      <name value="CECode"/>
+      <extends value="CSCode"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="CE"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="code"/>
+         <mode value="target"/>
+      </input>
+   </group>
+   <group>
+      <name value="CDCode"/>
+      <extends value="CSCode"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="CD"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="code"/>
+         <mode value="target"/>
+      </input>
+   </group>
+   <group>
+      <name value="CECodeableConcept"/>
+      <extends value="Any"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="CE"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="CodeableConcept"/>
+         <mode value="target"/>
+      </input>
+      <rule>
+         <name value="originltext"/>
+         <source>
+            <context value="src"/>
+            <element value="originalText"/>
+            <variable value="originalText"/>
+         </source>
+         <rule>
+            <name value="reference"/>
+            <source>
+               <context value="originalText"/>
+               <element value="reference"/>
+               <variable value="reference"/>
+            </source>
+            <target>
+               <context value="tgt"/>
+               <contextType value="variable"/>
+               <element value="text"/>
+               <transform value="evaluate"/>
+               <parameter>
+                  <valueString value="reference.value"/>
+               </parameter>
+            </target>
+         </rule>
+      </rule>
+      <rule>
+         <name value="code"/>
+         <source>
+            <context value="src"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="coding"/>
+            <variable value="coding"/>
+         </target>
+         <rule>
+            <name value="code"/>
+            <source>
+               <context value="src"/>
+               <element value="code"/>
+               <variable value="code"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="code"/>
+               <transform value="cast"/>
+               <parameter>
+                  <valueId value="code"/>
+               </parameter>
+               <parameter>
+                  <valueString value="string"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="codeSystem"/>
+            <source>
+               <context value="src"/>
+               <element value="codeSystem"/>
+               <variable value="system"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="system"/>
+               <transform value="translate"/>
+               <parameter>
+                  <valueId value="system"/>
+               </parameter>
+               <parameter>
+                  <valueString value="http://hl7.org/fhir/ConceptMap/special-oid2uri"/>
+               </parameter>
+               <parameter>
+                  <valueString value="uri"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="displayName"/>
+            <source>
+               <context value="src"/>
+               <element value="displayName"/>
+               <variable value="display"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="display"/>
+               <transform value="cast"/>
+               <parameter>
+                  <valueId value="display"/>
+               </parameter>
+               <parameter>
+                  <valueString value="string"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="codeSystemVersion"/>
+            <source>
+               <context value="src"/>
+               <element value="codeSystemVersion"/>
+               <variable value="version"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="version"/>
+               <transform value="cast"/>
+               <parameter>
+                  <valueId value="version"/>
+               </parameter>
+               <parameter>
+                  <valueString value="string"/>
+               </parameter>
+            </target>
+         </rule>
+      </rule>
+      <rule>
+         <name value="translation"/>
+         <source>
+            <context value="src"/>
+            <element value="translation"/>
+            <variable value="translation"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="coding"/>
+            <variable value="coding"/>
+         </target>
+         <rule>
+            <name value="code"/>
+            <source>
+               <context value="translation"/>
+               <element value="code"/>
+               <variable value="code"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="code"/>
+               <transform value="cast"/>
+               <parameter>
+                  <valueId value="code"/>
+               </parameter>
+               <parameter>
+                  <valueString value="string"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="codeSystem"/>
+            <source>
+               <context value="translation"/>
+               <element value="codeSystem"/>
+               <variable value="system"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="system"/>
+               <transform value="translate"/>
+               <parameter>
+                  <valueId value="system"/>
+               </parameter>
+               <parameter>
+                  <valueString value="http://hl7.org/fhir/ConceptMap/special-oid2uri"/>
+               </parameter>
+               <parameter>
+                  <valueString value="uri"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="displayName"/>
+            <source>
+               <context value="translation"/>
+               <element value="displayName"/>
+               <variable value="display"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="display"/>
+               <transform value="cast"/>
+               <parameter>
+                  <valueId value="display"/>
+               </parameter>
+               <parameter>
+                  <valueString value="string"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="codeSystemVersion"/>
+            <source>
+               <context value="translation"/>
+               <element value="codeSystemVersion"/>
+               <variable value="version"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="version"/>
+               <transform value="cast"/>
+               <parameter>
+                  <valueId value="version"/>
+               </parameter>
+               <parameter>
+                  <valueString value="string"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="qualifier"/>
+            <source>
+               <context value="translation"/>
+               <element value="qualifier"/>
+               <variable value="qualifier"/>
+            </source>
+            <rule>
+               <name value="value"/>
+               <source>
+                  <context value="qualifier"/>
+                  <element value="value"/>
+                  <variable value="value"/>
+               </source>
+               <target>
+                  <context value="tgt"/>
+                  <contextType value="variable"/>
+                  <element value="coding"/>
+                  <variable value="coding"/>
+               </target>
+               <rule>
+                  <name value="code"/>
+                  <source>
+                     <context value="value"/>
+                     <element value="code"/>
+                     <variable value="code"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="code"/>
+                     <transform value="cast"/>
+                     <parameter>
+                        <valueId value="code"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="string"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="codeSystem"/>
+                  <source>
+                     <context value="value"/>
+                     <element value="codeSystem"/>
+                     <variable value="system"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="system"/>
+                     <transform value="translate"/>
+                     <parameter>
+                        <valueId value="system"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="http://hl7.org/fhir/ConceptMap/special-oid2uri"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="uri"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="displayName"/>
+                  <source>
+                     <context value="value"/>
+                     <element value="displayName"/>
+                     <variable value="display"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="display"/>
+                     <transform value="cast"/>
+                     <parameter>
+                        <valueId value="display"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="string"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="codeSystemVersion"/>
+                  <source>
+                     <context value="value"/>
+                     <element value="codeSystemVersion"/>
+                     <variable value="version"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="version"/>
+                     <transform value="cast"/>
+                     <parameter>
+                        <valueId value="version"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="string"/>
+                     </parameter>
+                  </target>
+               </rule>
+            </rule>
+         </rule>
+      </rule>
+   </group>
+   <group>
+      <name value="CSCodeableConcept"/>
+      <extends value="CECodeableConcept"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="CS"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="CodeableConcept"/>
+         <mode value="target"/>
+      </input>
+   </group>
+   <group>
+      <name value="CDCodeableConcept"/>
+      <extends value="CECodeableConcept"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="CD"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="CodeableConcept"/>
+         <mode value="target"/>
+      </input>
+   </group>
+   <group>
+      <name value="ENHumanName"/>
+      <extends value="Any"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="EN"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="HumanName"/>
+         <mode value="target"/>
+      </input>
+      <rule>
+         <name value="family"/>
+         <source>
+            <context value="src"/>
+            <element value="family"/>
+            <variable value="v"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="family"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="v.dataString"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="given"/>
+         <source>
+            <context value="src"/>
+            <element value="given"/>
+            <variable value="v"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="given"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="v.dataString"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="prefix"/>
+         <source>
+            <context value="src"/>
+            <element value="prefix"/>
+            <variable value="v"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="prefix"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="v.dataString"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="suffix"/>
+         <source>
+            <context value="src"/>
+            <element value="suffix"/>
+            <variable value="v"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="suffix"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="v.dataString"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="validTime"/>
+         <source>
+            <context value="src"/>
+            <element value="validTime"/>
+            <variable value="vvv"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="period"/>
+            <variable value="vvv"/>
+            <transform value="create"/>
+         </target>
+         <documentation value="src.use as c -> tgt.use = translate(c, 'http://hl7.org/fhir/ConceptMap/cm-name-use-v3', 'code');"/>
+      </rule>
+   </group>
+   <group>
+      <name value="ADAddress"/>
+      <extends value="Any"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="AD"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="Address"/>
+         <mode value="target"/>
+      </input>
+      <rule>
+         <name value="country"/>
+         <source>
+            <context value="src"/>
+            <element value="country"/>
+            <variable value="v"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="country"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="v.dataString"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="state"/>
+         <source>
+            <context value="src"/>
+            <element value="state"/>
+            <variable value="v"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="state"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="v.dataString"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="county"/>
+         <source>
+            <context value="src"/>
+            <element value="county"/>
+            <variable value="v"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="district"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="v.dataString"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="city"/>
+         <source>
+            <context value="src"/>
+            <element value="city"/>
+            <variable value="v"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="city"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="v.dataString"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="postalCode"/>
+         <source>
+            <context value="src"/>
+            <element value="postalCode"/>
+            <variable value="v"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="postalCode"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="v.dataString"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="CensusTract"/>
+         <source>
+            <context value="src"/>
+            <element value="streetAddressLine"/>
+            <variable value="v"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="line"/>
+            <variable value="line"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="v.dataString"/>
+            </parameter>
+         </target>
+         <rule>
+            <name value="line"/>
+            <source>
+               <context value="src"/>
+               <element value="censusTract"/>
+               <variable value="v"/>
+            </source>
+            <target>
+               <context value="line"/>
+               <contextType value="variable"/>
+               <element value="extension"/>
+               <variable value="ext1"/>
+            </target>
+            <dependent>
+               <name value="CensusTract"/>
+               <variable value="v">
+                  <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                     <valueUrl value="id"/>
+                  </extension>
+               </variable>
+               <variable value="ext1">
+                  <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                     <valueUrl value="id"/>
+                  </extension>
+               </variable>
+            </dependent>
+         </rule>
+      </rule>
+      <rule>
+         <name value="streetName"/>
+         <source>
+            <context value="src"/>
+            <element value="streetName"/>
+            <variable value="v"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="line"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="v.dataString"/>
+            </parameter>
+         </target>
+         <documentation value="share firstline &quot;streetAddress&quot;;"/>
+      </rule>
+      <rule>
+         <name value="houseNumber"/>
+         <source>
+            <context value="src"/>
+            <element value="houseNumber"/>
+            <variable value="v"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="line"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="v.dataString"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="addressUse"/>
+         <source>
+            <context value="src"/>
+            <element value="use"/>
+            <variable value="c"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="use"/>
+            <transform value="translate"/>
+            <parameter>
+               <valueId value="c"/>
+            </parameter>
+            <parameter>
+               <valueString value="#addressUse"/>
+            </parameter>
+            <parameter>
+               <valueString value="code"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="useablePeriod"/>
+         <source>
+            <context value="src"/>
+            <element value="useablePeriod"/>
+            <variable value="vvv"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="period"/>
+            <variable value="vvv"/>
+            <transform value="create"/>
+         </target>
+      </rule>
+   </group>
+   <group>
+      <name value="TELContactPoint"/>
+      <extends value="Any"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="TEL"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="ContactPoint"/>
+         <mode value="target"/>
+      </input>
+      <rule>
+         <name value="valuetel"/>
+         <source>
+            <context value="src"/>
+            <element value="value"/>
+            <variable value="v"/>
+            <condition value="(src.value.startsWith('tel:'))"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="value"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="v.substring(4)"/>
+            </parameter>
+         </target>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="system"/>
+            <transform value="copy"/>
+            <parameter>
+               <valueString value="phone"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="valuefax"/>
+         <source>
+            <context value="src"/>
+            <element value="value"/>
+            <variable value="v"/>
+            <condition value="(src.value.startsWith('fax:'))"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="value"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="v.substring(4)"/>
+            </parameter>
+         </target>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="system"/>
+            <transform value="copy"/>
+            <parameter>
+               <valueString value="fax"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="valuemail"/>
+         <source>
+            <context value="src"/>
+            <element value="value"/>
+            <variable value="v"/>
+            <condition value="(src.value.startsWith('mailto:'))"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="value"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="v.substring(7)"/>
+            </parameter>
+         </target>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="system"/>
+            <transform value="copy"/>
+            <parameter>
+               <valueString value="email"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="valuehttp"/>
+         <source>
+            <context value="src"/>
+            <element value="value"/>
+            <variable value="v"/>
+            <condition value="(src.value.startsWith('http:'))"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="value"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="v.substring(5)"/>
+            </parameter>
+         </target>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="system"/>
+            <transform value="copy"/>
+            <parameter>
+               <valueString value="url"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="usehome"/>
+         <source>
+            <context value="src"/>
+            <element value="use"/>
+            <condition value="(src.use.startsWith('H'))"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="use"/>
+            <transform value="copy"/>
+            <parameter>
+               <valueString value="home"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="usework"/>
+         <source>
+            <context value="src"/>
+            <element value="use"/>
+            <condition value="((src.use = 'WP') or (src.use = 'DIR') or (src.use = 'PUB'))"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="use"/>
+            <transform value="copy"/>
+            <parameter>
+               <valueString value="work"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="usebad"/>
+         <source>
+            <context value="src"/>
+            <element value="use"/>
+            <condition value="(src.use = 'BAD')"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="use"/>
+            <transform value="copy"/>
+            <parameter>
+               <valueString value="old"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="usetmp"/>
+         <source>
+            <context value="src"/>
+            <element value="use"/>
+            <condition value="(src.use = 'TMP')"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="use"/>
+            <transform value="copy"/>
+            <parameter>
+               <valueString value="temp"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="usemobile"/>
+         <source>
+            <context value="src"/>
+            <element value="use"/>
+            <condition value="(src.use = 'MC')"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="use"/>
+            <transform value="copy"/>
+            <parameter>
+               <valueString value="mobile"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="useablePeriod"/>
+         <source>
+            <context value="src"/>
+            <element value="useablePeriod"/>
+            <variable value="vvv"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="period"/>
+            <variable value="vvv"/>
+            <transform value="create"/>
+         </target>
+      </rule>
+   </group>
+   <group>
+      <name value="PQQuantity"/>
+      <extends value="Any"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="PQ"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="Quantity"/>
+         <mode value="target"/>
+      </input>
+      <rule>
+         <name value="unit"/>
+         <source>
+            <context value="src"/>
+            <element value="unit"/>
+            <variable value="unit"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="unit"/>
+            <transform value="copy"/>
+            <parameter>
+               <valueId value="unit"/>
+            </parameter>
+         </target>
+         <documentation value="src.unit as unit -> tgt.code = unit;"/>
+      </rule>
+      <rule>
+         <name value="value"/>
+         <source>
+            <context value="src"/>
+            <element value="value"/>
+            <variable value="value"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="value"/>
+            <transform value="copy"/>
+            <parameter>
+               <valueId value="value"/>
+            </parameter>
+         </target>
+      </rule>
+   </group>
+   <group>
+      <name value="RTOPQPQRatio"/>
+      <extends value="Any"/>
+      <typeMode value="types"/>
+      <input>
+         <name value="src"/>
+         <type value="RTO_PQ_PQ"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="tgt"/>
+         <type value="Ratio"/>
+         <mode value="target"/>
+      </input>
+      <rule>
+         <name value="numerator"/>
+         <source>
+            <context value="src"/>
+            <element value="numerator"/>
+            <variable value="numerator"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="numerator"/>
+            <variable value="targetNumerator"/>
+         </target>
+         <dependent>
+            <name value="PQQuantity"/>
+            <variable value="numerator">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+            <variable value="targetNumerator">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+         </dependent>
+      </rule>
+      <rule>
+         <name value="denominator"/>
+         <source>
+            <context value="src"/>
+            <element value="denominator"/>
+            <variable value="denominator"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="denominator"/>
+            <variable value="targetDenominator"/>
+         </target>
+         <dependent>
+            <name value="PQQuantity"/>
+            <variable value="denominator">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+            <variable value="targetDenominator">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+         </dependent>
+      </rule>
+   </group>
+   <group>
+      <name value="CensusTract"/>
+      <typeMode value="none"/>
+      <input>
+         <name value="src"/>
+         <type value="ST"/>
+         <mode value="source"/>
+      </input>
+      <input>
+         <name value="ext"/>
+         <type value="Extension"/>
+         <mode value="target"/>
+      </input>
+      <rule>
+         <name value="url"/>
+         <source>
+            <context value="src"/>
+         </source>
+         <target>
+            <context value="ext"/>
+            <contextType value="variable"/>
+            <element value="url"/>
+            <transform value="copy"/>
+            <parameter>
+               <valueString value="http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-censusTract"/>
+            </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="value"/>
+         <source>
+            <context value="src"/>
+         </source>
+         <target>
+            <context value="ext"/>
+            <contextType value="variable"/>
+            <element value="value"/>
+            <transform value="create"/>
+            <parameter>
+               <valueString value="string"/>
+            </parameter>
+         </target>
+         <target>
+            <context value="ext"/>
+            <contextType value="variable"/>
+            <element value="value"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="src.dataString"/>
+            </parameter>
+         </target>
+      </rule>
+   </group>
+</StructureMap>
