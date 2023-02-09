@@ -1,0 +1,195 @@
+{
+  "resourceType": "ImplementationGuide",
+  "id": "hl7.fhir.it.cda2fhir",
+  "url": "http://hl7.it/fhir/cda2fhir/ImplementationGuide/hl7.fhir.it.cda2fhir",
+  "version": "0.1.0",
+  "name": "HL7ItCda2FhirMapIG",
+  "title": "CDA to FHIR Maps",
+  "status": "draft",
+  "publisher": "HL7 Italy",
+  "contact": [
+    {
+      "name": "HL7 Italy",
+      "telecom": [
+        {
+          "system": "url",
+          "value": "http://hl7.it"
+        }
+      ]
+    }
+  ],
+  "description": "This guide documents the maps that have been created to enable the transformation of the currently used CDA documents into FHIR resources.",
+  "jurisdiction": [
+    {
+      "coding": [
+        {
+          "code": "IT",
+          "system": "urn:iso:std:iso:3166",
+          "display": "Italy"
+        }
+      ]
+    }
+  ],
+  "packageId": "hl7.fhir.it.cda2fhir",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "dependsOn": [
+    {
+      "packageId": "hl7.fhir.cda",
+      "version": "dev",
+      "uri": "http://hl7.org/fhir/cda/ImplementationGuide/hl7.fhir.cda",
+      "id": "hl7_fhir_cda"
+    }
+  ],
+  "definition": {
+    "grouping": [
+      {
+        "id": "CommonMaps",
+        "name": "Common Maps",
+        "description": "Common CDA to FHIR maps"
+      },
+      {
+        "id": "LabMaps",
+        "name": "Laboratory Report",
+        "description": "CDA Laboratory Report to FHIR Bundle transaction maps"
+      },
+      {
+        "id": "HdrMaps",
+        "name": "Hospital Discharge Report",
+        "description": "CDA Hospital Discharge Report to FHIR Bundle transaction maps"
+      },
+      {
+        "id": "RadMaps",
+        "name": "Radiology Report",
+        "description": "CDA Radiology Report to FHIR Bundle transaction maps"
+      },
+      {
+        "id": "AmbMaps",
+        "name": "Ambulatory Visit Report",
+        "description": "CDA Ambulatory Visit Report to FHIR Bundle transaction maps"
+      },
+      {
+        "id": "VacMaps",
+        "name": "Vaccination Certificate",
+        "description": "CDA Vaccination Certificate Report to FHIR Bundle transaction maps"
+      },
+      {
+        "id": "EdrMaps",
+        "name": "Emergency Department Report",
+        "description": "CDA Emergency Department Report to FHIR Bundle transaction maps"
+      },
+      {
+        "id": "PssMaps",
+        "name": "Patient Summary",
+        "description": "CDA Patient Summary to FHIR Bundle transaction maps"
+      }
+    ],
+    "resource": [
+      {
+        "reference": {
+          "reference": "StructureMap/CdaToFhirDataTypes"
+        },
+        "name": "CdaToFhirDataTypes",
+        "description": "CDA to FHIR Data Types map",
+        "groupingId": "CommonMaps"
+      },
+      {
+        "reference": {
+          "reference": "StructureMap/FULLHEADER"
+        },
+        "name": "FULLHEADER",
+        "description": "CDA to FHIR full header map",
+        "groupingId": "CommonMaps"
+      },
+      {
+        "reference": {
+          "reference": "StructureMap/LetteraDimissioneOspedaliera"
+        },
+        "name": "LetteraDimissioneOspedaliera",
+        "description": "CDA to FHIR hospital discharge report map",
+        "groupingId": "HdrMaps"
+      },
+      {
+        "reference": {
+          "reference": "StructureMap/RefertodiRadiologiaBody"
+        },
+        "name": "RefertodiRadiologiaBody",
+        "description": "CDA to FHIR Radiology Report map",
+        "groupingId": "RadMaps"
+      },
+      {
+        "reference": {
+          "reference": "StructureMap/RefertodilaboratorioFULLBODY"
+        },
+        "name": "RefertodilaboratorioFULLBODY",
+        "description": "CDA to FHIR Laboratory Report map",
+        "groupingId": "LabMaps"
+      },
+      {
+        "reference": {
+          "reference": "StructureMap/RefertodiSpecialisticaAmbulatorialeBody"
+        },
+        "name": "RefertodiSpecialisticaAmbulatorialeBody",
+        "description": "CDA to FHIR Ambulatory Visit Report map",
+        "groupingId": "AmbMaps"
+      },
+      {
+        "reference": {
+          "reference": "StructureMap/Vaccinazioni"
+        },
+        "name": "Vaccinazioni",
+        "description": "CDA to FHIR Vaccination Certificate map",
+        "groupingId": "VacMaps"
+      },
+      {
+        "reference": {
+          "reference": "StructureMap/verbalePS"
+        },
+        "name": "verbalePS",
+        "description": "CDA to FHIR Emergency Department Report map",
+        "groupingId": "EdrMaps"
+      },
+      {
+        "reference": {
+          "reference": "StructureMap/ProfiloSanitarioSinteticoBody"
+        },
+        "name": "ProfiloSanitarioSinteticoBody",
+        "description": "CDA to FHIR Patient Summary map",
+        "groupingId": "PssMaps"
+      }
+    ],
+    "page": {
+      "nameUrl": "toc.html",
+      "title": "Table of Contents",
+      "generation": "html",
+      "page": [
+        {
+          "nameUrl": "index.html",
+          "title": "Home",
+          "generation": "html"
+        },
+        {
+          "nameUrl": "examples.html",
+          "title": "Examples",
+          "generation": "markdown"
+        },
+        {
+          "nameUrl": "downloads.html",
+          "title": "Downloads",
+          "generation": "markdown"
+        }
+      ]
+    },
+    "parameter": [
+      {
+        "code": "copyrightyear",
+        "value": "2023+"
+      },
+      {
+        "code": "releaselabel",
+        "value": "ci-build"
+      }
+    ]
+  }
+}
