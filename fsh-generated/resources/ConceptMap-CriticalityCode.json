@@ -1,0 +1,43 @@
+{
+  "resourceType": "ConceptMap",
+  "id": "CriticalityCode",
+  "name": "ConceptMap - Allergy Criticality Code",
+  "title": "ConceptMap - Allergy Criticality Code",
+  "status": "draft",
+  "sourceUri":"http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+  "targetUri":"http://hl7.org/fhir/allergy-intolerance-criticality",
+  "description": "Mappa di trasformazione del valueset di Criticality Code di CDA2 a FHIR",
+  "group": [
+    {
+      "element": [
+        {
+          "code": "L",
+          "target": [
+            {
+              "code": "low",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "H",
+          "target": [
+            {
+              "code": "hugh",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "M",
+          "target": [
+            {
+              "code": "unable_to_assess",
+              "equivalence": "equivalent"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

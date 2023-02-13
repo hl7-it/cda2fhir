@@ -1,0 +1,97 @@
+{
+  "resourceType": "ConceptMap",
+  "id": "AllergyCategory",
+  "name": "ConceptMap - Allergy Category",
+  "title": "ConceptMap - Allergy Category",
+  "status": "draft",
+  "sourceUri":"http://terminology.hl7.org/ValueSet/v3-type",
+  "targetUri":"http://hl7.org/fhir/ValueSet/allergy-intolerance-category",
+  "description": "Mappa di trasformazione del valueset di Allergy Type di CDA2 a FHIR",
+  "group": [
+    {
+      "element": [
+        {
+          "code": "DALG",
+          "target": [
+            {
+              "code": "medication",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "EALG",
+          "target": [
+            {
+              "code": "enviroment",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "FALG",
+          "target": [
+            {
+              "code": "food",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "FNAINT",
+          "target": [
+            {
+              "code": "food",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "DNAINT",
+          "target": [
+            {
+              "code": "medication",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "ENAINT",
+          "target": [
+            {
+              "code": "enviroment",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "FINT",
+          "target": [
+            {
+              "code": "food",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "DINT",
+          "target": [
+            {
+              "code": "medication",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "EINT",
+          "target": [
+            {
+              "code": "enviroment",
+              "equivalence": "equivalent"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

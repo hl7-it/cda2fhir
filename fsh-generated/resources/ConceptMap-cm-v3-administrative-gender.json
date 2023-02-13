@@ -1,0 +1,34 @@
+{
+  "resourceType": "ConceptMap",
+  "id": "cm-v3-administrative-gender",
+  "name": "ConceptMap - Administrative Gender",
+  "title": "ConceptMap - Administrative Gender",
+  "status": "draft",
+  "sourceUri":"http://terminology.hl7.org/ValueSet/v3-AdministrativeGender",
+  "targetUri":"http://hl7.org/fhir/ValueSet/administrative-gender",
+  "description": "Mappa di trasformazione del valueset di Administrative Gender Code di CDA2 a FHIR",
+  "group": [
+    {
+      "element": [
+        {
+          "code": "M",
+          "target": [
+            {
+              "code": "male",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "F",
+          "target": [
+            {
+              "code": "famale",
+              "equivalence": "equivalent"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

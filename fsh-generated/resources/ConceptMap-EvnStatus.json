@@ -1,0 +1,43 @@
+{
+  "resourceType": "ConceptMap",
+  "id": "evnStatus",
+  "name": "ConceptMap - Event Status Code",
+  "title": "ConceptMap - Event Status Code",
+  "status": "draft",
+  "sourceUri":"http://terminology.hl7.org/ValueSet/v3-statusCode",
+  "targetUri":"http://hl7.org/fhir/event-status",
+  "description": "Mappa di trasformazione del valueset di Event Status Code di CDA2 a FHIR",
+  "group": [
+    {
+      "element": [
+        {
+          "code": "aborted",
+          "target": [
+            {
+              "code": "stopped",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "suspended",
+          "target": [
+            {
+              "code": "on-hold",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "active",
+          "target": [
+            {
+              "code": "in-progress",
+              "equivalence": "equivalent"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -6,11 +6,11 @@
   /* --navbar-bg-color: #26407e; 2. Header container color */
   --navbar-bg-color: #6c6c6c; /* 2. Header container color */
   /* --footer-bg-color: #777799;  3. Footer background color*/
-  --footer-bg-color: #77997c; /* 3. Footer background color*/
+  --footer-bg-color: #707070; /* 3. Footer background color*/
   /* 4 --footer-container-bg-color: #2d457e; . Footer container color */
   --footer-container-bg-color:#808080; /* 4. Footer container color */
 
-  --stripe-bg-color: #77997c; /* 5. Header strip color */
+  --stripe-bg-color: #707070; /* 5. Header strip color */
 
   --btn-hover-color: #44aabb;  /* 6. Menu button hover color */
   --btn-active-color: #60a0f0; /* 7. Menu button active color */
@@ -31,7 +31,7 @@
   --stu-note-background-color: #f2f2ff; /* 19. (STU) Note box background color */
   --stu-note-border-left-color: #a0a0ff; /* 20. (STU) Note box border color */
 
-  --ig-header-color: #d0dfd3; /* 21. Header color (sides) */
+  --ig-header-color: #f5f5f5; /* 21. Header color (sides) */
   --ig-header-container-color: #ffffff; /* 22. Header container color (center) */
   --footer-nav-bg-color: #f5f5f5; /* 23. Footer navigation background color*/
   --footer-text-color: #ffffff; /* 24. Footer highlight font color */
