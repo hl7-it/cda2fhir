@@ -1,0 +1,43 @@
+{
+  "resourceType": "ConceptMap",
+  "id": "cm-v3-relatesTo-code",
+  "name": "ConceptMap - RelatesTo Code",
+  "title": "ConceptMap - RelatesTo Code",
+  "status": "draft",
+  "sourceUri":"http://terminology.hl7.org/ValueSet/typecode",
+  "targetUri":"http://hl7.org/fhir/ValueSet/document-relationship-type",
+  "description": "Mappa di trasformazione del valueset di RelatesTo Code di CDA2 a FHIR",
+  "group": [
+    {
+      "element": [
+        {
+          "code": "APND",
+          "target": [
+            {
+              "code": "appends",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "XFRM",
+          "target": [
+            {
+              "code": "trasform",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "RPLC",
+          "target": [
+            {
+              "code": "replaces",
+              "equivalence": "equivalent"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

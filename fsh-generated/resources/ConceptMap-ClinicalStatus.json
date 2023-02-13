@@ -1,0 +1,43 @@
+{
+  "resourceType": "ConceptMap",
+  "id": "ClinicalStatus",
+  "name": "ConceptMap - Clinical Status Code",
+  "title": "Mappa di trasformazione del valueset di Clinical Status Code di CDA2 a FHIR",
+  "status": "draft",
+  "sourceUri":"https://loinc.org/99493-9/",
+  "targetUri":"http://terminology.hl7.org/CodeSystem/condition-clinical",
+  "description": "Mappa di trasformazione del valueset di Clinical Status Code di CDA2 a FHIR",
+  "group": [
+    {
+      "element": [
+        {
+          "code": "LA16666-2",
+          "target": [
+            {
+              "code": "active",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "LA18632-2",
+          "target": [
+            {
+              "code": "inactive",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "LA9041-0",
+          "target": [
+            {
+              "code": "resolved",
+              "equivalence": "equivalent"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
