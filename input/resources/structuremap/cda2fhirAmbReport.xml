@@ -8,7 +8,7 @@
 
 conceptmap &quot;OBSstatus&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-statusCode&quot;
-  prefix t = &quot;http://hl7.org/fhir/status.html&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/diagnostic-report-status.html&quot;
 
   s:completed == t:final
   s:active == t:registered
@@ -36,7 +36,7 @@ conceptmap &quot;cm-v3-administrative-gender&quot; {
 
 conceptmap &quot;AllergyTypeMap&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-type&quot;
-  prefix t = &quot;http://hl7.org/fhir/Allergy-type.html&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/allergy-intolerance-type&quot;
 
   s:OINT == t:intolerance
   s:ALG == t:allergy
@@ -54,7 +54,7 @@ conceptmap &quot;AllergyTypeMap&quot; {
 
 conceptmap &quot;AllergyCategoryMap&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-type&quot;
-  prefix t = &quot;http://hl7.org/fhir/Allergy-type.html&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/allergy-intolerance-type&quot;
 
   s:DALG == t:medication
   s:EALG == t:enviroment
@@ -775,7 +775,7 @@ group Practitioner(source src : participant, target tgt : MedicationRequest, tar
          <status value="draft"/>
          <group>
             <source value="http://terminology.hl7.org/ValueSet/v3-statusCode"/>
-            <target value="http://hl7.org/fhir/status.html"/>
+            <target value="http://hl7.org/fhir/ValueSet/diagnostic-report-status.html"/>
             <element>
                <code value="completed"/>
                <target>
@@ -875,7 +875,7 @@ group Practitioner(source src : participant, target tgt : MedicationRequest, tar
          <status value="draft"/>
          <group>
             <source value="http://terminology.hl7.org/ValueSet/v3-type"/>
-            <target value="http://hl7.org/fhir/Allergy-type.html"/>
+            <target value="http://hl7.org/fhir/ValueSet/allergy-intolerance-type"/>
             <element>
                <code value="OINT"/>
                <target>
@@ -969,7 +969,7 @@ group Practitioner(source src : participant, target tgt : MedicationRequest, tar
          <status value="draft"/>
          <group>
             <source value="http://terminology.hl7.org/ValueSet/v3-type"/>
-            <target value="http://hl7.org/fhir/Allergy-type.html"/>
+            <target value="http://hl7.org/fhir/ValueSet/allergy-intolerance-type"/>
             <element>
                <code value="DALG"/>
                <target>

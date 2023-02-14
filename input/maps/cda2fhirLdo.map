@@ -4,7 +4,7 @@ conceptmap "AllergyTypeMap" {
 
   prefix s = "http://terminology.hl7.org/ValueSet/v3-type"
 
-  prefix t = "http://hl7.org/fhir/Allergy-type.html"
+  prefix t = "http://hl7.org/fhir/ValueSet/allergy-intolerance-type"
 
   s:OINT == t:intolerance
   s:ALG == t:allergy
@@ -23,7 +23,7 @@ conceptmap "AllergyTypeMap" {
 conceptmap "AllergyCategoryMap" {
 
   prefix s = "http://terminology.hl7.org/ValueSet/v3-type"
-  prefix t = "http://hl7.org/fhir/Allergy-type.html"
+  prefix t = "http://hl7.org/fhir/ValueSet/allergy-intolerance-type"
 
   s:DALG == t:medication
   s:EALG == t:enviroment
