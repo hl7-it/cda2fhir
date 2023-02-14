@@ -3,7 +3,7 @@
    <text>
       <status value="generated"/>
       <div xmlns="http://www.w3.org/1999/xhtml">
-         <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/VerbalePS&quot; = &quot;VerbalePS&quot;
+         <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirEdReport&quot; = &quot;VerbalePS&quot;
 
 
 conceptmap &quot;cm-v3-administrative-gender&quot; {
@@ -2484,7 +2484,7 @@ group periodTiming(source effectiveTime : PIVL_TS, target timing : Timing) {
          </group>
       </ConceptMap>
    </contained>
-   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/VerbalePS"/>
+   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirEdReport"/>
    <name value="VerbalePS"/>
    <structure>
       <url value="http://hl7.org/fhir/cda/StructureDefinition/ClinicalDocument"/>
@@ -2577,12 +2577,12 @@ group periodTiming(source effectiveTime : PIVL_TS, target timing : Timing) {
       <alias value="Act"/>
    </structure>
    <structure>
-      <url value="http://hl7.org/fhir/cda/StructureDefinition/IVL_PQ"/>
+      <url value="http://hl7.org/fhir/cda/StructureDefinition/IVL-PQ"/>
       <mode value="source"/>
       <alias value="IVL_PQ"/>
    </structure>
    <structure>
-      <url value="http://hl7.org/fhir/cda/StructureDefinition/IVL_TS"/>
+      <url value="http://hl7.org/fhir/cda/StructureDefinition/IVL-TS"/>
       <mode value="source"/>
    </structure>
    <structure>
