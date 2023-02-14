@@ -83,15 +83,15 @@ Le mappe rappresentano lo strumento tramite il quale il Gateway può generare un
         </tr>
         <tr class="odd">
             <td>Autore</td>
-            <td>Ilenia Centonze</td>
-            <td>EY Advisory spa</td>
-            <td>ilenia.centonze@it.ey.com</td>
-        </tr>
-        <tr class="odd">
-            <td>Autore</td>
             <td>Davide Spanu</td>
             <td>EY Advisory spa</td>
             <td>davide.spanu@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Ilenia Centonze</td>
+            <td>EY Advisory spa</td>
+            <td>ilenia.centonze@it.ey.com</td>
         </tr>
         <tr class="odd">
             <td>Autore</td>
