@@ -1,9 +1,9 @@
 <StructureMap xmlns="http://hl7.org/fhir">
-   <id value="Vaccinazioni"/>
+   <id value="cda2fhirVaccination"/>
    <text>
       <status value="generated"/>
       <div xmlns="http://www.w3.org/1999/xhtml">
-         <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/Vaccinazioni&quot; = &quot;Vaccinazioni&quot;
+         <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirVaccination&quot; = &quot;cda2fhirVaccination&quot;
 
 
 uses &quot;http://hl7.org/fhir/cda/StructureDefinition/ClinicalDocument&quot; alias ClinicalDocument as source
@@ -29,8 +29,8 @@ uses &quot;http://hl7.org/fhir/cda/StructureDefinition/PQ&quot; alias PQ as sour
 uses &quot;http://hl7.org/fhir/StructureDefinition/SimpleQuantity&quot; alias SimpleQuantity as target
 uses &quot;http://hl7.org/fhir/StructureDefinition/Immunization&quot; alias Immunization as target
 
-imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/CdaToFhirDataTypes&quot;
-imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/FULLHEADER&quot;
+imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes&quot;
+imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader&quot;
 
 group CdaToBundle(source cda : ClinicalDocument, target bundle : Bundle) {
   cda -&gt;  bundle.entry as e,  e.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e.resource = create(&apos;Composition&apos;) as composition,  composition.id = uuid() as uuid1,  e.fullUrl = append(&apos;https://example/Composition/&apos;, uuid1),  request.url = 'Composition',  bundle.entry as e2,  e2.request = create('BackboneElement') as requestPAT,  requestPAT.method = 'PUT',  e2.resource = create('Patient') as patient,  patient.id = uuid() as uuid2,  e2.fullUrl = append('https://example/Patient/', uuid2),  bundle.entry as e3,  e3.request = create('BackboneElement') as request,  request.method = 'POST',  e3.resource = create('Encounter') as encounter,  encounter.id = uuid() as uuid3,  e3.fullUrl = append('https://example/Encounter/', uuid3),  request.url = &apos;Encounter&apos;,  bundle.entry as e5,  e5.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e5.resource = create(&apos;DocumentReference&apos;) as DocumentReference,  DocumentReference.id = uuid() as uuid5,  e5.fullUrl = append(&apos;https://example/DocumentReference/&apos;, uuid5),  request.url = &apos;DocumentReference&apos; then {
@@ -332,8 +332,8 @@ group Observation1(source entrirel4 : entryRelationship, target patient : Patien
 </pre>
       </div>
    </text>
-   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/Vaccinazioni"/>
-   <name value="Vaccinazioni"/>
+   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirVaccination"/>
+   <name value="cda2fhirVaccination"/>
    <structure>
       <url value="http://hl7.org/fhir/cda/StructureDefinition/ClinicalDocument"/>
       <mode value="source"/>
@@ -444,8 +444,8 @@ group Observation1(source entrirel4 : entryRelationship, target patient : Patien
       <mode value="target"/>
       <alias value="Immunization"/>
    </structure>
-   <import value="http://hl7.it/fhir/cda2fhir/StructureMap/CdaToFhirDataTypes"/>
-   <import value="http://hl7.it/fhir/cda2fhir/StructureMap/FULLHEADER"/>
+   <import value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"/>
+   <import value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader"/>
    <group>
       <name value="CdaToBundle"/>
       <typeMode value="none"/>

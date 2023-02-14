@@ -1,5 +1,5 @@
 <StructureMap xmlns="http://hl7.org/fhir">
-   <id value="verbalePS"/>
+   <id value="cda2fhirEdReport"/>
    <text>
       <status value="generated"/>
       <div xmlns="http://www.w3.org/1999/xhtml">
@@ -70,8 +70,8 @@ uses &quot;http://hl7.org/fhir/cda/StructureDefinition/IVL_TS&quot; as source
 uses &quot;http://hl7.org/fhir/cda/StructureDefinition/PQ&quot; alias PQ as source
 uses &quot;http://hl7.org/fhir/StructureDefinition/SimpleQuantity&quot; alias SimpleQuantity as target
 
-imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/CdaToFhirDataTypes&quot;
-imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/FULLHEADER&quot;
+imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes&quot;
+imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader&quot;
 
 // --------------------------------------------------------------------------------------------
 group CdaToBundle(source cda : ClinicalDocument, target bundle : Bundle) {
@@ -2595,8 +2595,8 @@ group periodTiming(source effectiveTime : PIVL_TS, target timing : Timing) {
       <mode value="target"/>
       <alias value="SimpleQuantity"/>
    </structure>
-   <import value="http://hl7.it/fhir/cda2fhir/StructureMap/CdaToFhirDataTypes"/>
-   <import value="http://hl7.it/fhir/cda2fhir/StructureMap/FULLHEADER"/>
+   <import value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"/>
+   <import value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader"/>
    <group>
       <name value="CdaToBundle"/>
       <typeMode value="none"/>

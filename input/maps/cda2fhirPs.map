@@ -1,4 +1,4 @@
-map "http://hl7.it/fhir/cda2fhir/StructureMap/ProfiloSanitarioSinteticoBody" = "ProfiloSanitarioSinteticoBody"
+map "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirPs" = "cda2fhirPs"
 
 conceptmap "OBSstatus" {
 prefix s = "http://terminology.hl7.org/ValueSet/v3-statusCode"
@@ -118,8 +118,8 @@ uses "http://hl7.org/fhir/cda/StructureDefinition/PQ" alias PQ as source
 uses "http://hl7.org/fhir/StructureDefinition/SimpleQuantity" alias SimpleQuantity as target
 
 
-imports "http://hl7.it/fhir/cda2fhir/StructureMap/CdaToFhirDataTypes"
-imports "http://hl7.it/fhir/cda2fhir/StructureMap/FULLHEADER"
+imports "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"
+imports "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader"
 
 group CdaToBundle(source cda : ClinicalDocument, target bundle : Bundle) {
     cda ->  
@@ -724,7 +724,7 @@ group Immunization(source substance: substanceAdministration, target patient: Pa
                   manufactOrg-> organization.meta as meta then {
                   manufactOrg-> meta.tag = create('Coding') as coding then {
                   manufactOrg -> coding.system ='http://algoritmodiscoring'"system";
-                  manufactOrg -> coding.code ='ClinicalDocument/body/Vaccinazioni/manufacturerOrganization'"code";
+                  manufactOrg -> coding.code ='ClinicalDocument/body/cda2fhirVaccination/manufacturerOrganization'"code";
                 }"coding";
               }"meta";
             }"manufactOrg";          

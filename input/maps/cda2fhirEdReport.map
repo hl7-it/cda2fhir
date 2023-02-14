@@ -67,8 +67,8 @@ uses "http://hl7.org/fhir/cda/StructureDefinition/PQ" alias PQ as source
 uses "http://hl7.org/fhir/StructureDefinition/SimpleQuantity" alias SimpleQuantity as target
 
 
-imports "http://hl7.it/fhir/cda2fhir/StructureMap/CdaToFhirDataTypes"
-imports "http://hl7.it/fhir/cda2fhir/StructureMap/FULLHEADER"
+imports "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"
+imports "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader"
 
 //--------------------------------------------------------------------------------------------
 

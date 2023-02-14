@@ -1,4 +1,4 @@
-map "http://hl7.it/fhir/cda2fhir/StructureMap/CdaToFhirDataTypes" = "CdaToFhirDataTypes"
+map "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes" = "cda2fhirDataTypes"
 
 
 // Adapted from https://github.com/HL7/ccda-to-fhir/tree/master/mappings

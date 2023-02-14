@@ -1,9 +1,9 @@
 <StructureMap xmlns="http://hl7.org/fhir">
-   <id value="FULLHEADER"/>
+   <id value="cda2fhirHeader"/>
    <text>
       <status value="generated"/>
       <div xmlns="http://www.w3.org/1999/xhtml">
-         <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/FULLHEADER&quot; = &quot;FULLHEADER&quot;
+         <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader&quot; = &quot;cda2fhirHeader&quot;
 
 
 conceptmap &quot;cm-v3-administrative-gender&quot; {
@@ -50,7 +50,7 @@ uses &quot;http://hl7.org/fhir/StructureDefinition/Specimen&quot; alias Specimen
 uses &quot;http://hl7.org/fhir/StructureDefinition/Organization&quot; alias Organization as produced
 uses &quot;http://hl7.org/fhir/StructureDefinition/HealthCareFacility&quot; alias HealthCareFacility as queried
 
-imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/CdaToFhirDataTypes&quot;
+imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes&quot;
 
 group CdaToBundle(source cda : ClinicalDocument, target bundle : Bundle) {
   cda -&gt;  bundle.entry as e,  e.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e.resource = create(&apos;Composition&apos;) as composition,  composition.id = uuid() as uuid1,  e.fullUrl = append('https://example/Composition/', uuid1),  request.url = 'Composition',  bundle.entry as e2,  e2.request = create('BackboneElement') as requestPAT,  requestPAT.method = 'PUT',  e2.resource = create('Patient') as patient,  patient.id = uuid() as uuid2,  e2.fullUrl = append('https://example/Patient/', uuid2),  bundle.entry as e3,  e3.request = create('BackboneElement') as request,  request.method = 'POST',  e3.resource = create('Encounter') as encounter,  encounter.id = uuid() as uuid3,  e3.fullUrl = append('https://example/Encounter/', uuid3),  request.url = 'Encounter',  bundle.entry as e4,  e4.request = create('BackboneElement') as request,  request.method = 'POST',  e4.resource = create('DocumentReference') as DocumentReference,  DocumentReference.id = uuid() as uuid4,  e4.fullUrl = append('https://example/DocumentReference/', uuid3),  request.url = 'DocumentReference' then {
@@ -1912,8 +1912,8 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
          </group>
       </ConceptMap>
    </contained>
-   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/FULLHEADER"/>
-   <name value="FULLHEADER"/>
+   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader"/>
+   <name value="cda2fhirHeader"/>
    <structure>
       <url value="http://hl7.org/fhir/cda/StructureDefinition/ClinicalDocument"/>
       <mode value="source"/>
@@ -1994,7 +1994,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
       <mode value="queried"/>
       <alias value="HealthCareFacility"/>
    </structure>
-   <import value="http://hl7.it/fhir/cda2fhir/StructureMap/CdaToFhirDataTypes"/>
+   <import value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"/>
    <group>
       <name value="CdaToBundle"/>
       <typeMode value="none"/>
