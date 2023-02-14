@@ -161,7 +161,7 @@
         "reference": {
           "reference": "StructureMap/CdaToFhirDataTypes"
         },
-        "name": "CdaToFhirDataTypes",
+        "name": "Datatypes",
         "description": "Mappa di trasformazione dei dataTypes di CDA a FHIR",
         "groupingId": "CommonMaps"
       },
@@ -169,7 +169,7 @@
         "reference": {
           "reference": "StructureMap/FULLHEADER"
         },
-        "name": "FULLHEADER",
+        "name": "Header Generico",
         "description": "Mappa di trasformazione dell'header generico",
         "groupingId": "CommonMaps"
       },
