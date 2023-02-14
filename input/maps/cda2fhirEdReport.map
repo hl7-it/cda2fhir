@@ -61,8 +61,8 @@ uses "http://hl7.org/fhir/StructureDefinition/Person" alias Patient as produced
 uses "http://hl7.org/fhir/StructureDefinition/Practitioner" alias Practitioner as produced
 uses "http://hl7.org/fhir/StructureDefinition/Organization" alias Organization as produced
 uses "http://hl7.org/fhir/cda/StructureDefinition/Act" alias Act as produced
-uses "http://hl7.org/fhir/cda/StructureDefinition/IVL_PQ" alias IVL_PQ as source
-uses "http://hl7.org/fhir/cda/StructureDefinition/IVL_TS" as source
+uses "http://hl7.org/fhir/cda/StructureDefinition/IVL-PQ" alias IVL_PQ as source
+uses "http://hl7.org/fhir/cda/StructureDefinition/IVL-TS" as source
 uses "http://hl7.org/fhir/cda/StructureDefinition/PQ" alias PQ as source
 uses "http://hl7.org/fhir/StructureDefinition/SimpleQuantity" alias SimpleQuantity as target
 

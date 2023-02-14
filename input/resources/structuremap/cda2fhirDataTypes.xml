@@ -11,7 +11,7 @@
 
 conceptmap &quot;addressUse&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-AddressUse&quot;
-  prefix t = &quot;http://hl7.org/fhir/valueset-address-use.html&quot;
+  prefix t = &quot;	http://hl7.org/fhir/ValueSet/address-use&quot;
 
   s:H == t:home
   s:HP == t:home
@@ -222,7 +222,7 @@ group CensusTract(source src : ST, target ext : Extension) {
          <status value="draft"/>
          <group>
             <source value="http://terminology.hl7.org/ValueSet/v3-AddressUse"/>
-            <target value="http://hl7.org/fhir/valueset-address-use.html"/>
+            <target value="	http://hl7.org/fhir/ValueSet/address-use"/>
             <element>
                <code value="H"/>
                <target>

@@ -2,7 +2,7 @@ map "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirAmbReport" = "cda2fhirAmbR
 
 conceptmap "OBSstatus" {
 prefix s = "http://terminology.hl7.org/ValueSet/v3-statusCode"
-prefix t = "http://hl7.org/fhir/ValueSet/diagnostic-report-status.html"
+prefix t = "http://hl7.org/fhir/ValueSet/diagnostic-report-status"
 
 s:completed == t:final
 s:active == t:registered

@@ -7,7 +7,7 @@ map "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes" = "cda2fhirData
 
 conceptmap "addressUse" {
   prefix s = "http://terminology.hl7.org/ValueSet/v3-AddressUse"
-  prefix t = "http://hl7.org/fhir/valueset-address-use.html"
+  prefix t = "	http://hl7.org/fhir/ValueSet/address-use"
 
   s:H == t:home
   s:HP == t:home
