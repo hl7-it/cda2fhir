@@ -71,18 +71,6 @@ Le mappe rappresentano lo strumento tramite il quale il Gateway può generare un
         </tr>
         <tr class="odd">
             <td>Autore</td>
-            <td>Maria Teresa De Pippo</td>
-            <td>EY Advisory spa</td>
-            <td>maria.teresa.de.pippo@it.ey.com</td>
-        </tr>
-        <tr class="odd">
-            <td>Autore</td>
-            <td>Ilenia Centonze</td>
-            <td>EY Advisory spa</td>
-            <td>ilenia.centonze@it.ey.com</td>
-        </tr>
-        <tr class="odd">
-            <td>Autore</td>
             <td>Xhuliana Haxhi</td>
             <td>EY Advisory spa</td>
             <td>Xhuliana.haxhi@it.ey.com</td>
@@ -95,9 +83,9 @@ Le mappe rappresentano lo strumento tramite il quale il Gateway può generare un
         </tr>
         <tr class="odd">
             <td>Autore</td>
-            <td>Marta Oliverio</td>
+            <td>Ilenia Centonze</td>
             <td>EY Advisory spa</td>
-            <td>marta.oliverio@it.ey.com</td>
+            <td>ilenia.centonze@it.ey.com</td>
         </tr>
         <tr class="odd">
             <td>Autore</td>
@@ -107,14 +95,27 @@ Le mappe rappresentano lo strumento tramite il quale il Gateway può generare un
         </tr>
         <tr class="odd">
             <td>Autore</td>
-            <td>Ludovica Luciani</td>
-            <td>EY Advisory spa</td>
-            <td>ludovica.luciani@it.ey.com</td>
-        <tr class="odd">
-            <td>Autore</td>
             <td>Eleny Mulugeta Teklehaimanot</td>
             <td>EY Advisory spa</td>
             <td>Eleny.mulugeta.teklehaimanot@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Ludovica Luciani</td>
+            <td>EY Advisory spa</td>
+            <td>ludovica.luciani@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Marta Oliverio</td>
+            <td>EY Advisory spa</td>
+            <td>marta.oliverio@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Maria Teresa De Pippo</td>
+            <td>EY Advisory spa</td>
+            <td>maria.teresa.de.pippo@it.ey.com</td>
         </tr>
         <tr class="odd">
             <td>Contributore</td>
