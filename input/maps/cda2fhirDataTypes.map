@@ -1,4 +1,4 @@
-map "http://hl7.it/fhir/cda2fhir/StructureMap/CdaToFhirDataTypes" = "CdaToFhirDataTypes"
+map "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes" = "cda2fhirDataTypes"
 
 
 // Adapted from https://github.com/HL7/ccda-to-fhir/tree/master/mappings
@@ -7,7 +7,7 @@ map "http://hl7.it/fhir/cda2fhir/StructureMap/CdaToFhirDataTypes" = "CdaToFhirDa
 
 conceptmap "addressUse" {
   prefix s = "http://terminology.hl7.org/ValueSet/v3-AddressUse"
-  prefix t = "http://hl7.org/fhir/valueset-address-use.html"
+  prefix t = "http://hl7.org/fhir/ValueSet/address-use"
 
   s:H == t:home
   s:HP == t:home

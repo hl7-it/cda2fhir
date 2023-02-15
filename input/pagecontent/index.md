@@ -15,17 +15,17 @@ I documenti previsti per la trasformata includono, come definito dal DPCM n.18 d
 {:class="table table-bordered"}
 | Mapping di  | Trasformata da CDA a FHIR |
 |----------------|-------------|
-| Tipo di dati | [Trasformata del tipo di dato](StructureMap-CdaToFhirDataTypes.html) |
+| Tipo di dati | [Trasformata del tipo di dato](StructureMap-cda2fhirDataTypes.html) |
 |----------------|-------------|
-| Documenti | [Header CDA in Bundle](StructureMap-FULLHEADER.html)|
+| Documenti | [Header CDA in Bundle](StructureMap-cda2fhirHeader.html)|
 |----------------|-------------|
-| | [Referto di Laboratorio in Bundle](StructureMap-RefertodilaboratorioFULLBODY.html)|
-| | [Referto di Radiologia in Bundle](StructureMap-RefertodiRadiologiaBody.html)|
-| | [Lettera di Dimissione Ospedaliera in Bundle](StructureMap-LetteraDimissioneOspedaliera.html)|
-| | [Referto di Specialistica Ambulatoriale in Bundle](StructureMap-RefertodiSpecialisticaAmbulatorialeBody.html)|
-| | [Vaccinazioni in Bundle](StructureMap-Vaccinazioni.html)|
-| | [Verbale di Pronto Soccorso in Bundle](StructureMap-verbalePS.html)|
-| | [Profilo Sanitario Sintetico (PSS) in Bundle](StructureMap-ProfiloSanitarioSinteticoBody.html)|
+| | [Referto di Laboratorio in Bundle](StructureMap-cda2fhirLabReport.html)|
+| | [Referto di Radiologia in Bundle](StructureMap-cda2fhirRadReport.html)|
+| | [Lettera di Dimissione Ospedaliera in Bundle](StructureMap-cda2fhirLdo.html)|
+| | [Referto di Specialistica Ambulatoriale in Bundle](StructureMap-cda2fhirAmbReport.html)|
+| | [cda2fhirVaccination in Bundle](StructureMap-cda2fhirVaccination.html)|
+| | [Verbale di Pronto Soccorso in Bundle](StructureMap-cda2fhirEdReport.html)|
+| | [Profilo Sanitario Sintetico (PSS) in Bundle](StructureMap-cda2fhirPs.html)|
 
 
 

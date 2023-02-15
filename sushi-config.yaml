@@ -26,7 +26,6 @@ dependencies:
 #     uri: http://hl7.org/fhir/us/mcode/ImplementationGuide/hl7.fhir.us.mcode
 #     version: 1.0.0
 #
-#
 # The pages property corresponds to IG.definition.page. SUSHI can
 # auto-generate the page list, but if the author includes pages in
 # this file, it is assumed that the author will fully manage the
@@ -39,10 +38,12 @@ dependencies:
 # sub-pages.
 #
 pages:
-  index.xml:
+  index.md:
     title: Home
   examples.md:
     title: Examples
+  contesto.md:
+    title: Contesto
   downloads.md:
     title: Downloads
 #  implementation.md:
@@ -78,6 +79,7 @@ pages:
 menu:
   Home: index.html
   Table of Contents: toc.html
+  Background: contesto.html
   Examples: examples.html
   Artifacts: artifacts.html
   Downloads: downloads.html
@@ -140,40 +142,40 @@ resources:
 #    exampleBoolean: true
 #  Patient/bad-example: omit
 
-  StructureMap/CdaToFhirDataTypes:
-    name: CdaToFhirDataTypes
+  StructureMap/cda2fhirDataTypes:
+    name: CDA to FHIR - Data Types
     description: CDA to FHIR Data Types map
 
-  StructureMap/FULLHEADER:
-    name: FULLHEADER
+  StructureMap/cda2fhirHeader:
+    name: CDA to FHIR - Header
     description: CDA to FHIR full header map
 
-  StructureMap/LetteraDimissioneOspedaliera:
-    name: LetteraDimissioneOspedaliera
+  StructureMap/cda2fhirLdo:
+    name: CDA to FHIR - LDO
     description: CDA to FHIR hospital discharge report map
 
-  StructureMap/RefertodiRadiologiaBody:
-    name: RefertodiRadiologiaBody
+  StructureMap/cda2fhirRadReport:
+    name: CDA to FHIR - RAD
     description: CDA to FHIR Radiology Report map
 
-  StructureMap/RefertodilaboratorioFULLBODY:
-    name: RefertodilaboratorioFULLBODY
+  StructureMap/cda2fhirLabReport:
+    name: CDA to FHIR - LAB
     description: CDA to FHIR Laboratory Report map 
 
-  StructureMap/RefertodiSpecialisticaAmbulatorialeBody:
-    name: RefertodiSpecialisticaAmbulatorialeBody
+  StructureMap/cda2fhirAmbReport:
+    name: CDA to FHIR - AMB
     description: CDA to FHIR Ambulatory Visit Report map 
 
-  StructureMap/Vaccinazioni:
-    name: Vaccinazioni
+  StructureMap/cda2fhirVaccination:
+    name: CDA to FHIR - VAC
     description: CDA to FHIR Vaccination Certificate map     
 
-  StructureMap/verbalePS:
-    name: verbalePS
+  StructureMap/cda2fhirEdReport:
+    name: CDA to FHIR - VPS
     description: CDA to FHIR Emergency Department Report map    
     
-  StructureMap/ProfiloSanitarioSinteticoBody:
-    name: ProfiloSanitarioSinteticoBody
+  StructureMap/cda2fhirPs:
+    name: CDA to FHIR - PS
     description: CDA to FHIR Patient Summary map  
 
 
@@ -192,50 +194,50 @@ groups:
     name:  Common Maps
     description: Common CDA to FHIR maps
     resources:
-      - StructureMap/CdaToFhirDataTypes
-      - StructureMap/FULLHEADER
+      - StructureMap/cda2fhirDataTypes
+      - StructureMap/cda2fhirHeader
 
   LabMaps:
     name:  Laboratory Report
     description: CDA Laboratory Report to FHIR Bundle transaction maps
     resources:
-      - StructureMap/RefertodilaboratorioFULLBODY
+      - StructureMap/cda2fhirLabReport
 
   HdrMaps:
     name:  Hospital Discharge Report
     description: CDA Hospital Discharge Report to FHIR Bundle transaction maps
     resources:
-      - StructureMap/LetteraDimissioneOspedaliera
+      - StructureMap/cda2fhirLdo
 
   RadMaps:
     name:  Radiology Report
     description: CDA Radiology Report to FHIR Bundle transaction maps
     resources:
-      - StructureMap/RefertodiRadiologiaBody
+      - StructureMap/cda2fhirRadReport
 
   AmbMaps:
     name:  Ambulatory Visit Report
     description: CDA Ambulatory Visit Report to FHIR Bundle transaction maps
     resources:
-      - StructureMap/RefertodiSpecialisticaAmbulatorialeBody
+      - StructureMap/cda2fhirAmbReport
 
   VacMaps:
     name:  Vaccination Certificate
     description: CDA Vaccination Certificate Report to FHIR Bundle transaction maps
     resources:
-      - StructureMap/Vaccinazioni
+      - StructureMap/cda2fhirVaccination
   
   EdrMaps:
     name:  Emergency Department Report
     description: CDA Emergency Department Report to FHIR Bundle transaction maps
     resources:
-      - StructureMap/verbalePS
+      - StructureMap/cda2fhirEdReport
   
   PssMaps:
     name:  Patient Summary
     description: CDA Patient Summary to FHIR Bundle transaction maps
     resources:
-      - StructureMap/ProfiloSanitarioSinteticoBody
+      - StructureMap/cda2fhirPs
 
 
 

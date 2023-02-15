@@ -1,9 +1,9 @@
 <StructureMap xmlns="http://hl7.org/fhir">
-   <id value="verbalePS"/>
+   <id value="cda2fhirEdReport"/>
    <text>
       <status value="generated"/>
       <div xmlns="http://www.w3.org/1999/xhtml">
-         <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/VerbalePS&quot; = &quot;VerbalePS&quot;
+         <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirEdReport&quot; = &quot;VerbalePS&quot;
 
 
 conceptmap &quot;cm-v3-administrative-gender&quot; {
@@ -16,7 +16,7 @@ conceptmap &quot;cm-v3-administrative-gender&quot; {
 
 conceptmap &quot;AllergyTypeMap&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-type&quot;
-  prefix t = &quot;http://hl7.org/fhir/Allergy-type.html&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/allergy-intolerance-type&quot;
 
   s:OINT == t:intolerance
   s:ALG == t:allergy
@@ -34,7 +34,7 @@ conceptmap &quot;AllergyTypeMap&quot; {
 
 conceptmap &quot;AllergyCategoryMap&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-type&quot;
-  prefix t = &quot;http://hl7.org/fhir/Allergy-type.html&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/allergy-intolerance-type&quot;
 
   s:DALG == t:medication
   s:EALG == t:enviroment
@@ -70,8 +70,8 @@ uses &quot;http://hl7.org/fhir/cda/StructureDefinition/IVL_TS&quot; as source
 uses &quot;http://hl7.org/fhir/cda/StructureDefinition/PQ&quot; alias PQ as source
 uses &quot;http://hl7.org/fhir/StructureDefinition/SimpleQuantity&quot; alias SimpleQuantity as target
 
-imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/CdaToFhirDataTypes&quot;
-imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/FULLHEADER&quot;
+imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes&quot;
+imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader&quot;
 
 // --------------------------------------------------------------------------------------------
 group CdaToBundle(source cda : ClinicalDocument, target bundle : Bundle) {
@@ -2323,7 +2323,7 @@ group periodTiming(source effectiveTime : PIVL_TS, target timing : Timing) {
          <status value="draft"/>
          <group>
             <source value="http://terminology.hl7.org/ValueSet/v3-type"/>
-            <target value="http://hl7.org/fhir/Allergy-type.html"/>
+            <target value="http://hl7.org/fhir/ValueSet/allergy-intolerance-type"/>
             <element>
                <code value="OINT"/>
                <target>
@@ -2417,7 +2417,7 @@ group periodTiming(source effectiveTime : PIVL_TS, target timing : Timing) {
          <status value="draft"/>
          <group>
             <source value="http://terminology.hl7.org/ValueSet/v3-type"/>
-            <target value="http://hl7.org/fhir/Allergy-type.html"/>
+            <target value="http://hl7.org/fhir/ValueSet/allergy-intolerance-type"/>
             <element>
                <code value="DALG"/>
                <target>
@@ -2484,7 +2484,7 @@ group periodTiming(source effectiveTime : PIVL_TS, target timing : Timing) {
          </group>
       </ConceptMap>
    </contained>
-   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/VerbalePS"/>
+   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirEdReport"/>
    <name value="VerbalePS"/>
    <structure>
       <url value="http://hl7.org/fhir/cda/StructureDefinition/ClinicalDocument"/>
@@ -2577,12 +2577,12 @@ group periodTiming(source effectiveTime : PIVL_TS, target timing : Timing) {
       <alias value="Act"/>
    </structure>
    <structure>
-      <url value="http://hl7.org/fhir/cda/StructureDefinition/IVL_PQ"/>
+      <url value="http://hl7.org/fhir/cda/StructureDefinition/IVL-PQ"/>
       <mode value="source"/>
       <alias value="IVL_PQ"/>
    </structure>
    <structure>
-      <url value="http://hl7.org/fhir/cda/StructureDefinition/IVL_TS"/>
+      <url value="http://hl7.org/fhir/cda/StructureDefinition/IVL-TS"/>
       <mode value="source"/>
    </structure>
    <structure>
@@ -2595,8 +2595,8 @@ group periodTiming(source effectiveTime : PIVL_TS, target timing : Timing) {
       <mode value="target"/>
       <alias value="SimpleQuantity"/>
    </structure>
-   <import value="http://hl7.it/fhir/cda2fhir/StructureMap/CdaToFhirDataTypes"/>
-   <import value="http://hl7.it/fhir/cda2fhir/StructureMap/FULLHEADER"/>
+   <import value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"/>
+   <import value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader"/>
    <group>
       <name value="CdaToBundle"/>
       <typeMode value="none"/>

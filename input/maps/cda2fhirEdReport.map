@@ -1,4 +1,4 @@
-map "http://hl7.it/fhir/cda2fhir/StructureMap/VerbalePS" = "VerbalePS"
+map "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirEdReport" = "VerbalePS"
 
 conceptmap "cm-v3-administrative-gender" {
   prefix s = "http://terminology.hl7.org/ValueSet/v3-AdministrativeGender"
@@ -61,14 +61,14 @@ uses "http://hl7.org/fhir/StructureDefinition/Person" alias Patient as produced
 uses "http://hl7.org/fhir/StructureDefinition/Practitioner" alias Practitioner as produced
 uses "http://hl7.org/fhir/StructureDefinition/Organization" alias Organization as produced
 uses "http://hl7.org/fhir/cda/StructureDefinition/Act" alias Act as produced
-uses "http://hl7.org/fhir/cda/StructureDefinition/IVL_PQ" alias IVL_PQ as source
-uses "http://hl7.org/fhir/cda/StructureDefinition/IVL_TS" as source
+uses "http://hl7.org/fhir/cda/StructureDefinition/IVL-PQ" alias IVL_PQ as source
+uses "http://hl7.org/fhir/cda/StructureDefinition/IVL-TS" as source
 uses "http://hl7.org/fhir/cda/StructureDefinition/PQ" alias PQ as source
 uses "http://hl7.org/fhir/StructureDefinition/SimpleQuantity" alias SimpleQuantity as target
 
 
-imports "http://hl7.it/fhir/cda2fhir/StructureMap/CdaToFhirDataTypes"
-imports "http://hl7.it/fhir/cda2fhir/StructureMap/FULLHEADER"
+imports "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"
+imports "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader"
 
 //--------------------------------------------------------------------------------------------
 

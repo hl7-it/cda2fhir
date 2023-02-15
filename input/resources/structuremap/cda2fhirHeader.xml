@@ -1,9 +1,9 @@
 <StructureMap xmlns="http://hl7.org/fhir">
-   <id value="FULLHEADER"/>
+   <id value="cda2fhirHeader"/>
    <text>
       <status value="generated"/>
       <div xmlns="http://www.w3.org/1999/xhtml">
-         <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/FULLHEADER&quot; = &quot;FULLHEADER&quot;
+         <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader&quot; = &quot;cda2fhirHeader&quot;
 
 
 conceptmap &quot;cm-v3-administrative-gender&quot; {
@@ -50,7 +50,7 @@ uses &quot;http://hl7.org/fhir/StructureDefinition/Specimen&quot; alias Specimen
 uses &quot;http://hl7.org/fhir/StructureDefinition/Organization&quot; alias Organization as produced
 uses &quot;http://hl7.org/fhir/StructureDefinition/HealthCareFacility&quot; alias HealthCareFacility as queried
 
-imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/CdaToFhirDataTypes&quot;
+imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes&quot;
 
 group CdaToBundle(source cda : ClinicalDocument, target bundle : Bundle) {
   cda -&gt;  bundle.entry as e,  e.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e.resource = create(&apos;Composition&apos;) as composition,  composition.id = uuid() as uuid1,  e.fullUrl = append('https://example/Composition/', uuid1),  request.url = 'Composition',  bundle.entry as e2,  e2.request = create('BackboneElement') as requestPAT,  requestPAT.method = 'PUT',  e2.resource = create('Patient') as patient,  patient.id = uuid() as uuid2,  e2.fullUrl = append('https://example/Patient/', uuid2),  bundle.entry as e3,  e3.request = create('BackboneElement') as request,  request.method = 'POST',  e3.resource = create('Encounter') as encounter,  encounter.id = uuid() as uuid3,  e3.fullUrl = append('https://example/Encounter/', uuid3),  request.url = 'Encounter',  bundle.entry as e4,  e4.request = create('BackboneElement') as request,  request.method = 'POST',  e4.resource = create('DocumentReference') as DocumentReference,  DocumentReference.id = uuid() as uuid4,  e4.fullUrl = append('https://example/DocumentReference/', uuid3),  request.url = 'DocumentReference' then {
@@ -420,7 +420,7 @@ group ClinicalDocumentComposition(source src : ClinicalDocument, target tgt : Co
         related.name -&gt; relatedPerson.name;
         related.birthTime as date then {
           date.value as value -&gt; relatedPerson.birthDate = truncate(value, 10) &quot;valueD&quot;;
-        } &quot;birth informant&quot;;
+        } &quot;BirthInformant&quot;;
         related -&gt;  relatedPerson.patient = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patientResource.id) &quot;reference&quot;;
       } &quot;relatedPerson&quot;;
     } &quot;informant&quot;;
@@ -1060,7 +1060,7 @@ group ClinicalDocumentComposition(source src : ClinicalDocument, target tgt : Co
           effectiveTime.low -&gt; period.start;
           effectiveTime.high -&gt; period.end;
           effectiveTime where (effectiveTime.value) -&gt; period.start = create(&apos;dateTime&apos;) as startP then TSDateTime(effectiveTime, startP) &quot;startP&quot;;
-        } &quot;period_DT&quot;;
+        } &quot;Period-DT&quot;;
       } &quot;eventDT&quot;;
       serviceEvent.performer as performer -&gt;  bundle.entry as e41,  e41.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e41.resource = create(&apos;PractitionerRole&apos;) as practitionerRole,  practitionerRole.id = uuid() as uuid1,  e41.fullUrl = append(&apos;https://example/PractitionerRole/&apos;, uuid1),  request.url = &apos;PractitionerRole&apos; then {
         performer -&gt;  event.detail = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/PractitionerRole/&apos; + %practitionerRole.id) then {
@@ -1912,8 +1912,8 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
          </group>
       </ConceptMap>
    </contained>
-   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/FULLHEADER"/>
-   <name value="FULLHEADER"/>
+   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader"/>
+   <name value="cda2fhirHeader"/>
    <structure>
       <url value="http://hl7.org/fhir/cda/StructureDefinition/ClinicalDocument"/>
       <mode value="source"/>
@@ -1994,7 +1994,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
       <mode value="queried"/>
       <alias value="HealthCareFacility"/>
    </structure>
-   <import value="http://hl7.it/fhir/cda2fhir/StructureMap/CdaToFhirDataTypes"/>
+   <import value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"/>
    <group>
       <name value="CdaToBundle"/>
       <typeMode value="none"/>
@@ -7505,7 +7505,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                   </target>
                </rule>
                <rule>
-                  <name value="birth informant"/>
+                  <name value="BirthInformant"/>
                   <source>
                      <context value="related"/>
                      <element value="birthTime"/>
@@ -16317,7 +16317,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                   <variable value="effectiveTime"/>
                </source>
                <rule>
-                  <name value="period_DT"/>
+                  <name value="Period-DT"/>
                   <source>
                      <context value="effectiveTime"/>
                   </source>

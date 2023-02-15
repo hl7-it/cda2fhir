@@ -46,24 +46,49 @@
     "grouping": [
       {
         "id": "CommonMaps",
-        "name": "Terminology: StructureMaps Condivise",
-        "description": "Mappe condivise per la trasformazione da CDA-FHIR"
+        "name": "Common Maps",
+        "description": "Common CDA to FHIR maps"
       },
       {
-        "id": "MappeInd",
-        "name": "Terminology: StructureMaps Indipendenti",
-        "description": "Mappe per la trasformazione da CDA a FHIR Bundle per tutte le tipologie documentali"
+        "id": "LabMaps",
+        "name": "Laboratory Report",
+        "description": "CDA Laboratory Report to FHIR Bundle transaction maps"
       },
       {
-        "id": "ConceptMaps",
-        "name": "Terminology: ConceptMaps",
-        "description": "Mappe di trasformazione dei Valueset usati in CDA in Valueset FHIR"
+        "id": "HdrMaps",
+        "name": "Hospital Discharge Report",
+        "description": "CDA Hospital Discharge Report to FHIR Bundle transaction maps"
+      },
+      {
+        "id": "RadMaps",
+        "name": "Radiology Report",
+        "description": "CDA Radiology Report to FHIR Bundle transaction maps"
+      },
+      {
+        "id": "AmbMaps",
+        "name": "Ambulatory Visit Report",
+        "description": "CDA Ambulatory Visit Report to FHIR Bundle transaction maps"
+      },
+      {
+        "id": "VacMaps",
+        "name": "Vaccination Certificate",
+        "description": "CDA Vaccination Certificate Report to FHIR Bundle transaction maps"
+      },
+      {
+        "id": "EdrMaps",
+        "name": "Emergency Department Report",
+        "description": "CDA Emergency Department Report to FHIR Bundle transaction maps"
+      },
+      {
+        "id": "PssMaps",
+        "name": "Patient Summary",
+        "description": "CDA Patient Summary to FHIR Bundle transaction maps"
       }
     ],
     "resource": [
       {
         "reference": {
-          "reference": "ConceptMap/AddressUseMap"
+          "reference": "StructureMap/cda2fhirDataTypes"
         },
         "name": "Address Use Maps",
         "description": "Mappa di trasformazione del valueset di use dell'attributo CDA Address in FHIR",
@@ -161,73 +186,74 @@
         "reference": {
           "reference": "StructureMap/CdaToFhirDataTypes"
         },
-        "name": "Datatypes",
-        "description": "Mappa di trasformazione dei dataTypes di CDA a FHIR",
+        "name": "CDA to FHIR - Data Types",
+        "description": "CDA to FHIR Data Types map",
         "groupingId": "CommonMaps"
       },
       {
         "reference": {
-          "reference": "StructureMap/FULLHEADER"
+          "reference": "StructureMap/cda2fhirHeader"
         },
-        "name": "Header Generico",
-        "description": "Mappa di trasformazione dell'header generico",
+
+        "name": "CDA to FHIR - Header",
+        "description": "CDA to FHIR full header map",
         "groupingId": "CommonMaps"
       },
       {
         "reference": {
-          "reference": "StructureMap/LetteraDimissioneOspedaliera"
+          "reference": "StructureMap/cda2fhirLdo"
         },
-        "name": "BODY - Lettera di Dimissione Ospedaliera",
-        "description": "Mappa di trasformazione del documento Lettera di dimissione Ospedaliera in FHIR Bundle",
-        "groupingId": "MappeInd"
+        "name": "CDA to FHIR - LDO",
+        "description": "CDA to FHIR hospital discharge report map",
+        "groupingId": "HdrMaps"
       },
       {
         "reference": {
-          "reference": "StructureMap/RefertodiRadiologiaBody"
+          "reference": "StructureMap/cda2fhirRadReport"
         },
-        "name": "BODY - Referto di Radiologia",
-        "description": "Mappa di trasformazione del documento CDA2 Lettera di dimissione Ospedaliera in FHIR Bundle",
-        "groupingId": "MappeInd"
+        "name": "CDA to FHIR - RAD",
+        "description": "CDA to FHIR Radiology Report map",
+        "groupingId": "RadMaps"
       },
       {
         "reference": {
-          "reference": "StructureMap/RefertodilaboratorioFULLBODY"
+          "reference": "StructureMap/cda2fhirLabReport"
         },
-        "name": "BODY - Referto di Medicina di laboratorio",
-        "description": "Mappa di trasformazione del documento CDA2 Referto di Medicina di laboratorio in FHIR Bundle",
-        "groupingId": "MappeInd"
+        "name": "CDA to FHIR - LAB",
+        "description": "CDA to FHIR Laboratory Report map",
+        "groupingId": "LabMaps"
       },
       {
         "reference": {
-          "reference": "StructureMap/RefertodiSpecialisticaAmbulatorialeBody"
+          "reference": "StructureMap/cda2fhirAmbReport"
         },
-        "name": "BODY - Referto di Specialistica Ambulatoriale",
-        "description": "Mappa di trasformazione del documento CDA2 Referto di Specialistica Ambulatoriale in FHIR Bundle",
-        "groupingId": "MappeInd"
+        "name": "CDA to FHIR - AMB",
+        "description": "CDA to FHIR Ambulatory Visit Report map",
+        "groupingId": "AmbMaps"
       },
       {
         "reference": {
-          "reference": "StructureMap/Vaccinazioni"
+          "reference": "StructureMap/cda2fhirVaccination"
         },
-        "name": "BODY - Vaccinazioni",
-        "description": "Mappa di trasformazione del documento CDA2 Singola Vaccinazione e Certificato Vaccinale in FHIR Bundle",
-        "groupingId": "MappeInd"
+        "name": "CDA to FHIR - VAC",
+        "description": "CDA to FHIR Vaccination Certificate map",
+        "groupingId": "VacMaps"
       },
       {
         "reference": {
-          "reference": "StructureMap/verbalePS"
+          "reference": "StructureMap/cda2fhirEdReport"
         },
-        "name": "BODY - Verbale di Pronto Soccorso",
-        "description": "Mappa di trasformazione del documento CDA2 Verbale di Pronto Soccorso in FHIR Bundle",
-        "groupingId": "MappeInd"
+        "name": "CDA to FHIR - VPS",
+        "description": "CDA to FHIR Emergency Department Report map",
+        "groupingId": "EdrMaps"
       },
       {
         "reference": {
-          "reference": "StructureMap/ProfiloSanitarioSinteticoBody"
+          "reference": "StructureMap/cda2fhirPs"
         },
-        "name": "BODY - Profilo Sanitario Sintetico",
-        "description": "Mappa di trasformazione del documento CDA2 Profilo Sanitario Sintetico (PSS) in FHIR Bundle",
-        "groupingId": "MappeInd"
+        "name": "CDA to FHIR - PS",
+        "description": "CDA to FHIR Patient Summary map",
+        "groupingId": "PssMaps"
       }
     ],
     "page": {
@@ -238,6 +264,11 @@
         {
           "nameUrl": "index.html",
           "title": "Home",
+          "generation": "markdown"
+        },
+        {
+          "nameUrl": "examples.html",
+          "title": "Examples",
           "generation": "markdown"
         },
         {
