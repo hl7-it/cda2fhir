@@ -19,18 +19,6 @@ L'architettura del FSE 2.0 prevede che le strutture sanitarie si interfaccino co
 ● **Trasformazione in FHIR**: i documenti CDA2, una volta validati, sono tradotti nel formato HL7 FHIR , qualora questi non siano generati direttamente in questo formato nativo, e inviarli al Data Repository Centrale.(EDS)
 
 ● **Validare il processo per permettere la conservazione del documento e del suo indice**: se entrambe le fasi precedenti sono eseguite nel modo corretto, il Gateway permetterà all'infrastruttura di pubblicare il documento clinico corrispondente per poterlo indicizzare sul Registry nazionale (tramite i servizi INI e ANA), oltre che sul Registry regionale.
-<!-- 
-![](Infrastruttura.png) -->
-
-<!-- <table>
-<tbody>
-<tr class="odd">
-<td><p><img src="Infrastruttura.png" style="width:7.00in;height:4.44556in" /></p>
-<p>Figura XX - Flusso dei dati previsto per FSE 2.0 e attori coinvolti</p></td>
-</tr>
-</tbody>
-</table> -->
-
 
 ### Implementazione
 
@@ -38,7 +26,7 @@ L'architettura del FSE 2.0 prevede che le strutture sanitarie si interfaccino co
 <tbody>
 <tr class="odd">
 <td><p><img src="Processo_logico.png" style="width:7.00in;height:2.47in" /></p>
-<p>Figura XX - Flusso dei documenti/dati previsto per FSE 2.0 e attori coinvolti</p></td>
+<p>Figura 2 - Flusso dei documenti/dati previsto per FSE 2.0 e attori coinvolti</p></td>
 </tr>
 </tbody>
 </table>
