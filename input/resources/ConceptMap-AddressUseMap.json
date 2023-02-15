@@ -1,0 +1,97 @@
+{
+  "resourceType" : "ConceptMap",
+  "id" : "AddressUseMap",
+  "text" : {
+    "status" : "extensions",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><h2>ConceptMap - Address Use (http://hl7.it/fhir/cda2fhir/ConceptMap/AddressUseMap)</h2><p>Mapping from <a href=\"http://terminology.hl7.org/4.0.0/ValueSet-v3-AddressUse.html\">http://terminology.hl7.org/ValueSet/v3-AddressUse</a> to http://hl7.org/fhir/valueset-address-use.html</p><p>DRAFT. Published on 2023-02-15 10:57:30+0100 by HL7 Italy (HL7 Italy: <a href=\"http://hl7.it\">http://hl7.it</a>). </p><div><p>Mappa di trasformazione del valueset di use dell'attributo CDA Address in FHIR</p>\n</div><br/><p><b>Group 1</b>Mapping from <code>unspecified code system</code> to <code>unspecified code system</code></p><table class=\"grid\"><tr><td><b>Source Code</b></td><td><b>Relationship</b></td><td><b>Target Code</b></td></tr><tr><td>H</td><td><a href=\"http://hl7.org/fhir/R4/codesystem-concept-map-equivalence.html#equivalent\" title=\"equivalent\">is equivalent to</a></td><td>home</td></tr><tr><td>HP</td><td><a href=\"http://hl7.org/fhir/R4/codesystem-concept-map-equivalence.html#equivalent\" title=\"equivalent\">is equivalent to</a></td><td>home</td></tr><tr><td>HV</td><td><a href=\"http://hl7.org/fhir/R4/codesystem-concept-map-equivalence.html#equivalent\" title=\"equivalent\">is equivalent to</a></td><td>home</td></tr><tr><td>WP</td><td><a href=\"http://hl7.org/fhir/R4/codesystem-concept-map-equivalence.html#equivalent\" title=\"equivalent\">is equivalent to</a></td><td>work</td></tr><tr><td>DIR</td><td><a href=\"http://hl7.org/fhir/R4/codesystem-concept-map-equivalence.html#equivalent\" title=\"equivalent\">is equivalent to</a></td><td>work</td></tr><tr><td>PUB</td><td><a href=\"http://hl7.org/fhir/R4/codesystem-concept-map-equivalence.html#equivalent\" title=\"equivalent\">is equivalent to</a></td><td>work</td></tr><tr><td>TMP</td><td><a href=\"http://hl7.org/fhir/R4/codesystem-concept-map-equivalence.html#equivalent\" title=\"equivalent\">is equivalent to</a></td><td>temp</td></tr><tr><td>OLD</td><td><a href=\"http://hl7.org/fhir/R4/codesystem-concept-map-equivalence.html#equivalent\" title=\"equivalent\">is equivalent to</a></td><td>old</td></tr><tr><td>BAD</td><td><a href=\"http://hl7.org/fhir/R4/codesystem-concept-map-equivalence.html#equivalent\" title=\"equivalent\">is equivalent to</a></td><td>old</td></tr></table></div>"
+  },
+  "url" : "http://hl7.it/fhir/cda2fhir/ConceptMap/AddressUseMap",
+  "version" : "0.1.0",
+  "name" : "ConceptMap - Address Use",
+  "title" : "ConceptMap - Address Use",
+  "status" : "draft",
+  "date" : "2023-02-15T10:57:30+01:00",
+  "publisher" : "HL7 Italy",
+  "contact" : [{
+    "name" : "HL7 Italy",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "http://hl7.it"
+    }]
+  }],
+  "description" : "Mappa di trasformazione del valueset di use dell'attributo CDA Address in FHIR",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IT",
+      "display" : "Italy"
+    }]
+  }],
+  "sourceUri" : "http://terminology.hl7.org/ValueSet/v3-AddressUse",
+  "targetUri" : "http://hl7.org/fhir/valueset-address-use",
+  "group" : [{
+    "element" : [{
+      "code" : "H",
+      "target" : [{
+        "code" : "home",
+        "equivalence" : "equivalent"
+      }]
+    },
+    {
+      "code" : "HP",
+      "target" : [{
+        "code" : "home",
+        "equivalence" : "equivalent"
+      }]
+    },
+    {
+      "code" : "HV",
+      "target" : [{
+        "code" : "home",
+        "equivalence" : "equivalent"
+      }]
+    },
+    {
+      "code" : "WP",
+      "target" : [{
+        "code" : "work",
+        "equivalence" : "equivalent"
+      }]
+    },
+    {
+      "code" : "DIR",
+      "target" : [{
+        "code" : "work",
+        "equivalence" : "equivalent"
+      }]
+    },
+    {
+      "code" : "PUB",
+      "target" : [{
+        "code" : "work",
+        "equivalence" : "equivalent"
+      }]
+    },
+    {
+      "code" : "TMP",
+      "target" : [{
+        "code" : "temp",
+        "equivalence" : "equivalent"
+      }]
+    },
+    {
+      "code" : "OLD",
+      "target" : [{
+        "code" : "old",
+        "equivalence" : "equivalent"
+      }]
+    },
+    {
+      "code" : "BAD",
+      "target" : [{
+        "code" : "old",
+        "equivalence" : "equivalent"
+      }]
+    }]
+  }]
+}

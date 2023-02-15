@@ -1,0 +1,55 @@
+{
+  "resourceType" : "ConceptMap",
+  "id" : "evnStatus",
+  "text" : {
+    "status" : "extensions",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><h2>ConceptMap - Event Status Code (http://hl7.it/fhir/cda2fhir/ConceptMap/evnStatus)</h2><p>Mapping from http://terminology.hl7.org/ValueSet/v3-statusCode to <a href=\"http://hl7.org/fhir/R4/codesystem-event-status.html\">http://hl7.org/fhir/event-status</a></p><p>DRAFT. Published on 2023-02-15 10:57:30+0100 by HL7 Italy (HL7 Italy: <a href=\"http://hl7.it\">http://hl7.it</a>). </p><div><p>Mappa di trasformazione del valueset di Event Status Code di CDA2 a FHIR</p>\n</div><br/><p><b>Group 1</b>Mapping from <code>unspecified code system</code> to <code>unspecified code system</code></p><table class=\"grid\"><tr><td><b>Source Code</b></td><td><b>Relationship</b></td><td><b>Target Code</b></td></tr><tr><td>aborted</td><td><a href=\"http://hl7.org/fhir/R4/codesystem-concept-map-equivalence.html#equivalent\" title=\"equivalent\">is equivalent to</a></td><td>stopped</td></tr><tr><td>suspended</td><td><a href=\"http://hl7.org/fhir/R4/codesystem-concept-map-equivalence.html#equivalent\" title=\"equivalent\">is equivalent to</a></td><td>on-hold</td></tr><tr><td>active</td><td><a href=\"http://hl7.org/fhir/R4/codesystem-concept-map-equivalence.html#equivalent\" title=\"equivalent\">is equivalent to</a></td><td>in-progress</td></tr></table></div>"
+  },
+  "url" : "http://hl7.it/fhir/cda2fhir/ConceptMap/evnStatus",
+  "version" : "0.1.0",
+  "name" : "ConceptMap - Event Status Code",
+  "title" : "ConceptMap - Event Status Code",
+  "status" : "draft",
+  "date" : "2023-02-15T10:57:30+01:00",
+  "publisher" : "HL7 Italy",
+  "contact" : [{
+    "name" : "HL7 Italy",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "http://hl7.it"
+    }]
+  }],
+  "description" : "Mappa di trasformazione del valueset di Event Status Code di CDA2 a FHIR",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IT",
+      "display" : "Italy"
+    }]
+  }],
+  "sourceUri" : "http://terminology.hl7.org/ValueSet/v3-statusCode",
+  "targetUri" : "http://hl7.org/fhir/event-status",
+  "group" : [{
+    "element" : [{
+      "code" : "aborted",
+      "target" : [{
+        "code" : "stopped",
+        "equivalence" : "equivalent"
+      }]
+    },
+    {
+      "code" : "suspended",
+      "target" : [{
+        "code" : "on-hold",
+        "equivalence" : "equivalent"
+      }]
+    },
+    {
+      "code" : "active",
+      "target" : [{
+        "code" : "in-progress",
+        "equivalence" : "equivalent"
+      }]
+    }]
+  }]
+}

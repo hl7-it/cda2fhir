@@ -1,0 +1,55 @@
+{
+  "resourceType" : "ConceptMap",
+  "id" : "cm-v3-relatesTo-code",
+  "text" : {
+    "status" : "extensions",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><h2>ConceptMap - RelatesTo Code (http://hl7.it/fhir/cda2fhir/ConceptMap/cm-v3-relatesTo-code)</h2><p>Mapping from http://terminology.hl7.org/ValueSet/typecode to <a href=\"http://hl7.org/fhir/R4/valueset-document-relationship-type.html\">http://hl7.org/fhir/ValueSet/document-relationship-type</a></p><p>DRAFT. Published on 2023-02-15 10:57:30+0100 by HL7 Italy (HL7 Italy: <a href=\"http://hl7.it\">http://hl7.it</a>). </p><div><p>Mappa di trasformazione del valueset di RelatesTo Code di CDA2 a FHIR</p>\n</div><br/><p><b>Group 1</b>Mapping from <code>unspecified code system</code> to <code>unspecified code system</code></p><table class=\"grid\"><tr><td><b>Source Code</b></td><td><b>Relationship</b></td><td><b>Target Code</b></td></tr><tr><td>APND</td><td><a href=\"http://hl7.org/fhir/R4/codesystem-concept-map-equivalence.html#equivalent\" title=\"equivalent\">is equivalent to</a></td><td>appends</td></tr><tr><td>XFRM</td><td><a href=\"http://hl7.org/fhir/R4/codesystem-concept-map-equivalence.html#equivalent\" title=\"equivalent\">is equivalent to</a></td><td>trasform</td></tr><tr><td>RPLC</td><td><a href=\"http://hl7.org/fhir/R4/codesystem-concept-map-equivalence.html#equivalent\" title=\"equivalent\">is equivalent to</a></td><td>replaces</td></tr></table></div>"
+  },
+  "url" : "http://hl7.it/fhir/cda2fhir/ConceptMap/cm-v3-relatesTo-code",
+  "version" : "0.1.0",
+  "name" : "ConceptMap - RelatesTo Code",
+  "title" : "ConceptMap - RelatesTo Code",
+  "status" : "draft",
+  "date" : "2023-02-15T10:57:30+01:00",
+  "publisher" : "HL7 Italy",
+  "contact" : [{
+    "name" : "HL7 Italy",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "http://hl7.it"
+    }]
+  }],
+  "description" : "Mappa di trasformazione del valueset di RelatesTo Code di CDA2 a FHIR",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IT",
+      "display" : "Italy"
+    }]
+  }],
+  "sourceUri" : "http://terminology.hl7.org/ValueSet/typecode",
+  "targetUri" : "http://hl7.org/fhir/ValueSet/document-relationship-type",
+  "group" : [{
+    "element" : [{
+      "code" : "APND",
+      "target" : [{
+        "code" : "appends",
+        "equivalence" : "equivalent"
+      }]
+    },
+    {
+      "code" : "XFRM",
+      "target" : [{
+        "code" : "trasform",
+        "equivalence" : "equivalent"
+      }]
+    },
+    {
+      "code" : "RPLC",
+      "target" : [{
+        "code" : "replaces",
+        "equivalence" : "equivalent"
+      }]
+    }]
+  }]
+}

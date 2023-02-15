@@ -1,0 +1,55 @@
+{
+  "resourceType" : "ConceptMap",
+  "id" : "CriticalityCode",
+  "text" : {
+    "status" : "extensions",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><h2>ConceptMap - Allergy Criticality Code (http://hl7.it/fhir/cda2fhir/ConceptMap/CriticalityCode)</h2><p>Mapping from <a href=\"http://terminology.hl7.org/4.0.0/CodeSystem-v3-ObservationValue.html\">http://terminology.hl7.org/CodeSystem/v3-ObservationValue</a> to <a href=\"http://hl7.org/fhir/R4/codesystem-allergy-intolerance-criticality.html\">http://hl7.org/fhir/allergy-intolerance-criticality</a></p><p>DRAFT. Published on 2023-02-15 10:57:30+0100 by HL7 Italy (HL7 Italy: <a href=\"http://hl7.it\">http://hl7.it</a>). </p><div><p>Mappa di trasformazione del valueset di Criticality Code di CDA2 a FHIR</p>\n</div><br/><p><b>Group 1</b>Mapping from <code>unspecified code system</code> to <code>unspecified code system</code></p><table class=\"grid\"><tr><td><b>Source Code</b></td><td><b>Relationship</b></td><td><b>Target Code</b></td></tr><tr><td>L</td><td><a href=\"http://hl7.org/fhir/R4/codesystem-concept-map-equivalence.html#equivalent\" title=\"equivalent\">is equivalent to</a></td><td>low</td></tr><tr><td>H</td><td><a href=\"http://hl7.org/fhir/R4/codesystem-concept-map-equivalence.html#equivalent\" title=\"equivalent\">is equivalent to</a></td><td>hugh</td></tr><tr><td>M</td><td><a href=\"http://hl7.org/fhir/R4/codesystem-concept-map-equivalence.html#equivalent\" title=\"equivalent\">is equivalent to</a></td><td>unable_to_assess</td></tr></table></div>"
+  },
+  "url" : "http://hl7.it/fhir/cda2fhir/ConceptMap/CriticalityCode",
+  "version" : "0.1.0",
+  "name" : "ConceptMap - Allergy Criticality Code",
+  "title" : "ConceptMap - Allergy Criticality Code",
+  "status" : "draft",
+  "date" : "2023-02-15T10:57:30+01:00",
+  "publisher" : "HL7 Italy",
+  "contact" : [{
+    "name" : "HL7 Italy",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "http://hl7.it"
+    }]
+  }],
+  "description" : "Mappa di trasformazione del valueset di Criticality Code di CDA2 a FHIR",
+  "jurisdiction" : [{
+    "coding" : [{
+      "system" : "urn:iso:std:iso:3166",
+      "code" : "IT",
+      "display" : "Italy"
+    }]
+  }],
+  "sourceUri" : "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+  "targetUri" : "http://hl7.org/fhir/allergy-intolerance-criticality",
+  "group" : [{
+    "element" : [{
+      "code" : "L",
+      "target" : [{
+        "code" : "low",
+        "equivalence" : "equivalent"
+      }]
+    },
+    {
+      "code" : "H",
+      "target" : [{
+        "code" : "hugh",
+        "equivalence" : "equivalent"
+      }]
+    },
+    {
+      "code" : "M",
+      "target" : [{
+        "code" : "unable_to_assess",
+        "equivalence" : "equivalent"
+      }]
+    }]
+  }]
+}
