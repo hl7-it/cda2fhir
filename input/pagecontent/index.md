@@ -47,3 +47,93 @@ Le mappe rappresentano lo strumento tramite il quale il Gateway può generare un
 </tr>
 </tbody>
 </table>
+
+
+
+### Autori e contributori
+
+
+<table>
+    <thead>
+        <tr class="header">
+            <th>Ruolo</th>
+            <th>Nome</th>
+            <th>Organizzazione</th>
+            <th>Contatto</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="odd">
+            <td>Contributore</td>
+            <td>Giorgio Cangioli</td>
+            <td>Consulente</td>
+            <td>giorgio.cangioli@gmail.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Xhuliana Haxhi</td>
+            <td>EY Advisory spa</td>
+            <td>Xhuliana.haxhi@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Orgest Kuqi</td>
+            <td>EY Advisory spa</td>
+            <td>orgest.kuqi@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Davide Spanu</td>
+            <td>EY Advisory spa</td>
+            <td>davide.spanu@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Ilenia Centonze</td>
+            <td>EY Advisory spa</td>
+            <td>ilenia.centonze@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Eleny Mulugeta Teklehaimanot</td>
+            <td>EY Advisory spa</td>
+            <td>Eleny.mulugeta.teklehaimanot@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Ludovica Luciani</td>
+            <td>EY Advisory spa</td>
+            <td>ludovica.luciani@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Marta Oliverio</td>
+            <td>EY Advisory spa</td>
+            <td>marta.oliverio@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Maria Teresa De Pippo</td>
+            <td>EY Advisory spa</td>
+            <td>maria.teresa.de.pippo@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Contributore</td>
+            <td>Leonardo Alcaro</td>
+            <td>DTD</td>
+            <td>leonardo.alcaro@teamdigitale.governo.it</td>
+        </tr>
+        <tr class="odd">
+            <td>Contributore</td>
+            <td>Mario Sicuranza</td>
+            <td>CNR ICAR</td>
+            <td>mario.sicuranza@icar.cnr.it</td>
+        </tr>
+        <tr class="odd">
+            <td>Contributore</td>
+            <td>Mario Ciampi</td>
+            <td>CNR ICAR</td>
+            <td>mario.ciampi@icar.cnr.it</td>
+        </tr>
+    </tbody>
+</table>
