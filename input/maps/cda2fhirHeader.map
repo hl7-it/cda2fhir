@@ -439,7 +439,7 @@ group ClinicalDocumentComposition(source src : ClinicalDocument, target tgt : Co
     related.name -> relatedPerson.name;
     related.birthTime as date then{
       date.value as value -> relatedPerson.birthDate = truncate(value, 10) "valueD"; 
-    }"birth informant";
+    }"BirthInformant";
     related->relatedPerson.patient= create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patientResource.id) "reference";
     
       }"relatedPerson";
@@ -1138,7 +1138,7 @@ associetedEntity.scopingOrganization as scopingOrganization ->  bundle.entry as 
         effectiveTime.low -> period.start;
         effectiveTime.high -> period.end;        
         effectiveTime where (effectiveTime.value) -> period.start = create('dateTime') as startP then TSDateTime(effectiveTime,startP) "startP";
-      }"period_DT";
+      }"Period-DT";
     }"eventDT";
       serviceEvent.performer as performer ->  bundle.entry as e41, e41.request = create('BackboneElement') as request, request.method = 'POST',  e41.resource = create('PractitionerRole') as practitionerRole,  practitionerRole.id = uuid() as uuid1,  e41.fullUrl = append('https://example/PractitionerRole/', uuid1), request.url = 'PractitionerRole' then{
 			 performer -> event.detail = create('Reference') as reference,  reference.reference = ('https://example/PractitionerRole/' + %practitionerRole.id) then {

@@ -420,7 +420,7 @@ group ClinicalDocumentComposition(source src : ClinicalDocument, target tgt : Co
         related.name -&gt; relatedPerson.name;
         related.birthTime as date then {
           date.value as value -&gt; relatedPerson.birthDate = truncate(value, 10) &quot;valueD&quot;;
-        } &quot;birth informant&quot;;
+        } &quot;BirthInformant&quot;;
         related -&gt;  relatedPerson.patient = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patientResource.id) &quot;reference&quot;;
       } &quot;relatedPerson&quot;;
     } &quot;informant&quot;;
@@ -1060,7 +1060,7 @@ group ClinicalDocumentComposition(source src : ClinicalDocument, target tgt : Co
           effectiveTime.low -&gt; period.start;
           effectiveTime.high -&gt; period.end;
           effectiveTime where (effectiveTime.value) -&gt; period.start = create(&apos;dateTime&apos;) as startP then TSDateTime(effectiveTime, startP) &quot;startP&quot;;
-        } &quot;period_DT&quot;;
+        } &quot;Period-DT&quot;;
       } &quot;eventDT&quot;;
       serviceEvent.performer as performer -&gt;  bundle.entry as e41,  e41.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e41.resource = create(&apos;PractitionerRole&apos;) as practitionerRole,  practitionerRole.id = uuid() as uuid1,  e41.fullUrl = append(&apos;https://example/PractitionerRole/&apos;, uuid1),  request.url = &apos;PractitionerRole&apos; then {
         performer -&gt;  event.detail = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/PractitionerRole/&apos; + %practitionerRole.id) then {
@@ -7505,7 +7505,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                   </target>
                </rule>
                <rule>
-                  <name value="birth informant"/>
+                  <name value="BirthInformant"/>
                   <source>
                      <context value="related"/>
                      <element value="birthTime"/>
@@ -16317,7 +16317,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                   <variable value="effectiveTime"/>
                </source>
                <rule>
-                  <name value="period_DT"/>
+                  <name value="Period-DT"/>
                   <source>
                      <context value="effectiveTime"/>
                   </source>
