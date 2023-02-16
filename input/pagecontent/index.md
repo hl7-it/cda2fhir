@@ -23,7 +23,7 @@ I documenti previsti per la trasformata includono, come definito dal DPCM n.18 d
 | | [Referto di Radiologia in Bundle](StructureMap-cda2fhirRadReport.html)|
 | | [Lettera di Dimissione Ospedaliera in Bundle](StructureMap-cda2fhirLdo.html)|
 | | [Referto di Specialistica Ambulatoriale in Bundle](StructureMap-cda2fhirAmbReport.html)|
-| | [cda2fhirVaccination in Bundle](StructureMap-cda2fhirVaccination.html)|
+| | [Certificato Vaccinale e Singola Vaccinazione in Bundle](StructureMap-cda2fhirVaccination.html)|
 | | [Verbale di Pronto Soccorso in Bundle](StructureMap-cda2fhirEdReport.html)|
 | | [Profilo Sanitario Sintetico (PSS) in Bundle](StructureMap-cda2fhirPs.html)|
 
@@ -38,106 +38,107 @@ Dopo la validazione, il Gateway ha il compito di tradurli nel formato HL7 FHIR e
 Le mappe rappresentano lo strumento tramite il quale il Gateway può generare una Bundle a partire da un documento CDA, abilitando il processo di trasformazione.
 
 
-<!-- ![Logica di Trasformazione in FHIR](Trasformazione.png) -->
 <table>
 <tbody>
 <tr class="odd">
 <td><p><img src="Trasformazione.png" style="width:6.00in;height:4.95in" /></p>
-<p>Figura XX - Logica di Trasformazione in FHIR</p></td>
+<p>Figura 1 - Logica di Trasformazione in FHIR</p></td>
 </tr>
 </tbody>
 </table>
 
 
 
-### Autori e contributori
+<!-- ### Autori e contributori -->
 
-
+<!-- 
 <table>
-<thead>
-<tr class="header">
-<th>Ruolo</th>
-<th>Nome</th>
-<th>Organizzazione</th>
-<th>Contatto</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Autore</td>
-<td>Giorgio Cangioli</td>
-<td>Consulente</td>
-<td>giorgio.cangioli@gmail.com</td>
-</tr>
-<tr class="even">
-<td></td>
-</tr>
-<tr class="odd">
-<td>Autore</td>
-<td>Maria Teresa De Pippo</td>
-<td>EY Advisory spa</td>
-<td>Maria.Teresa.De.Pippo@it.ey.com</td>
-</tr>
-<tr class="odd">
-<td>Autore</td>
-<td>Ilenia Centonze</td>
-<td>EY Advisory spa</td>
-<td>ilenia.centonze@it.ey.com</td>
-</tr>
-<tr class="odd">
-<td>Autore</td>
-<td>Orgest Kuqi</td>
-<td>EY Advisory spa</td>
-<td>orgest.kuqi@it.ey.com</td>
-</tr>
-<tr class="odd">
-<td>Autore</td>
-<td>Xhuliana Haxhi</td>
-<td>EY Advisory spa</td>
-<td>Xhuliana.haxhi@it.ey.com</td>
-</tr>
-<tr class="odd">
-<td>Autore</td>
-<td>Marta Oliverio</td>
-<td>EY Advisory spa</td>
-<td>marta.oliverio@it.ey.com</td>
-</tr>
-<tr class="odd">
-<td>Autore</td>
-<td>Davide Spanu</td>
-<td>EY Advisory spa</td>
-<td>davide.spanu@it.ey.com</td>
-</tr>
-<tr class="odd">
-<td>Autore</td>
-<td>Ludovica Luciani</td>
-<td>EY Advisory spa</td>
-<td>ludovica.luciani@it.ey.com</td>
-<td></td>
-<tr class="odd">
-<td>Autore</td>
-<td>Eleny Mulugeta Teklehaimanot</td>
-<td>EY Advisory spa</td>
-<td>Eleny.mulugeta.teklehaimanot@it.ey.com</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>Contributore</td>
-<td>Leonardo Alcaro</td>
-<td>Agid</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>Contributore</td>
-<td>Mario Sicuranza</td>
-<td>CNR ICAR</td>
-<td>mario.sicuranza@icar.cnr.it</td>
-</tr>
-<tr class="odd">
-<td>Contributore</td>
-<td>Mario Ciampi</td>
-<td>CNR ICAR</td>
-<td>mario.ciampi@icar.cnr.it</td>
-</tr>
-</tbody>
-</table>
+    <thead>
+        <tr class="header">
+            <th>Ruolo</th>
+            <th>Nome</th>
+            <th>Organizzazione</th>
+            <th>Contatto</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Xhuliana Haxhi</td>
+            <td>EY Advisory spa</td>
+            <td>Xhuliana.haxhi@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Orgest Kuqi</td>
+            <td>EY Advisory spa</td>
+            <td>orgest.kuqi@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Davide Spanu</td>
+            <td>EY Advisory spa</td>
+            <td>davide.spanu@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Ilenia Centonze</td>
+            <td>EY Advisory spa</td>
+            <td>ilenia.centonze@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Eleny Mulugeta Teklehaimanot</td>
+            <td>EY Advisory spa</td>
+            <td>eleny.mulugeta.teklehaimanot@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Ludovica Luciani</td>
+            <td>EY Advisory spa</td>
+            <td>ludovica.luciani@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Marta Oliverio</td>
+            <td>EY Advisory spa</td>
+            <td>marta.oliverio@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Maria Teresa De Pippo</td>
+            <td>EY Advisory spa</td>
+            <td>maria.teresa.de.pippo@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Augusto Ruggeri</td>
+            <td>EY Advisory spa</td>
+            <td>augusto.ruggeri@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Contributore</td>
+            <td>Giorgio Cangioli</td>
+            <td>Hl7 Italia</td>
+            <td>giorgio.cangioli@gmail.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Contributore</td>
+            <td>Leonardo Alcaro</td>
+            <td>Hl7 Italia</td>
+            <td>leonardo.alcaro@teamdigitale.governo.it</td>
+        </tr>
+        <tr class="odd">
+            <td>Contributore</td>
+            <td>Mario Sicuranza</td>
+            <td>CNR ICAR</td>
+            <td>mario.sicuranza@icar.cnr.it</td>
+        </tr>
+        <tr class="odd">
+            <td>Contributore</td>
+            <td>Mario Ciampi</td>
+            <td>CNR ICAR</td>
+            <td>mario.ciampi@icar.cnr.it</td>
+        </tr>
+    </tbody>
+</table> -->
