@@ -37,7 +37,7 @@ L'architettura del FSE 2.0 prevede che le strutture sanitarie si interfaccino co
 <table>
 <tbody>
 <tr class="odd">
-<td><p><img src="Processo_logico.png" style="width:7.00in;height:2.47in" /></p>
+<td><p><img src="Processo_Logico.png" style="width:7.00in;height:2.47in" /></p>
 <p>Figura XX - Flusso dei documenti/dati previsto per FSE 2.0 e attori coinvolti</p></td>
 </tr>
 </tbody>
