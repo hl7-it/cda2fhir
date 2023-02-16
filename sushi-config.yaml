@@ -40,8 +40,8 @@ dependencies:
 pages:
   index.md:
     title: Home
-  # examples.md:
-  #   title: Esempi
+  examples.md:
+    title: Examples
   contesto.md:
     title: Contesto
   downloads.md:
@@ -77,15 +77,12 @@ pages:
 # │ property below.                                                                                │
 # ╰────────────────────────────────────────────────────────────────────────────────────────────────╯
 menu:
-  IG Home: index.html
-  Sommario: toc.html
-  Contesto: contesto.html
-  # Esempi: examples.html
-  Indice Artefatti: artifacts.html
-  Support:
-    FHIR Spec: http://hl7.org/fhir/R4/index.html
-    Downloads: downloads.html
-  
+  Home: index.html
+  Table of Contents: toc.html
+  Background: contesto.html
+  Examples: examples.html
+  Artifacts: artifacts.html
+  Downloads: downloads.html
   
 
 # ╭───────────────────────────Less Common Implementation Guide Properties──────────────────────────╮
@@ -147,85 +144,40 @@ resources:
 
   StructureMap/cda2fhirDataTypes:
     name: CDA to FHIR - Data Types
-    description: Mappa di trasformazione dei dataTypes di CDA a FHIR
+    description: CDA to FHIR Data Types map
 
   StructureMap/cda2fhirHeader:
     name: CDA to FHIR - Header
-    description: Mappa di trasformazione dell'header generico
+    description: CDA to FHIR full header map
 
   StructureMap/cda2fhirLdo:
     name: CDA to FHIR - LDO
-    description: Mappa di trasformazione del documento Lettera di dimissione Ospedaliera in FHIR Bundle
+    description: CDA to FHIR hospital discharge report map
 
   StructureMap/cda2fhirRadReport:
     name: CDA to FHIR - RAD
-    description: Mappa di trasformazione del documento CDA2 Lettera di dimissione Ospedaliera in FHIR Bundle
+    description: CDA to FHIR Radiology Report map
 
   StructureMap/cda2fhirLabReport:
     name: CDA to FHIR - LAB
-    description: Mappa di trasformazione del documento CDA2 Referto di Medicina di laboratorio in FHIR Bundle
+    description: CDA to FHIR Laboratory Report map 
 
   StructureMap/cda2fhirAmbReport:
     name: CDA to FHIR - AMB
-    description: Mappa di trasformazione del documento CDA2 Referto di Specialistica Ambulatoriale in FHIR Bundle
+    description: CDA to FHIR Ambulatory Visit Report map 
 
   StructureMap/cda2fhirVaccination:
     name: CDA to FHIR - VAC
-    description: Mappa di trasformazione del documento CDA2 Singola Vaccinazione e Certificato Vaccinale in FHIR Bundle
+    description: CDA to FHIR Vaccination Certificate map     
 
   StructureMap/cda2fhirEdReport:
     name: CDA to FHIR - VPS
-    description: Mappa di trasformazione del documento CDA2 Verbale di Pronto Soccorso in FHIR Bundle
+    description: CDA to FHIR Emergency Department Report map    
     
   StructureMap/cda2fhirPs:
-    name: CDA to FHIR - PSS
-    description: Mappa di trasformazione del documento CDA2 Profilo Sanitario Sintetico (PSS) in FHIR Bundle
-      
-  ConceptMap/AddressUseMap:
-    name: CDA to FHIR - Address Use Map
-    description: Mappa di trasformazione dell'attributo use di Address
+    name: CDA to FHIR - PS
+    description: CDA to FHIR Patient Summary map  
 
-  ConceptMap/AllergyCategory:
-    name: CDA to FHIR - Allergy Category
-    description: Mappa di trasformazione dell'attributo code CDA per la descrizione della categoria di un'allergia o intolleranza
-
-  ConceptMap/AllergyType:
-    name: CDA to FHIR - Allergy Type
-    description: Mappa di trasformazione dell'attributo code CDA che identifica un'allergia o intolleranza
-
-  ConceptMap/ClinicalStatus:
-    name: CDA to FHIR - Clinical Status Code
-    description: Mappa di trasformazione dell'attributo code CDA per la descrizione dello stato clinico
-
-  ConceptMap/cm-v3-administrative-gender:
-    name: CDA to FHIR - Gender Code
-    description: Mappa di trasformazione dell'attributo code CDA per la descrizione del sesso
-
-  ConceptMap/cm-v3-relatesTo-code:
-    name: CDA to FHIR - Relates To Code
-    description: Mappa di trasformazione dell'attributo code CDA per la descrizione del documento correlato
-
-  ConceptMap/CriticalityCode:
-    name: CDA to FHIR - Criticality Code
-    description: Mappa di trasformazione dell'attributo code CDA per la descrizione del
-
-  ConceptMap/priorityCode:
-    name: CDA to FHIR - Priority Code
-    description: Mappa di trasformazione dell'attributo code CDA per la descrizione della priorità
-    
-  ConceptMap/evnStatus:
-    name: CDA to FHIR - Event Status Code
-    description: Mappa di trasformazione dell'attributo code CDA per la descrizione dello stato dell'evento clinico
-  
-  ConceptMap/medStatus:
-    name: CDA to FHIR - Medication Status Code
-    description: Mappa di trasformazione dell'attributo code CDA per la descrizione dello stato della prescrizione farmaceutica
-
-  ConceptMap/finStatus:
-    name: CDA to FHIR - Financial Status Code
-    description: Mappa di trasformazione dell'attributo code CDA per la descrizione dello stato 
-      
-      
 
 #
 # Groups can control certain aspects of the IG generation.  The IG
@@ -236,41 +188,56 @@ resources:
 # resource entries with the corresponding groupIds. If a resource
 # is specified by id or name, SUSHI will replace it with the correct
 # URL when generating the IG JSON.
+#
 groups:
   CommonMaps:
-    name:  StructureMaps Condivise
-    description: Mappe condivise per la trasformazione da CDA-FHIR.
+    name:  Common Maps
+    description: Common CDA to FHIR maps
     resources:
       - StructureMap/cda2fhirDataTypes
       - StructureMap/cda2fhirHeader
 
-  IndMaps:
-    name:  StructureMaps Indipendenti
-    description: Mappe per la trasformazione da CDA a FHIR Bundle per tutte le tipologie documentali.
+  LabMaps:
+    name:  Laboratory Report
+    description: CDA Laboratory Report to FHIR Bundle transaction maps
     resources:
       - StructureMap/cda2fhirLabReport
-      - StructureMap/cda2fhirLdo
-      - StructureMap/cda2fhirRadReport
-      - StructureMap/cda2fhirAmbReport
-      - StructureMap/cda2fhirVaccination
-      - StructureMap/cda2fhirEdReport
-      - StructureMap/cda2fhirPs
 
-  # ConMaps:
-  #   name:  ConceptMaps
-  #   description: Mappe per la trasformazione da CDA a FHIR dei Valueset
-  #   resources:
-  #     - ConceptMap/AddressUseMap
-  #     - ConceptMap/AllergyCategory
-  #     - ConceptMap/AllergyType
-  #     - ConceptMap/ClinicalStatus
-  #     - ConceptMap/cm-v3-administrative-gender
-  #     - ConceptMap/cm-v3-relatesTo-code
-  #     - ConceptMap/CriticalityCode
-  #     - ConceptMap/priorityCode
-  #     - ConceptMap/evnStatus
-  #     - ConceptMap/medStatus
-  #     - ConceptMap/finStatus
+  HdrMaps:
+    name:  Hospital Discharge Report
+    description: CDA Hospital Discharge Report to FHIR Bundle transaction maps
+    resources:
+      - StructureMap/cda2fhirLdo
+
+  RadMaps:
+    name:  Radiology Report
+    description: CDA Radiology Report to FHIR Bundle transaction maps
+    resources:
+      - StructureMap/cda2fhirRadReport
+
+  AmbMaps:
+    name:  Ambulatory Visit Report
+    description: CDA Ambulatory Visit Report to FHIR Bundle transaction maps
+    resources:
+      - StructureMap/cda2fhirAmbReport
+
+  VacMaps:
+    name:  Vaccination Certificate
+    description: CDA Vaccination Certificate Report to FHIR Bundle transaction maps
+    resources:
+      - StructureMap/cda2fhirVaccination
+  
+  EdrMaps:
+    name:  Emergency Department Report
+    description: CDA Emergency Department Report to FHIR Bundle transaction maps
+    resources:
+      - StructureMap/cda2fhirEdReport
+  
+  PssMaps:
+    name:  Patient Summary
+    description: CDA Patient Summary to FHIR Bundle transaction maps
+    resources:
+      - StructureMap/cda2fhirPs
 
 
 
