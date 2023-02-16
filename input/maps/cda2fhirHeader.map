@@ -41,7 +41,7 @@ uses "http://hl7.org/fhir/StructureDefinition/Person" alias Patient as produced
 uses "http://hl7.org/fhir/StructureDefinition/Practitioner" alias Practitioner as produced
 uses "http://hl7.org/fhir/StructureDefinition/Specimen" alias Specimen as produced
 uses "http://hl7.org/fhir/StructureDefinition/Organization" alias Organization as produced
-uses "http://hl7.org/fhir/cda/StructureDefinition/HealthCareFacility" alias HealthCareFacility as queried
+uses "http://hl7.org/fhir/StructureDefinition/HealthCareFacility" alias HealthCareFacility as queried
 
 imports "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"
 
