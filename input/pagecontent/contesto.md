@@ -1,45 +1,26 @@
 ### Contesto di riferimento
 
-Coerentemente con quanto stabilito nel DPCM n.18 del 29 settembre 2015, ovvero il Regolamento in materia di fascicolo sanitario elettronico, "i contenuti del FSE sono rappresentati da un nucleo minimo di dati e documenti, nonchè da dati e documenti integrativi chepermettono di arricchire il Fascicolo stesso".
-
-Rispetto i documenti "si adotta lo standard HL7 (Health Level 7) per descrivere le definizioni dei dati da scambiare in termini di messaggi e documenti costituenti il FSE, e in particolare è prescritto l'utilizzo del CDA (Clinical Document Architecture) release 2 (ISO/HL7 27932:2009)".
-
-Successivamente, tramite il Decreto n.160/2022, per l'attuazione del FSE (Fascicolo Sanitario Elettronico), è stato stabilito che i documenti devono essere "mappati in standard FHIR" e memorizzati. Questi dati devono essere conservati in Data Repository Centrali, a norma dell'articolo 21 del DL 4/2022 nell'ambito di EDS (Ecosistema di dati Sanitari), e resi disponibili via API per la costruzione di servizi di:
-
-● **Prevenzione, diagnosi, cura e riabilitazione** rivolti ai professionisti sanitari e alle strutture sanitarie abilitate, secondo le autorizzazioni l trattamento rilasciate dagli assistiti, oltre che ai cittadini al fine di consultare le proprie informazioni cliniche;
-
-● **Prevenzione, sorveglianza epidemiologica e governo** di supporto alle Direzioni Sanitarie Regionali e delle Province Autonome, nonché di prevenzione e profilassi internazionale, di supporto al Ministero della Salute.
+Coerentemente con l'attuazione della Missione 6 Salute del PNRR e la misura rifierita alla realizzazione del FSE 2.0, le Linee Guida di Attuazione FSE 2.0 Decreto n.160 del 20 maggio 2022, prescrivono di uniformare i dati e documenti dell'FSE secondo standard HL7 FHIR per i dati HL7 CDA2  per i  documenti.
 
 ### Infrastruttura
 
-L'architettura del FSE 2.0 prevede che le strutture sanitarie si interfaccino con il Gateway. Il Gateway offrirà numerosi servizi, tra cui:
+L'adeguamento normativo (DL4/2022) introduce due nuovi elementi tecnologici all'interno dell'ecosistema del FSE 2.0: il gateway e l'Ecosistema Dati Sanitari. L’architettura del FSE 2.0 prevede che i sistemi produttori si interfaccino con la componente Gateway o con il middleware regionale seguendo regole tecniche e di processo definite. Il Gateway offrirà numerosi servizi, tra cui:
 
 ● **Validazione dei documenti CDA2**: secondo quanto previsto dal decreto, in linea con le IG dei documenti del nucleo minimo pubblicate da Hl7 Italia ([Specifiche e Guide di HL7 Italia](http://www.hl7italia.it/hl7italia_D7/node/2359));
 
-● **Trasformazione in FHIR**: i documenti CDA2, una volta validati, sono tradotti nel formato HL7 FHIR , qualora questi non siano generati direttamente in questo formato nativo, e inviarli al Data Repository Centrale.(EDS)
+● **Validazione dei metadati**: validazione dei metadati in conformità con l'Affinity Domain ai fini della pubblicazione dei documenti;
 
-● **Validare il processo per permettere la conservazione del documento e del suo indice**: se entrambe le fasi precedenti sono eseguite nel modo corretto, il Gateway permetterà all'infrastruttura di pubblicare il documento clinico corrispondente per poterlo indicizzare sul Registry nazionale (tramite i servizi INI e ANA), oltre che sul Registry regionale.
-<!-- 
-![](Infrastruttura.png) -->
-
-<!-- <table>
-<tbody>
-<tr class="odd">
-<td><p><img src="Infrastruttura.png" style="width:7.00in;height:4.44556in" /></p>
-<p>Figura XX - Flusso dei dati previsto per FSE 2.0 e attori coinvolti</p></td>
-</tr>
-</tbody>
-</table> -->
-
-
-### Implementazione
+● **Trasformazione in FHIR**: i documenti CDA2, una volta validati, sono tradotti nel formato HL7 FHIR, qualora questi non siano generati direttamente in questo formato nativo.
 
 <table>
 <tbody>
 <tr class="odd">
 <td><p><img src="Processo_logico.png" style="width:7.00in;height:2.47in" /></p>
-<p>Figura XX - Flusso dei documenti/dati previsto per FSE 2.0 e attori coinvolti</p></td>
+<p>Figura 2 - Flusso dei documenti/dati previsto per FSE 2.0 e attori coinvolti</p></td>
 </tr>
 </tbody>
 </table>
 
+Un Mapping Engine basato sullo standard FHIR mapping Language è già presente e funzionante all’interno dell’infrastruttura FSE 2.0 in realizzazione.
+All’interno del motore del FSE 2.0 esiste un apposito [microservizio](https://github.com/ministero-salute/it-fse-gtw-fhir-mapping-engine) incaricato di trasformare i CDA2 in input in FHIR R4 Resource, utilizzando i files .map definiti per le singole tipologie di documento.
+L’implementazione prevede una separazione tra la componente di trasformazione ed il [sistema di configurazione](https://github.com/ministero-salute/it-fse-srv-fhir) in modo da rendere indipendente il motore dall’aggiornamento delle regole di mapping, facilitando la manutenzione delle singole componenti anche per competenza.	
