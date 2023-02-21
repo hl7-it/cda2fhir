@@ -1,12 +1,11 @@
 {
-  "name": "unicom.fhir.template",
-  "version": "0.0.1",
-  "type": "fhir.template",
-  "license": "CC0-1.0",
-  "description": "Local template extension for UNICOM project",
-  "author": "http://hl7.org/fhir",
-	"base":  "fhir.base.template",
-  "dependencies": {
-    "fhir.base.template": "current"
-  }
+	"name": "it-template",
+	"version": "0.1",
+	"type": "fhir.template",
+	"license": "CC0-1.0",
+	"description": "Italian FHIR Template",
+	"base": "fhir.base.template",
+	"dependencies": {
+		"fhir.base.template": "current"
+	}
 }
