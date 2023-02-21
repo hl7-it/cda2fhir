@@ -41,7 +41,7 @@ Le mappe rappresentano lo strumento tramite il quale il Gateway può generare un
 <table>
 <tbody>
 <tr class="odd">
-<td><p><img src="Trasformazione.png" style="width:6.00in;height:4.95in" /></p>
+<td><p><img src="Trasformazione.png" style="width:4.00in;height:2.74in" /></p>
 <p>Figura 1 - Logica di Trasformazione in FHIR</p></td>
 </tr>
 </tbody>
