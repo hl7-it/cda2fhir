@@ -1,4 +1,4 @@
-map "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirLabReport" = "cda2fhirLabReport"
+map "http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirLabReport" = "cda2fhirLabReport"
 
 uses "http://hl7.org/fhir/cda/StructureDefinition/ClinicalDocument" alias ClinicalDocument as source
 uses "http://hl7.org/fhir/cda/StructureDefinition/AssignedAuthor" alias AssignedAuthor as queried
@@ -25,8 +25,8 @@ uses "http://hl7.org/fhir/cda/StructureDefinition/PQ" alias PQ as source
 uses "http://hl7.org/fhir/StructureDefinition/SimpleQuantity" alias SimpleQuantity as target
 uses "http://hl7.org/fhir/cda/StructureDefinition/Organizer" alias Organizer as source
 
-imports "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"
-imports "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader"
+imports "http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/CdaToFhirDataTypes"
+imports "http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/FULLHEADER"
 
 group CdaToBundle(source cda : ClinicalDocument, target bundle : Bundle) {
   cda ->  bundle.entry as e, e.request = create('BackboneElement') as request, request.method = 'POST',  e.resource = create('Composition') as composition,  composition.id = uuid() as uuid1,  e.fullUrl = append('https://example/Composition/', uuid1), request.url = 'Composition',  bundle.entry as e2, e2.request = create('BackboneElement') as requestPAT, requestPAT.method = 'PUT', e2.resource = create('Patient') as patient,  patient.id = uuid() as uuid2,  e2.fullUrl = append('https://example/Patient/', uuid2), bundle.entry as e3, e3.request = create('BackboneElement') as request, request.method = 'POST',  e3.resource = create('Encounter') as encounter,  encounter.id = uuid() as uuid3,  e3.fullUrl = append('https://example/Encounter/', uuid3),request.url = 'Encounter',
@@ -52,7 +52,7 @@ group ClinicalDocumentToBundle(source cda : ClinicalDocument, target patient : P
   cda -> bundle.id = uuid() "id";
   cda.id -> bundle.identifier "identifier";
   cda -> bundle.type = 'transaction' "type";
-  cda.effectiveTime -> bundle.timestamp;
+  cda -> bundle.timestamp=(timestamp.now()) "date";
   cda then ClinicalDocumentComposition(cda, composition, patient, encounter, bundle,documentreference) "composition";
   cda.component as component then {
     component.structuredBody as body then {
@@ -91,6 +91,9 @@ group Observation (source obs : Observation, target patient : Patient, target en
   obs.statusCode as statusc where (code='aborted') -> ob.status ='cancelled';
   obs.statusCode as statusc where (code='suspended') -> ob.status ='partial';
   obs.effectiveTime as effectiveTime -> ob.effective = create('dateTime') as value then TSDateTime(effectiveTime, value) "value2";
+  obs where effectiveTime.low.exists() or effectiveTime.high.exists() then {
+  obs.effectiveTime as eff-> ob.effective=create('Period') as period then IVLTSPeriod(eff,period);
+  }"where";
   obs.interpretationCode -> ob.interpretation;
   obs.methodCode -> ob.method;
   obs.value:INT as int->ob.value=(int.value) "value";
@@ -398,7 +401,11 @@ group Observation (source obs : Observation, target patient : Patient, target en
       }"type";
     }"fhirParticipant";
     participant.participantRole as participantRole -> bundle.entry as e12,   e12.request = create('BackboneElement') as request, request.method = 'POST',  e12.resource = create('PractitionerRole') as practitionerRole,  practitionerRole.id = uuid() as uuid12 ,  e12.fullUrl = append('https://example/PractitionerRole/', uuid12), request.url = 'PractitionerRole', encounter.participant = create('BackboneElement') as participant1, participant1.individual = create('Reference') as referencepart, referencepart.reference =  ('https://example/Practitioner/' + %practitionerRole.id) then { 
-      participant.time -> participant1.period; 
+     // participant.time -> participant1.period;
+      participant.time as time1 -> participant1.period = create('Period') as period then{
+        time1 -> period.start = create('dateTime') as start then TSDateTime(time1,start) "val";
+       }"time";
+       participant.time as time1 -> participant1.period =create('Period') as period then IVLTSPeriod(time1,period);
       participant.functionCode -> practitionerRole.code;
       //non mappa i 2 precedenti
       participantRole  -> bundle.entry as e13, e13.request = create('BackboneElement') as request, request.method = 'PUT', e13.resource = create('Practitioner') as practitioner then {
@@ -415,7 +422,7 @@ group Observation (source obs : Observation, target patient : Patient, target en
           }"ext";
           id.assigningAuthorityName as s ->  identifier.assigner as a,  a.display = s;
           id.root as r then {
-            id.extension as ext  -> practitioner.id  = (r +'-'+ ext) as uuid4,  e13.fullUrl = append('https://example/Practitioner/', uuid13),  practitionerRole.practitioner = create('Reference') as reference,  reference.reference = ('https://example/Practitioner/' + %practitioner.id) "org";
+            id.extension as ext  -> practitioner.id  = (r +'-'+ ext) as uuid4,  e13.fullUrl = append('https://example/Practitioner/', uuid4),  practitionerRole.practitioner = create('Reference') as reference,  reference.reference = ('https://example/Practitioner/' + %practitioner.id) "org";
           }"r";
         }"identifier";
         participantRole.code -> practitionerRole.code;
@@ -510,6 +517,9 @@ group Observation2 (source obs : Observation, target patient : Patient, target e
   obs.statusCode as statusc where (code='aborted') -> ob.status ='cancelled';
   obs.statusCode as statusc where (code='suspended') -> ob.status ='partial';
   obs.effectiveTime as effectiveTime -> ob.effective = create('dateTime') as value then TSDateTime(effectiveTime, value) "value2";
+  obs where effectiveTime.low.exists() or effectiveTime.high.exists() then {
+  obs.effectiveTime as eff-> ob.effective=create('Period') as period then IVLTSPeriod(eff,period);
+  }"where";
   obs.interpretationCode -> ob.interpretation;
   obs.methodCode -> ob.method;
   obs.value:INT as int->ob.value=(int.value) "value";
@@ -587,6 +597,9 @@ group Observation2 (source obs : Observation, target patient : Patient, target e
                       }"specimenPlayingEntity";   
                         a -> specimen.collection=create('BackboneElement') as collection then {
                           a.effectiveTime as effectivetime -> collection.collected =create('dateTime') as value then TSDateTime(effectivetime,value)"value";
+                          a where effectiveTime.low.exists() or effectiveTime.high.exists() then {
+                          a.effectiveTime as eff-> collection.collected=create('Period') as period then IVLTSPeriod(eff,period);
+                          }"where";
                           a.participant as participant ->bundle.entry as e10, e10.request = create('BackboneElement') as request, request.method = 'PUT', e10.resource = create('Practitioner') as practitioner, practitioner.id = uuid() as uuid11, e10.fullUrl = append('https://example/Practitioner/', uuid11),  collection.collector = create('Reference') as reference,  reference.reference = ('https://example/Practitioner/' + %practitioner.id) then {
                             participant.participantRole as participantRole then {
                               participantRole->practitioner.meta as meta then {
@@ -856,7 +869,11 @@ group Observation2 (source obs : Observation, target patient : Patient, target e
       }"type";
     }"fhirParticipant";
     participant.participantRole as participantRole -> bundle.entry as e12,   e12.request = create('BackboneElement') as request, request.method = 'POST',  e12.resource = create('PractitionerRole') as practitionerRole,  practitionerRole.id = uuid() as uuid12 ,  e12.fullUrl = append('https://example/PractitionerRole/', uuid12), request.url = 'PractitionerRole', encounter.participant = create('BackboneElement') as participant1, participant1.individual = create('Reference') as referencepart, referencepart.reference =  ('https://example/Practitioner/' + %practitionerRole.id) then { 
-      participant.time -> participant1.period; 
+      //participant.time -> participant1.period;
+      participant.time as time1 -> participant1.period = create('Period') as period then{
+        time1 -> period.start = create('dateTime') as start then TSDateTime(time1,start) "val";
+       }"time"; 
+       participant.time as time1 -> participant1.period =create('Period') as period then IVLTSPeriod(time1,period);
       participant.functionCode -> practitionerRole.code;
       //non mappa i 2 precedenti
       participantRole  -> bundle.entry as e13, e13.request = create('BackboneElement') as request, request.method = 'PUT', e13.resource = create('Practitioner') as practitioner then {
@@ -873,7 +890,7 @@ group Observation2 (source obs : Observation, target patient : Patient, target e
           }"ext";
           id.assigningAuthorityName as s ->  identifier.assigner as a,  a.display = s;
           id.root as r then {
-            id.extension as ext  -> practitioner.id  = (r +'-'+ ext) as uuid4,  e13.fullUrl = append('https://example/Practitioner/', uuid13),  practitionerRole.practitioner = create('Reference') as reference,  reference.reference = ('https://example/Practitioner/' + %practitioner.id) "org";
+            id.extension as ext  -> practitioner.id  = (r +'-'+ ext) as uuid4,  e13.fullUrl = append('https://example/Practitioner/', uuid4),  practitionerRole.practitioner = create('Reference') as reference,  reference.reference = ('https://example/Practitioner/' + %practitioner.id) "org";
           }"r";
         }"identifier";
         participantRole.code -> practitionerRole.code;
@@ -957,7 +974,7 @@ group Observation2 (source obs : Observation, target patient : Patient, target e
 
 }
 
-group Observation3 (source obs : Observation, target patient : Patient, target encounter : Encounter, target ob : Observation, target bundle : Bundle, source cda: Act, target specimenp : Specimen) {
+group Observation3 (source obs : Observation, target patient : Patient, target encounter : Encounter, target ob : Observation, target bundle : Bundle, source cda: Act) {
     
   obs->ob.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";     
   obs->ob.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "reference"; 
@@ -968,6 +985,9 @@ group Observation3 (source obs : Observation, target patient : Patient, target e
   obs.statusCode as statusc where (code='aborted') -> ob.status ='cancelled';
   obs.statusCode as statusc where (code='suspended') -> ob.status ='partial';
   obs.effectiveTime as effectiveTime -> ob.effective = create('dateTime') as value then TSDateTime(effectiveTime, value) "value2";
+  obs where effectiveTime.low.exists() or effectiveTime.high.exists() then {
+  obs.effectiveTime as eff-> ob.effective=create('Period') as period then IVLTSPeriod(eff,period);
+  }"where";
   obs.interpretationCode -> ob.interpretation;
   obs.methodCode -> ob.method;
   obs.value:INT as int->ob.value=(int.value) "value";
@@ -1024,16 +1044,27 @@ group Observation3 (source obs : Observation, target patient : Patient, target e
   }"subject";
 
   //specimen
-  obs.specimen -> ob.specimen = create('Reference') as reference,  reference.reference = ('https://example/Specimen/' + %specimenp.id) "ref";
-  obs.specimen as spmn  then {    
-    spmn.specimenRole as specimenRole then{        
-      specimenRole.specimenPlayingEntity as ent then{
-        ent where(specimenp.type.exists().not()) then{
-          ent.code -> specimenp.type;
-        }"once";
-      }"ent";
-    }"specimenRole";  
+  // cda where cda.specimen.exists() then {
+  // obs.specimen -> ob.specimen = create('Reference') as reference,  reference.reference = ('https://example/Specimen/' + %specimenp.id) "ref";
+  // obs.specimen as spmn  then {    
+  //   spmn.specimenRole as specimenRole then{        
+  //     specimenRole.specimenPlayingEntity as ent then{
+  //       ent where(specimenp.type.exists().not()) then{
+  //         ent.code -> specimenp.type;
+  //       }"once";
+  //     }"ent";
+  //   }"specimenRole";  
+  // }"specimen";
+  // }"cda";
+  obs.specimen as  spmn ->bundle.entry as e4o, e4o.request = create('BackboneElement') as request, request.method = 'POST', e4o.resource = create('Specimen') as specimen, specimen.id = uuid() as uuid4o, e4o.fullUrl = append('https://example/Specimen/', uuid4o), request.url = 'Specimen', ob.specimen=create('Reference') as reference, reference.reference = ('https://example/Specimen/' + %specimen.id) then {
+      spmn.specimenRole as specimenRole then{
+          specimenRole.id as id -> specimen.identifier;
+          specimenRole.specimenPlayingEntity as specimenPlayingEntity then {
+          specimenPlayingEntity.code -> specimen.type;
+            }"specimenPlayingEntity";
+        }"specimenRole";
   }"specimen";
+
   
   //performer
   obs.performer as performer -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',  e1.resource = create('PractitionerRole') as practitionerRole,  practitionerRole.id = uuid() as uuid1,  e1.fullUrl = append('https://example/PractitionerRole/', uuid1), request.url = 'PractitionerRole' then{
@@ -1260,7 +1291,11 @@ group Observation3 (source obs : Observation, target patient : Patient, target e
       }"type";
     }"fhirParticipant";
     participant.participantRole as participantRole -> bundle.entry as e12,   e12.request = create('BackboneElement') as request, request.method = 'POST',  e12.resource = create('PractitionerRole') as practitionerRole,  practitionerRole.id = uuid() as uuid12 ,  e12.fullUrl = append('https://example/PractitionerRole/', uuid12), request.url = 'PractitionerRole', encounter.participant = create('BackboneElement') as participant1, participant1.individual = create('Reference') as referencepart, referencepart.reference =  ('https://example/Practitioner/' + %practitionerRole.id) then { 
-      participant.time -> participant1.period; 
+      //participant.time -> participant1.period;
+      participant.time as time1 -> participant1.period = create('Period') as period then {
+        time1 -> period.start = create('dateTime') as start then TSDateTime(time1,start) "val";
+       }"time";
+       participant.time as time1 -> participant1.period =create('Period') as period then IVLTSPeriod(time1,period);
       participant.functionCode -> practitionerRole.code;
       //non mappa i 2 precedenti
       participantRole  -> bundle.entry as e13, e13.request = create('BackboneElement') as request, request.method = 'PUT', e13.resource = create('Practitioner') as practitioner then {
@@ -1277,7 +1312,7 @@ group Observation3 (source obs : Observation, target patient : Patient, target e
           }"ext";
           id.assigningAuthorityName as s ->  identifier.assigner as a,  a.display = s;
           id.root as r then {
-            id.extension as ext  -> practitioner.id  = (r +'-'+ ext) as uuid4,  e13.fullUrl = append('https://example/Practitioner/', uuid13),  practitionerRole.practitioner = create('Reference') as reference,  reference.reference = ('https://example/Practitioner/' + %practitioner.id) "org";
+            id.extension as ext  -> practitioner.id  = (r +'-'+ ext) as uuid4,  e13.fullUrl = append('https://example/Practitioner/', uuid4),  practitionerRole.practitioner = create('Reference') as reference,  reference.reference = ('https://example/Practitioner/' + %practitioner.id) "org";
           }"r";
         }"identifier";
         participantRole.code -> practitionerRole.code;
@@ -1371,6 +1406,10 @@ group Act (source cda: Act, target pat : Patient, target ac : DiagnosticReport, 
   cda.statusCode as statusc where (code='aborted') -> ac.status ='cancelled';
   cda.statusCode as statusc where (code='suspended') -> ac.status ='partial';
   cda.effectiveTime as effectiveTime -> ac.effective = create('dateTime') as value then TSDateTime(effectiveTime, value) "value3";
+  cda where effectiveTime.low.exists() or effectiveTime.high.exists() then {
+  cda.effectiveTime as eff-> ac.effective=create('Period') as period then IVLTSPeriod(eff,period);
+  }"where";
+  
   cda -> ac.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %pat.id) "reference";
   cda -> ac.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference";
 
@@ -1406,6 +1445,9 @@ group Act (source cda: Act, target pat : Patient, target ac : DiagnosticReport, 
             proc.statusCode as statusc where (code='obsolete') -> procedure.status ='entered-in-error';
             proc.statusCode as statusc where (code='nullified') -> procedure.status ='unknown';
             proc.effectiveTime as effectiveTime -> procedure.performed = create('dateTime') as value then TSDateTime(effectiveTime, value) "datetime";
+            proc where effectiveTime.low.exists() or effectiveTime.high.exists() then {
+            proc.effectiveTime as  eff-> procedure.performed=create('Period') as period then IVLTSPeriod(eff,period);
+            }"where";
             proc.targetSiteCode -> procedure.bodySite;     
           }"procedure"; 
         }"entryRelationshipprocedure"; 
@@ -1433,6 +1475,9 @@ group Act (source cda: Act, target pat : Patient, target ac : DiagnosticReport, 
               proc.statusCode as statusc where (code='obsolete') -> procedure.status ='entered-in-error';
               proc.statusCode as statusc where (code='nullified') -> procedure.status ='unknown';
               proc.effectiveTime as effectiveTime -> procedure.performed = create('dateTime') as value then TSDateTime(effectiveTime, value) "datetime";
+              proc where effectiveTime.low.exists() or effectiveTime.high.exists() then {
+              proc.effectiveTime as  eff-> procedure.performed=create('Period') as period then IVLTSPeriod(eff,period);
+              }"where";
               proc.targetSiteCode -> procedure.bodySite;     
             }"pbservation"; 
           }"entryRelationshiprocedure"; 
@@ -1444,11 +1489,11 @@ group Act (source cda: Act, target pat : Patient, target ac : DiagnosticReport, 
   }"exist";
 
   cda where cda.specimen.exists().not() then {
-    cda -> bundle.entry as e4, e4.request = create('BackboneElement') as request, request.method = 'POST', e4.resource = create('Specimen') as specimen,  specimen.id = uuid() as uuid4,  e4.fullUrl = append('https://example/Specimen/', uuid4), request.url = 'Specimen' then {
+   // cda -> bundle.entry as e4, e4.request = create('BackboneElement') as request, request.method = 'POST', e4.resource = create('Specimen') as specimen,  specimen.id = uuid() as uuid4,  e4.fullUrl = append('https://example/Specimen/', uuid4), request.url = 'Specimen' then {
       cda.entryRelationship as entryRelationship then {
       entryRelationship.observation as observation then {
       observation -> bundle.entry as e12, e12.request = create('BackboneElement') as request, request.method = 'POST', e12.resource = create('Observation') as obs,  obs.id = uuid() as uuid13,  e12.fullUrl = append('https://example/Observation/', uuid13), request.url = 'Observation', ac.result = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %obs.id) then {
-        observation then  Observation3(observation,pat,enc,obs,bundle,cda,specimen) "ORG";
+        observation then  Observation3(observation,pat,enc,obs,bundle,cda) "ORG";
         // procedure
         cda.entryRelationship as entryRelationship1 then {
           entryRelationship1.procedure as proc  -> bundle.entry as e5, e5.request = create('BackboneElement') as request, request.method = 'POST', e5.resource = create('Procedure') as procedure,  procedure.id = uuid() as uuid5,  e5.fullUrl = append('https://example/Procedure/', uuid5), request.url = 'Procedure', obs.partOf=create('Reference') as reference,  reference.reference = ('https://example/Procedure/' + %procedure.id)  then{
@@ -1467,13 +1512,46 @@ group Act (source cda: Act, target pat : Patient, target ac : DiagnosticReport, 
             proc.statusCode as statusc where (code='obsolete') -> procedure.status ='entered-in-error';
             proc.statusCode as statusc where (code='nullified') -> procedure.status ='unknown';
             proc.effectiveTime as effectiveTime -> procedure.performed = create('dateTime') as value then TSDateTime(effectiveTime, value) "datetime";
+            proc where effectiveTime.low.exists() or effectiveTime.high.exists() then {
+            proc.effectiveTime as  eff-> procedure.performed=create('Period') as period then IVLTSPeriod(eff,period);
+            }"where";
             proc.targetSiteCode -> procedure.bodySite;     
           }"procedure"; 
         }"entryRelationshipprocedure"; 
       }"obs";
       }"observation";
+      entryRelationship.organizer as organizer then {
+        organizer -> bundle.entry as e12, e12.request = create('BackboneElement') as request, request.method = 'POST', e12.resource = create('Observation') as obs,  obs.id = uuid() as uuid13,  e12.fullUrl = append('https://example/Observation/', uuid13), request.url = 'Observation', ac.result = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %obs.id) then {
+          organizer then  Organizer(cda,organizer,pat,enc,obs,bundle) "ORG";
+          // procedure
+          cda.entryRelationship as entryRelationship1 then {
+            entryRelationship1.procedure as proc  -> bundle.entry as e5, e5.request = create('BackboneElement') as request, request.method = 'POST', e5.resource = create('Procedure') as procedure,  procedure.id = uuid() as uuid5,  e5.fullUrl = append('https://example/Procedure/', uuid5), request.url = 'Procedure', obs.partOf=create('Reference') as reference,  reference.reference = ('https://example/Procedure/' + %procedure.id)  then{
+              proc -> procedure.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";     
+              proc -> procedure.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "reference";
+              proc where proc.statusCode .exists().not() then {
+                proc->procedure.status ='unknown'"statuscode";
+              }"status";
+              proc.statusCode as statusc where (code='completed') -> procedure.status ='completed';
+              proc.statusCode as statusc where (code='active') -> procedure.status ='in-progress';
+              proc.statusCode as statusc where (code='aborted') -> procedure.status ='stopped';
+              proc.statusCode as statusc where (code='suspended') -> procedure.status ='on-hold';
+              proc.statusCode as statusc where (code='cancelled') -> procedure.status ='not-done';
+              proc.statusCode as statusc where (code='held') -> procedure.status ='on-hold';
+              proc.statusCode as statusc where (code='new') -> procedure.status ='preparation';
+              proc.statusCode as statusc where (code='obsolete') -> procedure.status ='entered-in-error';
+              proc.statusCode as statusc where (code='nullified') -> procedure.status ='unknown';
+              proc.effectiveTime as effectiveTime -> procedure.performed = create('dateTime') as value then TSDateTime(effectiveTime, value) "datetime";
+              proc where effectiveTime.low.exists() or effectiveTime.high.exists() then {
+              proc.effectiveTime as eff-> procedure.performed=create('Period') as period then IVLTSPeriod(eff,period);
+              }"where";
+              proc.targetSiteCode -> procedure.bodySite;     
+            }"pbservation"; 
+          }"entryRelationshiprocedure"; 
+        }"Organizer";
+      }"organizer";
       }"entryRelationshipobservation";
-    }"specimen";
+     
+    //}"specimen";
   }"exist not";
 
   //PARTICIPANT
@@ -1487,6 +1565,10 @@ group Act (source cda: Act, target pat : Patient, target ac : DiagnosticReport, 
   
      part.participantRole as participantRole ->  participant.individual = create('Reference') as reference then {
         participantRole ->  bundle.entry as e, e.request = create('BackboneElement') as request, request.method = 'PUT', e.resource = create('Practitioner') as practitioner  then { 
+          part.time as time1 -> participant.period = create('Period') as period then{
+            time1 -> period.start = create('dateTime') as start then TSDateTime(time1,start) "val";
+           }"time";
+           part.time as time1 -> participant.period =create('Period') as period then IVLTSPeriod(time1,period);
           participantRole->practitioner.meta as meta then {
             participantRole->meta.tag = create('Coding') as coding then {
               participantRole -> coding.system ='http://algoritmodiscoring'"system";
@@ -1518,10 +1600,10 @@ group Act (source cda: Act, target pat : Patient, target ac : DiagnosticReport, 
       assignedEntity.code as codice -> practitionerRole.code;
       assignedEntity -> bundle.entry as e2,  e2.request = create('BackboneElement') as request, request.method = 'PUT', e2.resource = create('Practitioner') as practitioner   then {
       assignedEntity.code -> practitionerRole.code;
-      participantRole->practitioner.meta as meta then {
-        participantRole->meta.tag = create('Coding') as coding then {
-          participantRole -> coding.system ='http://algoritmodiscoring'"system";
-          participantRole -> coding.code ='ClinicalDocument/body/act/performer'"code";
+      assignedEntity->practitioner.meta as meta then {
+        assignedEntity->meta.tag = create('Coding') as coding then {
+          assignedEntity -> coding.system ='http://algoritmodiscoring'"system";
+          assignedEntity -> coding.code ='ClinicalDocument/body/act/performer'"code";
         }"coding";
       }"meta";
       assignedEntity.id as id -> practitioner.identifier as identifier then {
@@ -1578,7 +1660,7 @@ group Act (source cda: Act, target pat : Patient, target ac : DiagnosticReport, 
                }"ext";
             id.assigningAuthorityName as s ->  identifier.assigner as a,  a.display = s;
             id.root as r then {
-              id.extension as ext  -> organization1.id  = (r +'-'+ ext) as uuid3,   organization1.id = uuid() as uuid3,  e4.fullUrl = append('https://example/Organization/', uuid4), organization.partOf = create('Reference') as reference, reference.reference= ('https://example/Organization/' + %organization1.id) "org";
+              id.extension as ext  -> organization1.id  = (r +'-'+ ext) as uuid3,   organization1.id = uuid() as uuid3,  e4.fullUrl = append('https://example/Organization/', uuid3), organization.partOf = create('Reference') as reference, reference.reference= ('https://example/Organization/' + %organization1.id) "org";
             }"r";
             }"identifier";
           OrgPartOf.code -> organization1.type;
@@ -1629,7 +1711,7 @@ group Act (source cda: Act, target pat : Patient, target ac : DiagnosticReport, 
             }"ext";
             id.assigningAuthorityName as s ->  identifier.assigner as a,  a.display = s;
             id.root as r then {
-              id.extension as ext  -> practitioner.id = (r +'-'+ ext) as uuid2,  e7.fullUrl = append('https://example/Practitioner/', uuid7),  practitionerRole.practitioner = create('Reference') as reference,  reference.reference = ('https://example/Practitioner/' + %practitioner.id) "aut";
+              id.extension as ext  -> practitioner.id = (r +'-'+ ext) as uuid2,  e7.fullUrl = append('https://example/Practitioner/', uuid2),  practitionerRole.practitioner = create('Reference') as reference,  reference.reference = ('https://example/Practitioner/' + %practitioner.id) "aut";
             }"r";
            }"identifier";
            assignedAuthor.id as id where (root='2.16.840.1.113883.2.9.4.3.2') then {
@@ -1733,7 +1815,9 @@ group Organizer(source cda: Act, source org : Organizer, target patient : Patien
   org.statusCode as statusc where (code='aborted') -> observation.status ='cancelled';
   org.statusCode as statusc where (code='suspended') -> observation.status ='partial';
   org.effectiveTime as effectiveTime -> observation.effective = create('dateTime') as value then TSDateTime(effectiveTime, value) "value2";
-
+  org where effectiveTime.low.exists() or effectiveTime.high.exists() then {
+  org.effectiveTime as eff-> observation.effective=create('Period') as period then IVLTSPeriod(eff,period);
+ }"where";
   //specimen
   org.specimen as  spmn ->bundle.entry as e4o, e4o.request = create('BackboneElement') as request, request.method = 'POST', e4o.resource = create('Specimen') as specimen, specimen.id = uuid() as uuid4o, e4o.fullUrl = append('https://example/Specimen/', uuid4o), request.url = 'Specimen', observation.specimen=create('Reference') as reference, reference.reference = ('https://example/Specimen/' + %specimen.id) then {
       spmn.specimenRole as specimenRole then{
@@ -1836,7 +1920,7 @@ group Organizer(source cda: Act, source org : Organizer, target patient : Patien
                           }"ext";
                        id.assigningAuthorityName as s ->  identifier.assigner as a,  a.display = s;
                        id.root as r then {
-                        id.extension as ext  -> organization2.id = (r +'-'+ ext) as uuid4,  e5.fullUrl = append('https://example/Organization/', uuid5), organization1.partOf = create('Reference') as reference, reference.reference= ('https://example/Organization/' + %organization2.id)"org";
+                        id.extension as ext  -> organization2.id = (r +'-'+ ext) as uuid4,  e5.fullUrl = append('https://example/Organization/', uuid4), organization1.partOf = create('Reference') as reference, reference.reference= ('https://example/Organization/' + %organization2.id)"org";
                       }"r";
                      }"identifier";
                   wholeOrgan.name as v -> organization2.name = (v.other);
@@ -1976,7 +2060,11 @@ group Organizer(source cda: Act, source org : Organizer, target patient : Patien
       }"type";
     }"fhirParticipant";
     participant.participantRole as participantRole -> bundle.entry as e12,   e12.request = create('BackboneElement') as request, request.method = 'POST',  e12.resource = create('PractitionerRole') as practitionerRole,  practitionerRole.id = uuid() as uuid12,  e12.fullUrl = append('https://example/PractitionerRole/', uuid12), request.url = 'PractitionerRole', encounter.participant = create('BackboneElement') as participant1  then { 
-      participant.time -> participant1.period; 
+     // participant.time -> participant1.period; 
+      participant.time as time1 -> participant1.period = create('Period') as period then{
+        time1 -> period.start = create('dateTime') as start then TSDateTime(time1,start) "val";
+       }"time";
+       participant.time as time1 -> participant1.period =create('Period') as period then IVLTSPeriod(time1,period); 
       participant.functionCode -> practitionerRole.code;
       //non mappa i 2 precedenti
       participantRole  -> bundle.entry as e13, e13.request = create('BackboneElement') as request, request.method = 'PUT', e13.resource = create('Practitioner') as practitioner then {
@@ -2044,7 +2132,7 @@ group Organizer(source cda: Act, source org : Organizer, target patient : Patien
 
   //observationMedia  
   org.component as component then {
-        component.observationMedia as obsMedia -> bundle.entry as e15, e15.request = create('BackboneElement') as request, request.method = 'POST', e15.resource = create('Media') as media1,  media1.id = uuid() as uuid15,  e15.fullUrl = append('https://example/Organization/', uuid15), request.url='Media', observation.derivedFrom = create('Reference') as reference,  reference.reference = ('https://example/Organization/' + %media1.id) then {
+        component.observationMedia as obsMedia -> bundle.entry as e15, e15.request = create('BackboneElement') as request, request.method = 'POST', e15.resource = create('Media') as media1,  media1.id = uuid() as uuid15,  e15.fullUrl = append('https://example/Media/', uuid15), request.url='Media', observation.derivedFrom = create('Reference') as reference,  reference.reference = ('https://example/Media/' + %media1.id) then {
           obsMedia-> media1.content = create('Attachment') as Attachment then {
           obsMedia -> media1.status='unknown'"status";
           obsMedia.value as valueMedia then {

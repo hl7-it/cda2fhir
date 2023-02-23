@@ -1,4 +1,4 @@
-map "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirVaccination" = "cda2fhirVaccination"
+map "http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirVaccination" = "cda2fhirVaccination"
 
 
 uses "http://hl7.org/fhir/cda/StructureDefinition/ClinicalDocument" alias ClinicalDocument as source
@@ -25,8 +25,8 @@ uses "http://hl7.org/fhir/StructureDefinition/SimpleQuantity" alias SimpleQuanti
 uses "http://hl7.org/fhir/StructureDefinition/Immunization" alias Immunization as target
 
 
-imports "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"
-imports "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader"
+imports "http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/CdaToFhirDataTypes"
+imports "http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/FULLHEADER"
 
 group CdaToBundle(source cda : ClinicalDocument, target bundle : Bundle) {
   cda ->  bundle.entry as e, e.request = create('BackboneElement') as request, request.method = 'POST',  e.resource = create('Composition') as composition,  composition.id = uuid() as uuid1,  e.fullUrl = append('https://example/Composition/', uuid1), request.url = 'Composition',  bundle.entry as e2, e2.request = create('BackboneElement') as requestPAT, requestPAT.method = 'PUT', e2.resource = create('Patient') as patient,  patient.id = uuid() as uuid2,  e2.fullUrl = append('https://example/Patient/', uuid2), bundle.entry as e3, e3.request = create('BackboneElement') as request, request.method = 'POST',  e3.resource = create('Encounter') as encounter,  encounter.id = uuid() as uuid3,  e3.fullUrl = append('https://example/Encounter/', uuid3),request.url = 'Encounter',
@@ -56,7 +56,7 @@ group ClinicalDocumentToBundle(source cda : ClinicalDocument, target patient : P
   cda -> bundle.id = uuid() "id";
   cda.id -> bundle.identifier "identifier";
   cda -> bundle.type = 'transaction' "type";
-  cda.effectiveTime -> bundle.timestamp;
+  cda -> bundle.timestamp=(timestamp.now()) "date";
   cda then ClinicalDocumentComposition(cda, composition, patient, encounter, bundle, DocumentReference) "composition";  
   cda.component as component then {
     component.structuredBody as body then {
@@ -90,7 +90,9 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
         substance.statusCode  as statusc where (code='aborted') -> immunization.status ='final';  
         substance.statusCode  as statusc where (code='suspended') -> immunization.status ='enterer-in-error';  
         substance.statusCode  as statusc where (code='cancelled') -> immunization.status ='not-done';          
-        substance.effectiveTime as time -> immunization.occurrence = (time.value) "efftime";
+        substance.effectiveTime as eff where (value.exists()) -> immunization.occurrence = create('dateTime') as value then TSDateTime(eff, value) "value1";
+        substance.effectiveTime as eff where (low.exists()) -> immunization.occurrence = create('Period') as value then IVLTSPeriod(eff, value) "valuePeriod";
+
         substance.routeCode -> immunization.route "route";
 
         substance.approachSiteCode -> immunization.site "site";
@@ -226,7 +228,9 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
         substance.statusCode  as statusc where (code='aborted') -> immunization.status ='final';  
         substance.statusCode  as statusc where (code='suspended') -> immunization.status ='enterer-in-error';  
         substance.statusCode  as statusc where (code='cancelled') -> immunization.status ='not-done';          
-        substance.effectiveTime as time -> immunization.occurrence = (time.value);
+        
+        substance.effectiveTime as eff where (value.exists()) -> immunization.occurrence = create('dateTime') as value then TSDateTime(eff, value) "value1";
+        substance.effectiveTime as eff where (low.exists()) -> immunization.occurrence = create('Period') as value then IVLTSPeriod(eff, value) "valuePeriod";
 
         substance.consumable as cons then{
           cons.manufacturedProduct as manufact then{
@@ -353,7 +357,10 @@ group Observation1(source entrirel4: entryRelationship, target patient : Patient
     observation.statusCode as statusc where (code='suspended') -> obs.status ='partial';
     observation-> obs.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";
     observation-> obs.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference";  
+
+    observation.effectiveTime as eff where (value.exists()) -> obs.effective = create('dateTime') as value then TSDateTime(eff, value) "value1";
     observation.effectiveTime as eff -> obs.effective = create('Period') as period then IVLTSPeriod(eff,period) "period";
+    
     observation -> obs.value = create('CodeableConcept') as concept then{      
       observation.value -> concept.coding = create('Coding') as coding then{
         observation.value as v -> coding.code = (v.code);
