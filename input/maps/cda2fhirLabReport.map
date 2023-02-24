@@ -25,8 +25,8 @@ uses "http://hl7.org/fhir/cda/StructureDefinition/PQ" alias PQ as source
 uses "http://hl7.org/fhir/StructureDefinition/SimpleQuantity" alias SimpleQuantity as target
 uses "http://hl7.org/fhir/cda/StructureDefinition/Organizer" alias Organizer as source
 
-imports "http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/CdaToFhirDataTypes"
-imports "http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/FULLHEADER"
+imports "http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirDataTypes"
+imports "http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirHeader"
 
 group CdaToBundle(source cda : ClinicalDocument, target bundle : Bundle) {
   cda ->  bundle.entry as e, e.request = create('BackboneElement') as request, request.method = 'POST',  e.resource = create('Composition') as composition,  composition.id = uuid() as uuid1,  e.fullUrl = append('https://example/Composition/', uuid1), request.url = 'Composition',  bundle.entry as e2, e2.request = create('BackboneElement') as requestPAT, requestPAT.method = 'PUT', e2.resource = create('Patient') as patient,  patient.id = uuid() as uuid2,  e2.fullUrl = append('https://example/Patient/', uuid2), bundle.entry as e3, e3.request = create('BackboneElement') as request, request.method = 'POST',  e3.resource = create('Encounter') as encounter,  encounter.id = uuid() as uuid3,  e3.fullUrl = append('https://example/Encounter/', uuid3),request.url = 'Encounter',
@@ -483,7 +483,7 @@ group Observation (source obs : Observation, target patient : Patient, target en
             h1.unit as Unit1-> high.unit = Unit1;
           }"decValue";
         }"high";           
-      }"IVL_PQ";
+      }"IVL-PQ";
       obsRange.interpretationCode->ref.type;
       obsRange.precondition as precondition then { 
         precondition.criterion as criterion then{ 
@@ -631,7 +631,7 @@ group Observation2 (source obs : Observation, target patient : Patient, target e
         }"id"; 
     }"specimenRole";  
     }"specimen";
-  }"condition act exists";
+  }"conditionactexists";
   
   cda where cda.entryRelationship.act.exists().not() and (obs.specimen.specimenRole.specimenPlayingEntity.code.code != specimenp.type.coding.code) then {
     obs.specimen as spmn ->bundle.entry as e4o, e4o.request = create('BackboneElement') as request, request.method = 'POST', e4o.resource = create('Specimen') as specimen, specimen.id = uuid() as uuid4o, e4o.fullUrl = append('https://example/Specimen/', uuid4o), request.url = 'Specimen', ob.specimen=create('Reference') as reference, reference.reference = ('https://example/Specimen/' + %specimen.id) then {
@@ -642,7 +642,7 @@ group Observation2 (source obs : Observation, target patient : Patient, target e
         }"specimenPlayingEntity";
       }"specimenRole";
     }"specimen";    
-  }"where not exists";
+  }"wherenotexists";
   
   //performer
   obs.performer as performer -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',  e1.resource = create('PractitionerRole') as practitionerRole,  practitionerRole.id = uuid() as uuid1,  e1.fullUrl = append('https://example/PractitionerRole/', uuid1), request.url = 'PractitionerRole' then{
@@ -951,7 +951,7 @@ group Observation2 (source obs : Observation, target patient : Patient, target e
             h1.unit as Unit1-> high.unit = Unit1;
           }"decValue";
         }"high";           
-      }"IVL_PQ";
+      }"IVL-PQ";
       obsRange.interpretationCode->ref.type;
       obsRange.precondition as precondition then { 
         precondition.criterion as criterion then{ 
@@ -1373,7 +1373,7 @@ group Observation3 (source obs : Observation, target patient : Patient, target e
             h1.unit as Unit1-> high.unit = Unit1;
           }"decValue";
         }"high";           
-      }"IVL_PQ";
+      }"IVLPQ";
       obsRange.interpretationCode->ref.type;
       obsRange.precondition as precondition then { 
         precondition.criterion as criterion then{ 
@@ -1552,7 +1552,7 @@ group Act (source cda: Act, target pat : Patient, target ac : DiagnosticReport, 
       }"entryRelationshipobservation";
      
     //}"specimen";
-  }"exist not";
+  }"existnot";
 
   //PARTICIPANT
   cda.participant  as part where(typeCode!='DEV') ->  enc.participant as participant then{

@@ -15,7 +15,7 @@ L'adeguamento normativo (DL4/2022) introduce due nuovi elementi tecnologici all'
 <table>
 <tbody>
 <tr class="odd">
-<td><p><img src="Processo_Logico.png" style="width:7.00in;height:2.471in" /></p>
+<td><p><img src="Processo_Logico.png" style="width:7.00in;height:2.47in" /></p>
 <p>Figura 2 - Flusso dei documenti/dati previsto per FSE 2.0 e attori coinvolti</p></td>
 </tr>
 </tbody>

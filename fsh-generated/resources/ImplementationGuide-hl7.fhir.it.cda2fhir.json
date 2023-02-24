@@ -60,6 +60,102 @@
         "reference": {
           "reference": "StructureMap/cda2fhirDataTypes"
         },
+        "name": "Address Use Maps",
+        "description": "Mappa di trasformazione del valueset di use dell'attributo CDA Address in FHIR",
+		"groupingId":"ConceptMaps"
+      },
+	  {
+        "reference": {
+          "reference": "ConceptMap/AllergyCategory"
+        },
+        "name": "Allergy Category Maps",
+        "description": "Mappa di trasformazione del valueset di Allergy Type di CDA2 a FHIR",
+		"groupingId":"ConceptMaps"
+      },
+	  {
+        "reference": {
+          "reference": "ConceptMap/AllergyType"
+        },
+        "name": "Allergy Type Maps",
+        "description": "Mappa di trasformazione del valueset di Allergy Type Code di CDA2 a FHIR",
+		"groupingId":"ConceptMaps"
+      },
+	  {
+        "reference": {
+          "reference": "ConceptMap/CriticalityCode"
+        },
+        "name": "Allergy Criticality Code Maps",
+        "description": "Mappa di trasformazione del valueset di Criticality Code di CDA2 a FHIR",
+		"groupingId":"ConceptMaps"
+      },
+	  {
+        "reference": {
+          "reference": "ConceptMap/ClinicalStatus"
+        },
+        "name": "Clinical Status Maps",
+        "description": "Mappa di trasformazione del valueset di Clinical Status Code di CDA2 a FHIR",
+		"groupingId":"ConceptMaps"
+      },
+	  {
+        "reference": {
+          "reference": "ConceptMap/evnStatus"
+        },
+        "name": "Event Status Maps",
+        "description": "Mappa di trasformazione del valueset di Event Status Code di CDA2 a FHIR",
+		"groupingId":"ConceptMaps"
+      },
+	  {
+        "reference": {
+          "reference": "ConceptMap/finStatus"
+        },
+        "name": "Financial Status Maps",
+        "description": "Mappa di trasformazione del valueset di Financial Status Code di CDA2 a FHIR",
+		    "groupingId":"ConceptMaps"
+      },
+	  {
+        "reference": {
+          "reference": "ConceptMap/priorityCode"
+        },
+        "name": "Priority Code Maps",
+        "description": "Mappa di trasformazione del valueset di Priority Code di CDA2 a FHIR",
+		"groupingId":"ConceptMaps"
+      },
+      {
+        "reference": {
+          "reference": "ConceptMap/ObservationStatus"
+        },
+        "name": "Observation Status Code Maps",
+        "description": "Mappa di trasformazione del valueset di Observation Status Code di CDA2 a FHIR",
+		"groupingId":"ConceptMaps"
+      },
+	  {
+        "reference": {
+          "reference": "ConceptMap/medStatus"
+        },
+        "name": "MedicationStatus Maps",
+        "description": "Mappa di trasformazione del valueset di Medication Status Code di CDA2 a FHIR",
+		"groupingId":"ConceptMaps"
+      },
+	  {
+        "reference": {
+          "reference": "ConceptMap/cm-v3-relatesTo-code"
+        },
+        "name": "RelatesTO Code Maps",
+        "description": "Mappa di trasformazione del valueset di RelatesTo Code di CDA2 a FHIR",
+		"groupingId":"ConceptMaps"
+      },
+	  {
+        "reference": {
+          "reference": "ConceptMap/cm-v3-administrative-gender"
+        },
+        "name": "Gender Code Maps",
+        "description": "Mappa di trasformazione del valueset di Administrative Gender Code di CDA2 a FHIR",
+		"groupingId":"ConceptMaps"
+      },
+      {
+        "reference": {
+          "reference": "StructureMap/CdaToFhirDataTypes"
+        },
         "name": "CDA to FHIR - Data Types",
         "description": "Mappa di trasformazione dei dataTypes di CDA a FHIR",
         "groupingId": "CommonMaps"
@@ -68,6 +164,7 @@
         "reference": {
           "reference": "StructureMap/cda2fhirHeader"
         },
+
         "name": "CDA to FHIR - Header",
         "description": "Mappa di trasformazione dell'header generico",
         "groupingId": "CommonMaps"
