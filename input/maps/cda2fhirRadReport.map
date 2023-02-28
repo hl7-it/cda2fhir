@@ -1,4 +1,4 @@
-map "http://hl7.it/fhir/cda2fhir/cda2fhirRadReport" = "cda2fhirRadReport"
+map "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirRadReport" = "cda2fhirRadReport"
 
 conceptmap "OBSstatus" {
     prefix s = "http://terminology.hl7.org/ValueSet/v3-statusCode"
