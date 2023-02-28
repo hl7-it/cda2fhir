@@ -1,4 +1,4 @@
-map "http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirPs" = "cda2fhirPs"
+map "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirPs" = "cda2fhirPs"
 
 conceptmap "OBSstatus" {
 prefix s = "http://terminology.hl7.org/ValueSet/v3-statusCode"
@@ -118,8 +118,8 @@ uses "http://hl7.org/fhir/cda/StructureDefinition/PQ" alias PQ as source
 uses "http://hl7.org/fhir/StructureDefinition/SimpleQuantity" alias SimpleQuantity as target
 
 
-imports "http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirDataTypes"
-imports "http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirHeader"
+imports "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"
+imports "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader"
 
 group CdaToBundle(source cda : ClinicalDocument, target bundle : Bundle) {
     cda ->  
