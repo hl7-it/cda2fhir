@@ -3,7 +3,7 @@
    <text>
       <status value="generated"/>
       <div xmlns="http://www.w3.org/1999/xhtml">
-         <pre>map &quot;http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirDataTypes&quot; = &quot;cda2fhirDataTypes&quot;
+         <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes&quot; = &quot;cda2fhirDataTypes&quot;
 
 // Adapted from https://github.com/HL7/ccda-to-fhir/tree/master/mappings
 // CDA:  http://build.fhir.org/ig/ahdis/cda-core-2.0/branches/master/index.html
@@ -290,7 +290,7 @@ group CensusTract(source src : ST, target ext : Extension) {
          </group>
       </ConceptMap>
    </contained>
-   <url value="http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirDataTypes"/>
+   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"/>
    <name value="cda2fhirDataTypes"/>
    <description value="Adapted from https://github.com/HL7/ccda-to-fhir/tree/master/mappings&#xd;&#xa;CDA:  http://build.fhir.org/ig/ahdis/cda-core-2.0/branches/master/index.html&#xd;&#xa;FHIR: http://hl7.org/fhir/r4/"/>
    <structure>
