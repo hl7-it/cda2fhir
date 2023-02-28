@@ -1,4 +1,4 @@
-map "http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirHeader" = "cda2fhirHeader"
+map "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader" = "cda2fhirHeader"
 
 conceptmap "cm-v3-administrative-gender" {
   prefix s = "http://terminology.hl7.org/ValueSet/v3-AdministrativeGender"
@@ -43,7 +43,7 @@ uses "http://hl7.org/fhir/StructureDefinition/Specimen" alias Specimen as produc
 uses "http://hl7.org/fhir/StructureDefinition/Organization" alias Organization as produced
 uses "http://hl7.org/fhir/cda/StructureDefinition/HealthCareFacility" alias HealthCareFacility as queried
 
-imports "http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirDataTypes"
+imports "http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"
 
 group CdaToBundle(source cda : ClinicalDocument, target bundle : Bundle) {
   cda ->  bundle.entry as e, e.request = create('BackboneElement') as request, request.method = 'POST',  e.resource = create('Composition') as composition,  composition.id = uuid() as uuid1,  e.fullUrl = append('https://example/Composition/', uuid1), request.url = 'Composition',  bundle.entry as e2, e2.request = create('BackboneElement') as requestPAT, requestPAT.method = 'PUT', e2.resource = create('Patient') as patient,  patient.id = uuid() as uuid2,  e2.fullUrl = append('https://example/Patient/', uuid2), bundle.entry as e3, e3.request = create('BackboneElement') as request, request.method = 'POST',  e3.resource = create('Encounter') as encounter,  encounter.id = uuid() as uuid3,  e3.fullUrl = append('https://example/Encounter/', uuid3),request.url = 'Encounter', bundle.entry as e4, e4.request = create('BackboneElement') as request, request.method = 'POST',  e4.resource = create('DocumentReference') as DocumentReference,  DocumentReference.id = uuid() as uuid4,  e4.fullUrl = append('https://example/DocumentReference/', uuid3),request.url = 'DocumentReference' then {
