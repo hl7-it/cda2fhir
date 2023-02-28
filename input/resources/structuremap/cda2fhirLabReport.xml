@@ -3,7 +3,7 @@
    <text>
       <status value="generated"/>
       <div xmlns="http://www.w3.org/1999/xhtml">
-         <pre>map &quot;http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirLabReport&quot; = &quot;cda2fhirLabReport&quot;
+         <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirLabReport&quot; = &quot;cda2fhirLabReport&quot;
 
 
 uses &quot;http://hl7.org/fhir/cda/StructureDefinition/ClinicalDocument&quot; alias ClinicalDocument as source
@@ -31,8 +31,8 @@ uses &quot;http://hl7.org/fhir/cda/StructureDefinition/PQ&quot; alias PQ as sour
 uses &quot;http://hl7.org/fhir/StructureDefinition/SimpleQuantity&quot; alias SimpleQuantity as target
 uses &quot;http://hl7.org/fhir/cda/StructureDefinition/Organizer&quot; alias Organizer as source
 
-imports &quot;http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirDataTypes&quot;
-imports &quot;http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirHeader&quot;
+imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes&quot;
+imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader&quot;
 
 group CdaToBundle(source cda : ClinicalDocument, target bundle : Bundle) {
   cda -&gt;  bundle.entry as e,  e.request = create(&apos;BackboneElement&apos;) as request,  request.method = 'POST',  e.resource = create('Composition') as composition,  composition.id = uuid() as uuid1,  e.fullUrl = append('https://example/Composition/', uuid1),  request.url = 'Composition',  bundle.entry as e2,  e2.request = create('BackboneElement') as requestPAT,  requestPAT.method = 'PUT',  e2.resource = create('Patient') as patient,  patient.id = uuid() as uuid2,  e2.fullUrl = append('https://example/Patient/', uuid2),  bundle.entry as e3,  e3.request = create('BackboneElement') as request,  request.method = 'POST',  e3.resource = create('Encounter') as encounter,  encounter.id = uuid() as uuid3,  e3.fullUrl = append('https://example/Encounter/', uuid3),  request.url = 'Encounter',  bundle.entry as e6,  e6.request = create('BackboneElement') as request,  request.method = 'POST',  e6.resource = create('DocumentReference') as DocumentReference,  DocumentReference.id = uuid() as uuid6,  e6.fullUrl = append('https://example/DocumentReference/', uuid6),  request.url = 'DocumentReference' then {
@@ -2090,7 +2090,7 @@ group ExtSubjectAnimal(source src : relatedSubject, target ext : Extension) {
 </pre>
       </div>
    </text>
-   <url value="http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirLabReport"/>
+   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirLabReport"/>
    <name value="cda2fhirLabReport"/>
    <structure>
       <url value="http://hl7.org/fhir/cda/StructureDefinition/ClinicalDocument"/>
@@ -2212,8 +2212,8 @@ group ExtSubjectAnimal(source src : relatedSubject, target ext : Extension) {
       <mode value="source"/>
       <alias value="Organizer"/>
    </structure>
-   <import value="http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirDataTypes"/>
-   <import value="http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirHeader"/>
+   <import value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"/>
+   <import value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader"/>
    <group>
       <name value="CdaToBundle"/>
       <typeMode value="none"/>
