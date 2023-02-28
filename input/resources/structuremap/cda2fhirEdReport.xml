@@ -3,7 +3,7 @@
    <text>
       <status value="generated"/>
       <div xmlns="http://www.w3.org/1999/xhtml">
-         <pre>map &quot;http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirEdReport&quot; = &quot;cda2fhirEdReport&quot;
+         <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirEdReport&quot; = &quot;cda2fhirEdReport&quot;
 
 
 conceptmap &quot;AdministrativeGender&quot; {
@@ -70,8 +70,8 @@ uses &quot;http://hl7.org/fhir/cda/StructureDefinition/IVL-TS&quot; as source
 uses &quot;http://hl7.org/fhir/cda/StructureDefinition/PQ&quot; alias PQ as source
 uses &quot;http://hl7.org/fhir/StructureDefinition/SimpleQuantity&quot; alias SimpleQuantity as target
 
-imports &quot;http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirDataTypes&quot;
-imports &quot;http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirHeader&quot;
+imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes&quot;
+imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader&quot;
 
 // --------------------------------------------------------------------------------------------
 group CdaToBundle(source cda : ClinicalDocument, target bundle : Bundle) {
@@ -2738,7 +2738,7 @@ group periodTiming(source effectiveTime : PIVL_TS, target timing : Timing) {
          </group>
       </ConceptMap>
    </contained>
-   <url value="http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirEdReport"/>
+   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirEdReport"/>
    <name value="cda2fhirEdReport"/>
    <structure>
       <url value="http://hl7.org/fhir/cda/StructureDefinition/ClinicalDocument"/>
@@ -2849,8 +2849,8 @@ group periodTiming(source effectiveTime : PIVL_TS, target timing : Timing) {
       <mode value="target"/>
       <alias value="SimpleQuantity"/>
    </structure>
-   <import value="http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirDataTypes"/>
-   <import value="http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirHeader"/>
+   <import value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"/>
+   <import value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader"/>
    <group>
       <name value="CdaToBundle"/>
       <typeMode value="none"/>
