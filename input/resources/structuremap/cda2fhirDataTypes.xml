@@ -3,7 +3,7 @@
    <text>
       <status value="generated"/>
       <div xmlns="http://www.w3.org/1999/xhtml">
-         <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes&quot; = &quot;cda2fhirDataTypes&quot;
+         <pre>map &quot;http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirDataTypes&quot; = &quot;cda2fhirDataTypes&quot;
 
 // Adapted from https://github.com/HL7/ccda-to-fhir/tree/master/mappings
 // CDA:  http://build.fhir.org/ig/ahdis/cda-core-2.0/branches/master/index.html
@@ -11,7 +11,7 @@
 
 conceptmap &quot;addressUse&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-AddressUse&quot;
-  prefix t = &quot;	http://hl7.org/fhir/ValueSet/address-use&quot;
+  prefix t = &quot;http://hl7.org/fhir/address-use&quot;
 
   s:H == t:home
   s:HP == t:home
@@ -25,7 +25,7 @@ conceptmap &quot;addressUse&quot; {
 }
 
 uses &quot;http://hl7.org/fhir/cda/StructureDefinition/ED&quot; alias ED as source
-uses &quot;http://hl7.org/fhir/cda/StructureDefinition/INT&quot; alias IMT as source
+uses &quot;http://hl7.org/fhir/cda/StructureDefinition/INT&quot; alias INT as source
 uses &quot;http://hl7.org/fhir/cda/StructureDefinition/II&quot; as source
 uses &quot;http://hl7.org/fhir/StructureDefinition/Identifier&quot; as target
 uses &quot;http://hl7.org/fhir/cda/StructureDefinition/TS&quot; as source
@@ -96,8 +96,8 @@ group TSDate(source src : TS, target tgt : date) extends TSInstant &lt;&lt;types
 }
 
 group IVLTSPeriod(source src : IVL_TS, target tgt : Period) extends Any &lt;&lt;types&gt;&gt; {
-  src.low -&gt; tgt.start;
-  src.high -&gt; tgt.end;
+  src.low as l -&gt; tgt.start = create(&apos;dateTime&apos;) as start then TSDateTime(l, start);
+  src.high as h -&gt; tgt.end = create(&apos;dateTime&apos;) as end then TSDateTime(h, end);
 }
 
 group IVLTSDateTime(source src : IVL_TS, target tgt : dateTime) extends Any &lt;&lt;types&gt;&gt; {
@@ -174,7 +174,8 @@ group ADAddress(source src : AD, target tgt : Address) extends Any &lt;&lt;types
   src.county as v -&gt; tgt.district = (v.dataString);
   src.city as v -&gt; tgt.city = (v.dataString);
   src.postalCode as v -&gt; tgt.postalCode = (v.dataString);
-  src.streetAddressLine as v -&gt; tgt.line = (v.dataString) as line then {
+  src.streetAddressLine as v -&gt; tgt.line = (v.dataString);
+  src -&gt; tgt.line as line then {
     src.censusTract as v -&gt; line.extension as ext1 then CensusTract(v, ext1) &quot;line&quot;;
   } &quot;CensusTract&quot;;
   // share firstline &quot;streetAddress&quot;;
@@ -222,7 +223,7 @@ group CensusTract(source src : ST, target ext : Extension) {
          <status value="draft"/>
          <group>
             <source value="http://terminology.hl7.org/ValueSet/v3-AddressUse"/>
-            <target value="http://hl7.org/fhir/ValueSet/address-use"/>
+            <target value="http://hl7.org/fhir/address-use"/>
             <element>
                <code value="H"/>
                <target>
@@ -289,7 +290,7 @@ group CensusTract(source src : ST, target ext : Extension) {
          </group>
       </ConceptMap>
    </contained>
-   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"/>
+   <url value="http://www.ey.com/italy/ig/cda-fhir-maps/StructureMap/cda2fhirDataTypes"/>
    <name value="cda2fhirDataTypes"/>
    <description value="Adapted from https://github.com/HL7/ccda-to-fhir/tree/master/mappings&#xd;&#xa;CDA:  http://build.fhir.org/ig/ahdis/cda-core-2.0/branches/master/index.html&#xd;&#xa;FHIR: http://hl7.org/fhir/r4/"/>
    <structure>
@@ -300,7 +301,7 @@ group CensusTract(source src : ST, target ext : Extension) {
    <structure>
       <url value="http://hl7.org/fhir/cda/StructureDefinition/INT"/>
       <mode value="source"/>
-      <alias value="IMT"/>
+      <alias value="INT"/>
    </structure>
    <structure>
       <url value="http://hl7.org/fhir/cda/StructureDefinition/II"/>
@@ -865,30 +866,62 @@ group CensusTract(source src : ST, target ext : Extension) {
          <source>
             <context value="src"/>
             <element value="low"/>
-            <variable value="vvv"/>
+            <variable value="l"/>
          </source>
          <target>
             <context value="tgt"/>
             <contextType value="variable"/>
             <element value="start"/>
-            <variable value="vvv"/>
+            <variable value="start"/>
             <transform value="create"/>
+            <parameter>
+               <valueString value="dateTime"/>
+            </parameter>
          </target>
+         <dependent>
+            <name value="TSDateTime"/>
+            <variable value="l">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+            <variable value="start">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+         </dependent>
       </rule>
       <rule>
          <name value="high"/>
          <source>
             <context value="src"/>
             <element value="high"/>
-            <variable value="vvv"/>
+            <variable value="h"/>
          </source>
          <target>
             <context value="tgt"/>
             <contextType value="variable"/>
             <element value="end"/>
-            <variable value="vvv"/>
+            <variable value="end"/>
             <transform value="create"/>
+            <parameter>
+               <valueString value="dateTime"/>
+            </parameter>
          </target>
+         <dependent>
+            <name value="TSDateTime"/>
+            <variable value="h">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+            <variable value="end">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+         </dependent>
       </rule>
    </group>
    <group>
@@ -1637,7 +1670,7 @@ group CensusTract(source src : ST, target ext : Extension) {
          </target>
       </rule>
       <rule>
-         <name value="CensusTract"/>
+         <name value="streetAddressLine"/>
          <source>
             <context value="src"/>
             <element value="streetAddressLine"/>
@@ -1647,11 +1680,22 @@ group CensusTract(source src : ST, target ext : Extension) {
             <context value="tgt"/>
             <contextType value="variable"/>
             <element value="line"/>
-            <variable value="line"/>
             <transform value="evaluate"/>
             <parameter>
                <valueString value="v.dataString"/>
             </parameter>
+         </target>
+      </rule>
+      <rule>
+         <name value="CensusTract"/>
+         <source>
+            <context value="src"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="line"/>
+            <variable value="line"/>
          </target>
          <rule>
             <name value="line"/>
