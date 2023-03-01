@@ -33,7 +33,7 @@ imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes&quot;
 imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader&quot;
 
 group CdaToBundle(source cda : ClinicalDocument, target bundle : Bundle) {
-  cda -&gt;  bundle.entry as e,  e.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e.resource = create(&apos;Composition&apos;) as composition,  composition.id = uuid() as uuid1,  e.fullUrl = append(&apos;https://example/Composition/&apos;, uuid1),  request.url = 'Composition',  bundle.entry as e2,  e2.request = create('BackboneElement') as requestPAT,  requestPAT.method = 'PUT',  e2.resource = create('Patient') as patient,  patient.id = uuid() as uuid2,  e2.fullUrl = append('https://example/Patient/', uuid2),  bundle.entry as e3,  e3.request = create('BackboneElement') as request,  request.method = 'POST',  e3.resource = create('Encounter') as encounter,  encounter.id = uuid() as uuid3,  e3.fullUrl = append('https://example/Encounter/', uuid3),  request.url = &apos;Encounter&apos;,  bundle.entry as e5,  e5.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e5.resource = create(&apos;DocumentReference&apos;) as DocumentReference,  DocumentReference.id = uuid() as uuid5,  e5.fullUrl = append(&apos;https://example/DocumentReference/&apos;, uuid5),  request.url = &apos;DocumentReference&apos; then {
+  cda -&gt;  bundle.entry as e,  e.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e.resource = create(&apos;Composition&apos;) as composition,  composition.id = uuid() as uuid1,  e.fullUrl = append(&apos;https://example/Composition/', uuid1),  request.url = 'Composition',  bundle.entry as e2,  e2.request = create('BackboneElement') as requestPAT,  requestPAT.method = 'PUT',  e2.resource = create('Patient') as patient,  patient.id = uuid() as uuid2,  e2.fullUrl = append('https://example/Patient/', uuid2),  bundle.entry as e3,  e3.request = create('BackboneElement') as request,  request.method = 'POST',  e3.resource = create('Encounter') as encounter,  encounter.id = uuid() as uuid3,  e3.fullUrl = append('https://example/Encounter/', uuid3),  request.url = &apos;Encounter&apos;,  bundle.entry as e5,  e5.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e5.resource = create(&apos;DocumentReference&apos;) as DocumentReference,  DocumentReference.id = uuid() as uuid5,  e5.fullUrl = append(&apos;https://example/DocumentReference/&apos;, uuid5),  request.url = &apos;DocumentReference&apos; then {
     cda then ClinicalDocumentToBundle(cda, patient, composition, encounter, bundle, DocumentReference) &quot;cdatobundle&quot;;
     cda.recordTarget as recordTarget then {
       recordTarget.patientRole as patient then {
@@ -58,13 +58,13 @@ group ClinicalDocumentToBundle(source cda : ClinicalDocument, target patient : P
   cda -&gt; bundle.id = uuid() &quot;id&quot;;
   cda.id -&gt; bundle.identifier &quot;identifier&quot;;
   cda -&gt; bundle.type = &apos;transaction&apos; &quot;type&quot;;
-  cda.effectiveTime -&gt; bundle.timestamp;
+  cda -&gt; bundle.timestamp = (timestamp.now()) &quot;date&quot;;
   cda then ClinicalDocumentComposition(cda, composition, patient, encounter, bundle, DocumentReference) &quot;composition&quot;;
   cda.component as component then {
     component.structuredBody as body then {
       body.component as component then {
         component.section as srcSection then {
-          srcSection -&gt; composition.section as tgtSection then ClinicalDocumentSection(cda, srcSection, patient, tgtSection, bundle, encounter) &quot;Terapia Farmacologica alla dimissione&quot;;
+          srcSection -&gt; composition.section as tgtSection then ClinicalDocumentSection(cda, srcSection, patient, tgtSection, bundle, encounter) &quot;TerapiaFarmacologicaAllaDimissione&quot;;
         };
       };
     } &quot;body&quot;;
@@ -88,7 +88,8 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
         substance.statusCode as statusc where (code = &apos;aborted&apos;) -&gt; immunization.status = &apos;final&apos;;
         substance.statusCode as statusc where (code = &apos;suspended&apos;) -&gt; immunization.status = &apos;enterer-in-error&apos;;
         substance.statusCode as statusc where (code = &apos;cancelled&apos;) -&gt; immunization.status = &apos;not-done&apos;;
-        substance.effectiveTime as time -&gt; immunization.occurrence = (time.value) &quot;efftime&quot;;
+        substance.effectiveTime as eff where (value.exists()) -&gt; immunization.occurrence = create(&apos;dateTime&apos;) as value then TSDateTime(eff, value) &quot;value1&quot;;
+        substance.effectiveTime as eff where (low.exists()) -&gt; immunization.occurrence = create(&apos;Period&apos;) as value then IVLTSPeriod(eff, value) &quot;valuePeriod&quot;;
         substance.routeCode -&gt; immunization.route &quot;route&quot;;
         substance.approachSiteCode -&gt; immunization.site &quot;site&quot;;
         substance -&gt; immunization.doseQuantity = create(&apos;SimpleQuantity&apos;) as quantity then {
@@ -150,14 +151,14 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
             entrirel4.observation as obs then {
               obs.code where (code = &apos;75323-6&apos;) then {
                 obs.value -&gt; prot.targetDisease;
-              } &quot;code control&quot;;
+              } &quot;codeControl&quot;;
             } &quot;entrirel2&quot;;
             entrirel4.observation as obsdosenumber then {
               obsdosenumber.code where (code = &apos;30973-2&apos;) then {
                 obsdosenumber.value as v then {
                   v.value as int -&gt; prot.doseNumber = (int.toString());
                 } &quot;v&quot;;
-              } &quot;code control&quot;;
+              } &quot;codeControl&quot;;
             } &quot;entrirel2&quot;;
           } &quot;entrirel4&quot;;
         } &quot;protocolAp&quot;;
@@ -169,31 +170,31 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
                   h.value as date -&gt; immunization.expirationDate = truncate(date, 10);
                 } &quot;da&quot;;
               };
-            } &quot;code control&quot;;
+            } &quot;codeControl&quot;;
           } &quot;obs&quot;;
         } &quot;entrirel2&quot;;
         substance.entryRelationship as entrirel3 then {
           entrirel3.observation as obs then {
             obs.code where (code = &apos;95715-9&apos;) -&gt;  bundle.entry as e1,  e1.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e1.resource = create(&apos;Observation&apos;) as observation,  observation.id = uuid() as uuid1,  e1.fullUrl = append(&apos;https://example/Observation/&apos;, uuid1),  request.url = &apos;Observation&apos;,  immunization.reasonReference = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Observation/&apos; + %observation.id) then {
               obs then Observation(entrirel3, patient, tgt, bundle, enc, observation) &quot;observation&quot;;
-            } &quot;code control&quot;;
+            } &quot;codeControl&quot;;
           } &quot;obs&quot;;
         } &quot;entrirel2&quot;;
         substance.entryRelationship as entrirel4 then {
           entrirel4.observation as obs then {
             obs.code where (code = &apos;59785-6&apos;) -&gt;  bundle.entry as e1,  e1.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e1.resource = create(&apos;Observation&apos;) as observation,  observation.id = uuid() as uuid1,  e1.fullUrl = append(&apos;https://example/Observation/&apos;, uuid1),  request.url = &apos;Observation&apos;,  immunization.reasonReference = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Observation/&apos; + %observation.id) then {
               obs then Observation1(entrirel4, patient, tgt, bundle, enc, observation) &quot;observation&quot;;
-            } &quot;code control&quot;;
+            } &quot;codeControl&quot;;
           } &quot;obs&quot;;
         } &quot;entrirel2&quot;;
         substance.entryRelationship as entrirel4 then {
           entrirel4.observation as obs then {
             obs.code where (code = &apos;31044-1&apos;) -&gt;  bundle.entry as e1,  e1.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e1.resource = create(&apos;Observation&apos;) as observation,  observation.id = uuid() as uuid1,  e1.fullUrl = append(&apos;https://example/Observation/&apos;, uuid1),  request.url = &apos;Observation&apos;,  immunization.reasonReference = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Observation/&apos; + %observation.id) then {
               obs then Observation1(entrirel4, patient, tgt, bundle, enc, observation) &quot;observation&quot;;
-            } &quot;code control&quot;;
+            } &quot;codeControl&quot;;
           } &quot;obs&quot;;
         } &quot;entrirel2&quot;;
-      } &quot;Controllo+Immunization&quot;;
+      } &quot;ControlloImmunization&quot;;
       substance.templateId where (root = &apos;2.16.840.1.113883.2.9.10.1.11.4.2&apos;) -&gt;  bundle.entry as e1,  e1.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e1.resource = create(&apos;Immunization&apos;) as immunization,  immunization.id = uuid() as uuid1,  e1.fullUrl = append(&apos;https://example/Immunization/&apos;, uuid1),  request.url = &apos;Immunization&apos;,  tgt.entry = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Immunization/&apos; + %immunization.id) then {
         substance -&gt;  immunization.patient = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;patientRef&quot;;
         // substance.templateId as tid -&gt; immunization.identifier as idf then{
@@ -201,7 +202,8 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
         substance.statusCode as statusc where (code = &apos;aborted&apos;) -&gt; immunization.status = &apos;final&apos;;
         substance.statusCode as statusc where (code = &apos;suspended&apos;) -&gt; immunization.status = &apos;enterer-in-error&apos;;
         substance.statusCode as statusc where (code = &apos;cancelled&apos;) -&gt; immunization.status = &apos;not-done&apos;;
-        substance.effectiveTime as time -&gt; immunization.occurrence = (time.value);
+        substance.effectiveTime as eff where (value.exists()) -&gt; immunization.occurrence = create(&apos;dateTime&apos;) as value then TSDateTime(eff, value) &quot;value1&quot;;
+        substance.effectiveTime as eff where (low.exists()) -&gt; immunization.occurrence = create(&apos;Period&apos;) as value then IVLTSPeriod(eff, value) &quot;valuePeriod&quot;;
         substance.consumable as cons then {
           cons.manufacturedProduct as manufact then {
             manufact.manufacturedMaterial as manufactmat then {
@@ -234,14 +236,14 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
             entrirel4.observation as obs then {
               obs.code where (code = &apos;75323-6&apos;) then {
                 obs.value -&gt; prot.targetDisease;
-              } &quot;code control&quot;;
+              } &quot;codeControl&quot;;
             } &quot;entrirel2&quot;;
             entrirel4.observation as obsdosenumber then {
               obsdosenumber.code where (code = &apos;30973-2&apos;) then {
                 obsdosenumber.value as v then {
                   v.value as int -&gt; prot.doseNumber = (int.toString());
                 } &quot;v&quot;;
-              } &quot;code control&quot;;
+              } &quot;codeControl&quot;;
             } &quot;entrirel2&quot;;
           } &quot;entrirel4&quot;;
         } &quot;protocolAp&quot;;
@@ -249,14 +251,14 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
           entrirel1.observation as obs then {
             obs.code where (code = &apos;85714-4&apos;) then {
               obs.code -&gt; immunization.statusReason;
-            } &quot;code control&quot;;
+            } &quot;codeControl&quot;;
             obs.code where (code = &apos;59784-9&apos;) then {
               obs.value as val then {
                 val.originalText as original -&gt; immunization.statusReason = create(&apos;CodeableConcept&apos;) as cod then {
                   original.reference as reff -&gt; cod.text = (reff.value);
                 } &quot;cod&quot;;
               } &quot;val&quot;;
-            } &quot;code control&quot;;
+            } &quot;codeControl&quot;;
           } &quot;obs&quot;;
         } &quot;entrirel1&quot;;
         substance.participant as part -&gt;  bundle.entry as e1,  e1.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;PUT&apos;,  e1.resource = create(&apos;Location&apos;) as location then {
@@ -311,6 +313,7 @@ group Observation1(source entrirel4 : entryRelationship, target patient : Patien
     observation.statusCode as statusc where (code = &apos;suspended&apos;) -&gt; obs.status = &apos;partial&apos;;
     observation -&gt;  obs.subject = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;reference&quot;;
     observation -&gt;  obs.encounter = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Encounter/&apos; + %enc.id) &quot;reference&quot;;
+    observation.effectiveTime as eff where (value.exists()) -&gt; obs.effective = create(&apos;dateTime&apos;) as value then TSDateTime(eff, value) &quot;value1&quot;;
     observation.effectiveTime as eff -&gt; obs.effective = create(&apos;Period&apos;) as period then IVLTSPeriod(eff, period) &quot;period&quot;;
     observation -&gt; obs.value = create(&apos;CodeableConcept&apos;) as concept then {
       observation.value -&gt; concept.coding = create(&apos;Coding&apos;) as coding then {
@@ -992,18 +995,18 @@ group Observation1(source entrirel4 : entryRelationship, target patient : Patien
          </target>
       </rule>
       <rule>
-         <name value="effectiveTime"/>
+         <name value="date"/>
          <source>
             <context value="cda"/>
-            <element value="effectiveTime"/>
-            <variable value="vvv"/>
          </source>
          <target>
             <context value="bundle"/>
             <contextType value="variable"/>
             <element value="timestamp"/>
-            <variable value="vvv"/>
-            <transform value="create"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="timestamp.now()"/>
+            </parameter>
          </target>
       </rule>
       <rule>
@@ -1074,7 +1077,7 @@ group Observation1(source entrirel4 : entryRelationship, target patient : Patien
                      <variable value="srcSection"/>
                   </source>
                   <rule>
-                     <name value="Terapia Farmacologica alla dimissione"/>
+                     <name value="TerapiaFarmacologicaAllaDimissione"/>
                      <source>
                         <context value="srcSection"/>
                      </source>
@@ -1248,7 +1251,7 @@ group Observation1(source entrirel4 : entryRelationship, target patient : Patien
                <variable value="substance"/>
             </source>
             <rule>
-               <name value="Controllo+Immunization"/>
+               <name value="ControlloImmunization"/>
                <source>
                   <context value="substance"/>
                   <element value="templateId"/>
@@ -1435,21 +1438,68 @@ group Observation1(source entrirel4 : entryRelationship, target patient : Patien
                   </target>
                </rule>
                <rule>
-                  <name value="efftime"/>
+                  <name value="value1"/>
                   <source>
                      <context value="substance"/>
                      <element value="effectiveTime"/>
-                     <variable value="time"/>
+                     <variable value="eff"/>
+                     <condition value="(value.exists())"/>
                   </source>
                   <target>
                      <context value="immunization"/>
                      <contextType value="variable"/>
                      <element value="occurrence"/>
-                     <transform value="evaluate"/>
+                     <variable value="value"/>
+                     <transform value="create"/>
                      <parameter>
-                        <valueString value="time.value"/>
+                        <valueString value="dateTime"/>
                      </parameter>
                   </target>
+                  <dependent>
+                     <name value="TSDateTime"/>
+                     <variable value="eff">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                     <variable value="value">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                  </dependent>
+               </rule>
+               <rule>
+                  <name value="valuePeriod"/>
+                  <source>
+                     <context value="substance"/>
+                     <element value="effectiveTime"/>
+                     <variable value="eff"/>
+                     <condition value="(low.exists())"/>
+                  </source>
+                  <target>
+                     <context value="immunization"/>
+                     <contextType value="variable"/>
+                     <element value="occurrence"/>
+                     <variable value="value"/>
+                     <transform value="create"/>
+                     <parameter>
+                        <valueString value="Period"/>
+                     </parameter>
+                  </target>
+                  <dependent>
+                     <name value="IVLTSPeriod"/>
+                     <variable value="eff">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                     <variable value="value">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                  </dependent>
                </rule>
                <rule>
                   <name value="route"/>
@@ -2149,7 +2199,7 @@ group Observation1(source entrirel4 : entryRelationship, target patient : Patien
                            <variable value="obs"/>
                         </source>
                         <rule>
-                           <name value="code control"/>
+                           <name value="codeControl"/>
                            <source>
                               <context value="obs"/>
                               <element value="code"/>
@@ -2180,7 +2230,7 @@ group Observation1(source entrirel4 : entryRelationship, target patient : Patien
                            <variable value="obsdosenumber"/>
                         </source>
                         <rule>
-                           <name value="code control"/>
+                           <name value="codeControl"/>
                            <source>
                               <context value="obsdosenumber"/>
                               <element value="code"/>
@@ -2230,7 +2280,7 @@ group Observation1(source entrirel4 : entryRelationship, target patient : Patien
                         <variable value="obs"/>
                      </source>
                      <rule>
-                        <name value="code control"/>
+                        <name value="codeControl"/>
                         <source>
                            <context value="obs"/>
                            <element value="code"/>
@@ -2290,7 +2340,7 @@ group Observation1(source entrirel4 : entryRelationship, target patient : Patien
                         <variable value="obs"/>
                      </source>
                      <rule>
-                        <name value="code control"/>
+                        <name value="codeControl"/>
                         <source>
                            <context value="obs"/>
                            <element value="code"/>
@@ -2435,7 +2485,7 @@ group Observation1(source entrirel4 : entryRelationship, target patient : Patien
                         <variable value="obs"/>
                      </source>
                      <rule>
-                        <name value="code control"/>
+                        <name value="codeControl"/>
                         <source>
                            <context value="obs"/>
                            <element value="code"/>
@@ -2580,7 +2630,7 @@ group Observation1(source entrirel4 : entryRelationship, target patient : Patien
                         <variable value="obs"/>
                      </source>
                      <rule>
-                        <name value="code control"/>
+                        <name value="codeControl"/>
                         <source>
                            <context value="obs"/>
                            <element value="code"/>
@@ -2899,21 +2949,68 @@ group Observation1(source entrirel4 : entryRelationship, target patient : Patien
                   </target>
                </rule>
                <rule>
-                  <name value="effectiveTime"/>
+                  <name value="value1"/>
                   <source>
                      <context value="substance"/>
                      <element value="effectiveTime"/>
-                     <variable value="time"/>
+                     <variable value="eff"/>
+                     <condition value="(value.exists())"/>
                   </source>
                   <target>
                      <context value="immunization"/>
                      <contextType value="variable"/>
                      <element value="occurrence"/>
-                     <transform value="evaluate"/>
+                     <variable value="value"/>
+                     <transform value="create"/>
                      <parameter>
-                        <valueString value="time.value"/>
+                        <valueString value="dateTime"/>
                      </parameter>
                   </target>
+                  <dependent>
+                     <name value="TSDateTime"/>
+                     <variable value="eff">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                     <variable value="value">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                  </dependent>
+               </rule>
+               <rule>
+                  <name value="valuePeriod"/>
+                  <source>
+                     <context value="substance"/>
+                     <element value="effectiveTime"/>
+                     <variable value="eff"/>
+                     <condition value="(low.exists())"/>
+                  </source>
+                  <target>
+                     <context value="immunization"/>
+                     <contextType value="variable"/>
+                     <element value="occurrence"/>
+                     <variable value="value"/>
+                     <transform value="create"/>
+                     <parameter>
+                        <valueString value="Period"/>
+                     </parameter>
+                  </target>
+                  <dependent>
+                     <name value="IVLTSPeriod"/>
+                     <variable value="eff">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                     <variable value="value">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                  </dependent>
                </rule>
                <rule>
                   <name value="cons"/>
@@ -3267,7 +3364,7 @@ group Observation1(source entrirel4 : entryRelationship, target patient : Patien
                            <variable value="obs"/>
                         </source>
                         <rule>
-                           <name value="code control"/>
+                           <name value="codeControl"/>
                            <source>
                               <context value="obs"/>
                               <element value="code"/>
@@ -3298,7 +3395,7 @@ group Observation1(source entrirel4 : entryRelationship, target patient : Patien
                            <variable value="obsdosenumber"/>
                         </source>
                         <rule>
-                           <name value="code control"/>
+                           <name value="codeControl"/>
                            <source>
                               <context value="obsdosenumber"/>
                               <element value="code"/>
@@ -3348,7 +3445,7 @@ group Observation1(source entrirel4 : entryRelationship, target patient : Patien
                         <variable value="obs"/>
                      </source>
                      <rule>
-                        <name value="code control"/>
+                        <name value="codeControl"/>
                         <source>
                            <context value="obs"/>
                            <element value="code"/>
@@ -3371,7 +3468,7 @@ group Observation1(source entrirel4 : entryRelationship, target patient : Patien
                         </rule>
                      </rule>
                      <rule>
-                        <name value="code control"/>
+                        <name value="codeControl"/>
                         <source>
                            <context value="obs"/>
                            <element value="code"/>
@@ -4085,6 +4182,38 @@ group Observation1(source entrirel4 : entryRelationship, target patient : Patien
                   <valueString value="'https://example/Encounter/' + %enc.id"/>
                </parameter>
             </target>
+         </rule>
+         <rule>
+            <name value="value1"/>
+            <source>
+               <context value="observation"/>
+               <element value="effectiveTime"/>
+               <variable value="eff"/>
+               <condition value="(value.exists())"/>
+            </source>
+            <target>
+               <context value="obs"/>
+               <contextType value="variable"/>
+               <element value="effective"/>
+               <variable value="value"/>
+               <transform value="create"/>
+               <parameter>
+                  <valueString value="dateTime"/>
+               </parameter>
+            </target>
+            <dependent>
+               <name value="TSDateTime"/>
+               <variable value="eff">
+                  <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                     <valueUrl value="id"/>
+                  </extension>
+               </variable>
+               <variable value="value">
+                  <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                     <valueUrl value="id"/>
+                  </extension>
+               </variable>
+            </dependent>
          </rule>
          <rule>
             <name value="period"/>

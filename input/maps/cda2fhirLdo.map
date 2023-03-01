@@ -4,7 +4,7 @@ conceptmap "AllergyTypeMap" {
 
   prefix s = "http://terminology.hl7.org/ValueSet/v3-type"
 
-  prefix t = "http://hl7.org/fhir/ValueSet/allergy-intolerance-type"
+  prefix t = "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical"
 
   s:OINT == t:intolerance
   s:ALG == t:allergy
@@ -23,7 +23,7 @@ conceptmap "AllergyTypeMap" {
 conceptmap "AllergyCategoryMap" {
 
   prefix s = "http://terminology.hl7.org/ValueSet/v3-type"
-  prefix t = "http://hl7.org/fhir/ValueSet/allergy-intolerance-type"
+  prefix t = "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical"
 
   s:DALG == t:medication
   s:EALG == t:enviroment
@@ -97,26 +97,26 @@ group ClinicalDocumentToBundle(source cda : ClinicalDocument, target patient : P
   cda -> bundle.id = uuid() "id";
   cda.id -> bundle.identifier "identifier";
   cda -> bundle.type = 'transaction' "type";
-  cda.effectiveTime -> bundle.timestamp;
+  cda -> bundle.timestamp=(timestamp.now()) "date";
   cda then ClinicalDocumentComposition(cda, composition, patient, encounter, bundle, DocumentReference) "composition";  
   cda.component as component then {
     component.structuredBody as body then {
       body.component as component  then {
        //discretizzi il primo livello di component 
 	     component.section as srcSection then {
-        srcSection.code where(code = '46241-6') -> composition.section as tgtSection  then ClinicalDocumentSectionMotivoRicovero(cda, srcSection, patient, tgtSection, bundle,encounter) "motivo ricovero";
-        srcSection.code where(code = '47039-3') -> composition.section as tgtSection  then ClinicalDocumentSectionInquadramentoClinico(cda, srcSection, patient, tgtSection, bundle,encounter) "inquadramento clinico";
-        srcSection.code where(code = '8648-8')  ->  composition.section as tgtSection  then ClinicalDocumentSectionDecorsoOspedaliero(cda, srcSection, patient, tgtSection, bundle,encounter) "Decorso Ospedaliero";
+        srcSection.code where(code = '46241-6') -> composition.section as tgtSection  then ClinicalDocumentSectionMotivoRicovero(cda, srcSection, patient, tgtSection, bundle,encounter) "motivoRicovero";
+        srcSection.code where(code = '47039-3') -> composition.section as tgtSection  then ClinicalDocumentSectionInquadramentoClinico(cda, srcSection, patient, tgtSection, bundle,encounter) "inquadramentoClinico";
+        srcSection.code where(code = '8648-8')  ->  composition.section as tgtSection  then ClinicalDocumentSectionDecorsoOspedaliero(cda, srcSection, patient, tgtSection, bundle,encounter) "DecorsoOspedaliero";
         srcSection.code where(code = '55109-3') -> composition.section as tgtSection  then ClinicalDocumentSectionComplicanze(cda, srcSection, patient, tgtSection, bundle,encounter) "Complicazioni";
-        srcSection.code where(code = '11493-4') -> composition.section as tgtSection  then ClinicalDocumentSectionRiscontri(cda, srcSection, patient, tgtSection, bundle,encounter) "Hospital discharge studies summary";
-        srcSection.code where(code = '34104-0') -> composition.section as tgtSection  then ClinicalDocumentSectionConsulenza(cda, srcSection, patient, tgtSection, bundle,encounter) "Hospital discharge studies summary";
-        srcSection.code where(code = '30954-2') -> composition.section as tgtSection  then ClinicalDocumentSectionEsamiEseguitiRicovero(cda, srcSection, patient, tgtSection, bundle,encounter) "Esami_Eseguiti_Durante_il_Ricovero";
-        srcSection.code where(code = '47519-4') -> composition.section as tgtSection  then ClinicalDocumentSectionProcedureEseguiteRicovero(cda, srcSection, patient, tgtSection, bundle,encounter) "History of Procedures Document";
-        srcSection.code where(code = '48765-2') -> composition.section as tgtSection  then ClinicalDocumentSectionAllergie(cda, srcSection, patient, tgtSection, bundle,encounter) "Esami_Eseguiti_Durante_il_Ricovero";
-        srcSection.code where(code = '10160-0') -> composition.section as tgtSection  then ClinicalDocumentSectionTerapiaFarmacologicaDuranteRicovero(cda, srcSection, patient, tgtSection, bundle,encounter) "Terapia Farmacologica alla dimissione";       
-        srcSection.code where(code = '11535-2') -> composition.section as tgtSection  then ClinicalDocumentSectionDiagnosiDimissione(cda, srcSection, patient, tgtSection, bundle,encounter) "Diagnosi di Dimissione";
-        srcSection.code where(code = '18776-5') -> composition.section as tgtSection  then ClinicalDocumentSectionIstruzioniFollowUp(cda, srcSection, patient, tgtSection, bundle,encounter) "Diagnosi di Dimissione";
-        srcSection.code where(code = '10183-2') -> composition.section as tgtSection  then ClinicalDocumentSectionTerapiaDimissione(cda, srcSection, patient, tgtSection, bundle,encounter) "Terapia Farmacologica alla dimissione";
+        srcSection.code where(code = '11493-4') -> composition.section as tgtSection  then ClinicalDocumentSectionRiscontri(cda, srcSection, patient, tgtSection, bundle,encounter) "HospitalDischargeStudiesSummary";
+        srcSection.code where(code = '34104-0') -> composition.section as tgtSection  then ClinicalDocumentSectionConsulenza(cda, srcSection, patient, tgtSection, bundle,encounter) "HospitalDischargeStudiesSummary";
+        srcSection.code where(code = '30954-2') -> composition.section as tgtSection  then ClinicalDocumentSectionEsamiEseguitiRicovero(cda, srcSection, patient, tgtSection, bundle,encounter) "EsamiEseguitiDuranteilRicovero";
+        srcSection.code where(code = '47519-4') -> composition.section as tgtSection  then ClinicalDocumentSectionProcedureEseguiteRicovero(cda, srcSection, patient, tgtSection, bundle,encounter) "HistoryOfProceduresDocument";
+        srcSection.code where(code = '48765-2') -> composition.section as tgtSection  then ClinicalDocumentSectionAllergie(cda, srcSection, patient, tgtSection, bundle,encounter) "EsamiEseguitiDuranteIlRicovero";
+        srcSection.code where(code = '10160-0') -> composition.section as tgtSection  then ClinicalDocumentSectionTerapiaFarmacologicaDuranteRicovero(cda, srcSection, patient, tgtSection, bundle,encounter) "TerapiaFarmacologicaAllaDimissione";       
+        srcSection.code where(code = '11535-2') -> composition.section as tgtSection  then ClinicalDocumentSectionDiagnosiDimissione(cda, srcSection, patient, tgtSection, bundle,encounter) "DiagnosiDiDimissione";
+        srcSection.code where(code = '18776-5') -> composition.section as tgtSection  then ClinicalDocumentSectionIstruzioniFollowUp(cda, srcSection, patient, tgtSection, bundle,encounter) "DiagnosiDiDimissione";
+        srcSection.code where(code = '10183-2') -> composition.section as tgtSection  then ClinicalDocumentSectionTerapiaDimissione(cda, srcSection, patient, tgtSection, bundle,encounter) "TerapiaFarmacologicaAllaDimissione";
        };
       };
     } "body";
@@ -130,13 +130,29 @@ group ClinicalDocumentToBundle(source cda : ClinicalDocument, target patient : P
 group ClinicalDocumentSectionMotivoRicovero(source cda : ClinicalDocument, source src : Section, target patient : Patient, target tgt, target bundle : Bundle, target enc : Encounter){
   src.title as t -> tgt.title = (t.dataString);
   src.code -> tgt.code;
+  src where src.entry.exists() then {
   src.text as cdaText -> tgt.text as fhirText then {
     cdaText -> fhirText.status = 'generated' "narrativeStatus";
     cdaText as t -> fhirText.div = t "narrativeText";    
-  } "cdaText";
-  src.entry as entry1 -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('Observation') as observation,  observation.id = uuid() as uuid1,  e1.fullUrl = append('https://example/Observation/', uuid1), request.url = 'Observation' ,tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %observation.id) then {
+     } "cdaText";
+   } "cText";
+ src.entry as entry1 -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('Observation') as observation,  observation.id = uuid() as uuid1,  e1.fullUrl = append('https://example/Observation/', uuid1), request.url = 'Observation' ,tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %observation.id) then {
     entry1.observation as obs then Observation(obs, patient ,enc ,observation, bundle) "act";
-  }"entry";
+   } "entry";
+
+  src where src.entry.exists().not() then {
+    src.text as cdaText -> bundle.entry as e8, e8.request = create('BackboneElement') as request, request.method = 'POST', e8.resource = create('Observation') as Observation,  Observation.id = uuid() as uuid8,  e8.fullUrl = append('https://example/Observation/', uuid8), request.url = 'Observation', tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %Observation.id) then {
+      src -> Observation.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";
+      src -> Observation.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference"; 
+        src.code -> Observation.code;
+        src where observation.statusCode.exists().not() then {
+          src->Observation.status ='final'"status";
+        }"statuscode";
+        cdaText -> Observation.note as note then{
+          cdaText as t ->note.text =t "reference";
+        }"reference";
+      }"cdaText";
+  }"where";
 }
 
 group ClinicalDocumentSectionInquadramentoClinico(source cda : ClinicalDocument, source src : Section, target patient : Patient, target tgt, target bundle : Bundle, target enc : Encounter){
@@ -162,10 +178,27 @@ group ClinicalDocumentSectionInquadramentoClinico(source cda : ClinicalDocument,
       section2.code where(code = '11329-0') ->  sec2.code;
         section2.title as t -> sec2.title = (t.dataString);
         //section2.code -> sec2.code;
-        section2.text as cdaText -> sec2.text as fhirText then {
-          cdaText -> fhirText.status = 'generated' "narrativeStatus";
-          cdaText as t -> fhirText.div = t "narrativeText";          
-        } "cdaText";
+        src where src.entry.exists() then{
+          section2.text as cdaText -> sec2.text as fhirText then {
+            cdaText -> fhirText.status = 'generated' "narrativeStatus";
+            cdaText as t -> fhirText.div = t "narrativeText";          
+          } "cdaText";  
+        }"exist";
+
+        src where src.entry.exists().not() then {
+          section2.text as cdaText -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST', e1.resource = create('Observation') as condition, condition.id = uuid() as uuid1,  e1.fullUrl = append('https://example/Observation/', uuid1), request.url = 'Observation', sec2.entry = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %condition.id) then {
+              section2.code -> condition.code;
+              src where condition.statusCode.exists().not() then {
+                src->condition.status ='final'"status";
+              }"statuscode";
+              cdaText -> condition.note as note then{
+                cdaText->condition.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";          
+                cdaText->condition.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference";       
+                cdaText as t ->note.text =t "reference";
+              }"reference";
+          }"cdaText";
+        }"where";
+
         section2.entry as entry1 then {
           entry1.observation as obs then {
             //EntryRelationship per il Problem
@@ -202,9 +235,9 @@ group ClinicalDocumentSectionInquadramentoClinico(source cda : ClinicalDocument,
                 observation2.code as code then {
                 code.code where (code.code = '89261-2') then { 
                   obs -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST', e1.resource = create('Observation') as observation, observation.id = uuid() as uuid1,  e1.fullUrl = append('https://example/Observation/', uuid1), request.url = 'Observation' then {
-                 // entriRel -> condition.evidence = create('BackboneElement') as evidence then{
+              
                    entriRel -> evidence.detail  = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %observation.id) "ref";
-                // }"evidence";   
+                  
                 observation2.code -> observation.code;
                   observation2 where observation.statusCode.exists().not() then {
                     observation2->observation.status ='final'"status";
@@ -265,7 +298,7 @@ group ClinicalDocumentSectionInquadramentoClinico(source cda : ClinicalDocument,
                     }"Ce"; 
                   }"Value"; 
                  }"obser";
-                }"where Decorso Clinico";
+                }"whereDecorsoClinico";
                 }"code";
                          
               }"Observation2";
@@ -284,24 +317,23 @@ group ClinicalDocumentSectionInquadramentoClinico(source cda : ClinicalDocument,
                      value.code  where (value.code = 'LA16666-2')-> coding.code = 'active'"active";
                      value.code  where (value.code = 'LA18632-2')-> coding.code = 'inactive'"inactive";
                      value.codeSystem as system -> coding.system ='http://terminology.hl7.org/CodeSystem/condition-clinical'"system";
-                     //value->coding.version='ConditionClinicalStatusCodes 4.0.1'"version";
                      value.displayName as display -> coding.display = cast(display, 'string');
                      }"value1";
                  }"coding";
                }"code";                       
-             }"where Decorso Clinico"; 
+             }"whereDecorsoClinico"; 
             }"codestatus";  
            }"observationstatus"; 
           }"entryrelationshipstatus";           
-          }"where entry patologica prossima";
+          }"whereEntryPatologicaProssima";
         } "observationcondition";
-        }"entry 1";
+        }"entry";
     }"subsection1";
  
   // ESAME PBIETTIVO
-  section2.code where(code = '29545-1') then ClinicalDocumentSottoSectionOBS(section2, sec2, bundle,enc,patient) "esame obiettivo";
+  section2.code where(code = '29545-1') then ClinicalDocumentSottoSectionOBS(section2, sec2, bundle,enc,patient) "esameObiettivo";
       // TETAPIA FARMACOLOGICA
-   section2.code where(code = '42346-7') then ClinicalDocumentSottoSectionMS(section2, sec2, bundle,patient,enc) "Terapia Farmacologica all'ingresso";
+   section2.code where(code = '42346-7') then ClinicalDocumentSottoSectionMS(section2, sec2, bundle,patient,enc) "TerapiaFarmacologicaAllIngresso";
     }"sec2fhir";
   }"componentSec";
  };
@@ -335,10 +367,27 @@ group ClinicalDocumentSectionDecorsoOspedaliero(source cda : ClinicalDocument, s
 group ClinicalDocumentSectionComplicanze(source cda : ClinicalDocument, source src : Section, target patient : Patient, target tgt, target bundle : Bundle, target enc : Encounter){
   src.title as t -> tgt.title = (t.dataString);
   src.code -> tgt.code;
-  src.text as cdaText -> tgt.text as fhirText then {
-    cdaText -> fhirText.status = 'generated' "narrativeStatus";
-    cdaText as t -> fhirText.div = t "narrativeText";
-  } "cdaText";
+  src where src.entry.exists() then{
+    src.text as cdaText -> tgt.text as fhirText then {
+      cdaText -> fhirText.status = 'generated' "narrativeStatus";
+      cdaText as t -> fhirText.div = t "narrativeText";
+    } "cdaText";  
+  }"exist";
+
+  src where src.entry.exists().not() then {
+    src.text as cdaText -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('Observation') as observation,  observation.id = uuid() as uuid1,  e1.fullUrl = append('https://example/Observation/', uuid1), request.url = 'Observation' ,tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %observation.id) then {
+      src -> observation.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";
+      src -> observation.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference"; 
+          src.code -> observation.code;
+          src where observation.statusCode.exists().not() then {
+              src->observation.status ='final'"status";
+              }"statuscode";
+            cdaText -> observation.note as note then{
+            cdaText as t ->note.text =t "reference";
+          }"reference";
+        }"cdaText";
+      }"where";
+
   src.entry as entry1 -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('Observation') as observation,  observation.id = uuid() as uuid1,  e1.fullUrl = append('https://example/Observation/', uuid1), request.url = 'Observation' ,tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %observation.id) then {
     entry1.observation as obs then Observation(obs, patient ,enc ,observation, bundle) "act";
   }"entry";
@@ -373,10 +422,26 @@ group ClinicalDocumentSectionRiscontri(source cda : ClinicalDocument, source src
 group ClinicalDocumentSectionConsulenza(source cda : ClinicalDocument, source src : Section, target patient : Patient, target tgt, target bundle : Bundle, target enc : Encounter){
   src.title as t -> tgt.title = (t.dataString);
   src.code -> tgt.code;
-  src.text as cdaText -> tgt.text as fhirText then {
-    cdaText -> fhirText.status = 'generated' "narrativeStatus";
-    cdaText as t -> fhirText.div = t "narrativeText";
-  } "cdaText";
+  src where src.entry.exists() then{
+    src.text as cdaText -> tgt.text as fhirText then {
+      cdaText -> fhirText.status = 'generated' "narrativeStatus";
+      cdaText as t -> fhirText.div = t "narrativeText";
+    } "cdaText";  
+  }"exist";
+
+  src where src.entry.exists().not() then {
+    src.text as cdaText -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('Observation') as observation,  observation.id = uuid() as uuid1,  e1.fullUrl = append('https://example/Observation/', uuid1), request.url = 'Observation', tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %observation.id) then {
+      src -> observation.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";
+      src -> observation.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference"; 
+          src.code -> observation.code;
+          src where observation.statusCode.exists().not() then {
+              src->observation.status ='final'"status";
+              }"statuscode";
+            cdaText -> observation.note as note then{
+            cdaText as t ->note.text =t "reference";
+          }"reference";
+        }"cdaText";
+      }"where";
 
   src.entry as entry1 -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('Observation') as observation,  observation.id = uuid() as uuid1,  e1.fullUrl = append('https://example/Observation/', uuid1), request.url = 'Observation', tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %observation.id) then {
     entry1.observation as obs then ObservationConsulenza(obs, patient ,enc ,observation, bundle) "act";
@@ -387,10 +452,26 @@ group ClinicalDocumentSectionConsulenza(source cda : ClinicalDocument, source sr
 group ClinicalDocumentSectionEsamiEseguitiRicovero(source cda : ClinicalDocument, source src : Section, target patient : Patient, target tgt, target bundle : Bundle, target enc : Encounter){
   src.title as t -> tgt.title = (t.dataString);
   src.code -> tgt.code;
-  src.text as cdaText -> tgt.text as fhirText then {
-    cdaText -> fhirText.status = 'generated' "narrativeStatus";
-    cdaText as t -> fhirText.div = t "narrativeText";
-  } "cdaText";
+  src where src.entry.exists() then{
+    src.text as cdaText -> tgt.text as fhirText then {
+      cdaText -> fhirText.status = 'generated' "narrativeStatus";
+      cdaText as t -> fhirText.div = t "narrativeText";
+    } "cdaText";  
+  }"exists";
+
+  src where src.entry.exists().not() then {
+    src.text as cdaText -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('Observation') as observation,  observation.id = uuid() as uuid1,  e1.fullUrl = append('https://example/Observation/', uuid1), request.url = 'Observation', tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %observation.id) then {
+      src -> observation.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";
+      src -> observation.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference"; 
+          src.code -> observation.code;
+          src where observation.statusCode.exists().not() then {
+              src->observation.status ='final'"status";
+              }"statuscode";
+            cdaText -> observation.note as note then{
+            cdaText as t ->note.text =t "reference";
+          }"reference";
+        }"cdaText";
+      }"where";
 
   src.entry as entry1 -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('Observation') as observation,  observation.id = uuid() as uuid1,  e1.fullUrl = append('https://example/Observation/', uuid1), request.url = 'Observation', tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %observation.id) then {
     entry1.observation as obs then ObservationEsamiDuranteRicovero(obs, patient ,enc ,observation, bundle) "act";
@@ -401,11 +482,24 @@ group ClinicalDocumentSectionEsamiEseguitiRicovero(source cda : ClinicalDocument
 group ClinicalDocumentSectionProcedureEseguiteRicovero(source cda : ClinicalDocument, source src : Section, target patient : Patient, target tgt, target bundle : Bundle, target enc : Encounter){
   src.title as t -> tgt.title = (t.dataString);
   src.code -> tgt.code;
-  src.text as cdaText -> tgt.text as fhirText then {
-    cdaText -> fhirText.status = 'generated' "narrativeStatus";
-    cdaText as t -> fhirText.div = t "narrativeText";
-  } "cdaText";
+  src where src.entry.exists() then{
+    src.text as cdaText -> tgt.text as fhirText then {
+      cdaText -> fhirText.status = 'generated' "narrativeStatus";
+      cdaText as t -> fhirText.div = t "narrativeText";
+    } "cdaText";  
+  }"exists";
  
+  src where src.entry.exists().not() then {
+    src.text as cdaText -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('Procedure') as procedure,  procedure.id = uuid() as uuid1,  e1.fullUrl = append('https://example/Procedure/', uuid1), request.url = 'Procedure', tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/Procedure/' + %procedure.id) then {
+      src -> procedure.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";
+      src -> procedure.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference";        
+      src->procedure.status ='unknown'"statuscode";
+      cdaText -> procedure.note as note then{
+        cdaText as t ->note.text =t "reference";
+      }"reference";
+    }"cdaText";
+  }"where";  
+
   src.entry as entry1 -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('Procedure') as procedure,  procedure.id = uuid() as uuid1,  e1.fullUrl = append('https://example/Procedure/', uuid1), request.url = 'Procedure', tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/Procedure/' + %procedure.id) then {
     src -> procedure.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";
     src -> procedure.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference";
@@ -427,12 +521,7 @@ group ClinicalDocumentSectionProcedureEseguiteRicovero(source cda : ClinicalDocu
       proceduresrc.statusCode as statusc where (code='new') -> procedure.status ='preparation';
       proceduresrc.statusCode as statusc where (code='obsolete') -> procedure.status ='entered-in-error';
       proceduresrc.statusCode as statusc where (code='nullified') -> procedure.status ='unknown';
-
-      proceduresrc.effectiveTime as efft -> procedure.performed = create('Period') as period then{
-        efft.low as l -> period.start = (l.value) "val";
-        efft.high as h -> period.end = (h.value) "val2";
-      }"efft";
-
+      proceduresrc.effectiveTime as efft -> procedure.performed = create('Period') as period then IVLTSPeriod(efft,period);
       proceduresrc.entryRelationship as entriRel ->  bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('Observation') as observation,  observation.id = uuid() as uuid1,  e1.fullUrl = append('https://example/Observation/', uuid1), request.url = 'Observation', procedure.reasonReference  = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %observation.id) then{
         entriRel->observation.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";
         entriRel->observation.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference"; 
@@ -441,7 +530,7 @@ group ClinicalDocumentSectionProcedureEseguiteRicovero(source cda : ClinicalDocu
           obs where observation.statusCode.exists().not() then {
             obs->observation.status ='final'"status";
             }"statuscode";           
-        }"Observation value";
+        }"ObservationValue";
       }"Observation"; 
     }"Procedure";
   }"Entry";
@@ -450,19 +539,38 @@ group ClinicalDocumentSectionProcedureEseguiteRicovero(source cda : ClinicalDocu
 group ClinicalDocumentSectionAllergie(source cda : ClinicalDocument, source src : Section, target patient : Patient, target tgt, target bundle : Bundle, target enc : Encounter){
   src.title as t -> tgt.title = (t.dataString);
   src.code -> tgt.code;
-  src.text as cdaText -> tgt.text as fhirText then {
-    cdaText -> fhirText.status = 'generated' "narrativeStatus";
-    cdaText as t -> fhirText.div = t "narrativeText";
-  } "cdaText";
   
+  src where src.entry.exists() then{
+    src.text as cdaText -> tgt.text as fhirText then {
+      cdaText -> fhirText.status = 'generated' "narrativeStatus";
+      cdaText as t -> fhirText.div = t "narrativeText";
+    } "cdaText";  
+  }"exists";
+
+  src where src.entry.exists().not() then {
+    src.text as cdaText -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('AllergyIntolerance') as allergy,  allergy.id = uuid() as uuid1,  e1.fullUrl = append('https://example/AllergyIntolerance/', uuid1), request.url = 'AllergyIntolerance', tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/AllergyIntolerance/' + %allergy.id) then {
+      src -> allergy.patient=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";
+      src -> allergy.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference";
+      src -> allergy.clinicalStatus = create('CodeableConcept') as status then {
+        src -> status.text = 'string' "text";
+        src -> status.coding = create('Coding') as coding then{
+          src -> coding.code = 'active'"active";
+          src -> coding.system ='http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical'"system";
+        }"coding";
+      }"allergy";
+        src.code -> allergy.code;
+        cdaText -> allergy.note as note then{
+          cdaText as t ->note.text =t "reference";
+        }"reference";
+    }"cdaText";
+  }"where";  
+
+
   src.entry as entry1 -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('AllergyIntolerance') as allergy,  allergy.id = uuid() as uuid1,  e1.fullUrl = append('https://example/AllergyIntolerance/', uuid1), request.url = 'AllergyIntolerance', tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/AllergyIntolerance/' + %allergy.id) then {
     src -> allergy.patient=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";
     src -> allergy.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference";
     entry1.act as actallint then {
-  actallint.effectiveTime as eff -> allergy.onset = create('Period') as per then{
-    eff.low as l -> per.start = (l.value) "val";
-    eff.high as h -> per.end = (h.value) "val2";
-  }"eff";
+  actallint.effectiveTime as eff -> allergy.onset = create('Period') as per then IVLTSPeriod(eff,per);
   actallint.entryRelationship as entryact then {
     entryact.observation as entryobs then {
       entryobs.value as code then{
@@ -478,7 +586,7 @@ group ClinicalDocumentSectionAllergie(source cda : ClinicalDocument, source src 
            entryobs.entryRelationship as entryobs1 where (typeCode='MFST') then {
            entryobs1.observation as entobs then {
              entobs.effectiveTime as eff  then{
-                    eff.low as l -> reaction.onset =(l.value);
+            eff.low as l -> reaction.onset = create('dateTime') as start then TSDateTime(l,start) "val";
             }"eff";
             entobs.value->reaction.manifestation "manifest";
                      }"observ";
@@ -504,14 +612,12 @@ group ClinicalDocumentSectionAllergie(source cda : ClinicalDocument, source src 
        entryobs.entryRelationship as entryobs3 then {
         entryobs3.observation as entobs then {
           entobs.code as code where (code='33999-4') then {
-           // entobs.value->allergy.clinicalStatus "cstatus";
            entobs -> allergy.clinicalStatus = create('CodeableConcept') as status then {
            entobs  -> status.coding = create('Coding') as coding then{
             entobs.value as value then{
                 value.code  where (value.code = 'LA16666-2')-> coding.code = 'active'"active";
                 value.code  where (value.code = 'LA18632-2')-> coding.code = 'inactive'"active";
                 value.codeSystem as system -> coding.system ='http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical'"system";
-               // value->coding.version='ConditionClinicalStatusCodes 4.0.1'"version";
                 value.displayName as display -> coding.display = cast(display, 'string');
                  }"value1";
                }"coding";
@@ -539,10 +645,27 @@ group ClinicalDocumentSectionAllergie(source cda : ClinicalDocument, source src 
 group ClinicalDocumentSectionDiagnosiDimissione(source cda : ClinicalDocument, source src : Section, target patient : Patient, target tgt, target bundle : Bundle, target enc : Encounter){
   src.title as t -> tgt.title = (t.dataString);
   src.code -> tgt.code;
-  src.text as cdaText -> tgt.text as fhirText then {
-    cdaText -> fhirText.status = 'generated' "narrativeStatus";
-    cdaText as t -> fhirText.div = t "narrativeText";
-  } "cdaText";
+  src where src.entry.exists() then{
+    src.text as cdaText -> tgt.text as fhirText then {
+      cdaText -> fhirText.status = 'generated' "narrativeStatus";
+      cdaText as t -> fhirText.div = t "narrativeText";
+    } "cdaText";  
+  }"exists";
+
+  src where src.entry.exists().not() then {
+    src.text as cdaText -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('Observation') as observation,  observation.id = uuid() as uuid1,  e1.fullUrl = append('https://example/Observation/', uuid1), request.url = 'Observation' , tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %observation.id) then {
+      src -> observation.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";
+      src -> observation.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference"; 
+          src.code -> observation.code;
+          src where observation.statusCode.exists().not() then {
+              src->observation.status ='final'"status";
+              }"statuscode";
+            cdaText -> observation.note as note then{
+            cdaText as t ->note.text =t "reference";
+          }"reference";
+        }"cdaText";
+      }"where";
+
   src.entry as entry1 -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('Observation') as observation,  observation.id = uuid() as uuid1,  e1.fullUrl = append('https://example/Observation/', uuid1), request.url = 'Observation' , tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %observation.id) then {
     entry1.observation as obs then Observation(obs, patient ,enc ,observation, bundle) "act";
   }"entry";
@@ -569,10 +692,33 @@ group ClinicalDocumentSectionIstruzioniFollowUp(source cda : ClinicalDocument, s
 group ClinicalDocumentSectionTerapiaFarmacologicaDuranteRicovero(source cda : ClinicalDocument, source src : Section, target patient : Patient, target tgt, target bundle : Bundle, target enc : Encounter){
   src.title as t -> tgt.title = (t.dataString);
   src.code -> tgt.code;
-  src.text as cdaText -> tgt.text as fhirText then {
-    cdaText -> fhirText.status = 'generated' "narrativeStatus";
-    cdaText as t -> fhirText.div = t "narrativeText";
-  } "cdaText";
+  src where src.entry.exists() then{
+    src.text as cdaText -> tgt.text as fhirText then {
+      cdaText -> fhirText.status = 'generated' "narrativeStatus";
+      cdaText as t -> fhirText.div = t "narrativeText";
+    } "cdaText";  
+  }"exists";
+
+  src where src.entry.exists().not() then {
+    src.text as cdaText -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('MedicationAdministration') as medicationAdm,  medicationAdm.id = uuid() as uuid1,  e1.fullUrl = append('https://example/MedicationAdministration/', uuid1), request.url = 'MedicationAdministration', tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/MedicationAdministration/' + %medicationAdm.id) then {
+      cdaText->medicationAdm.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";     
+      cdaText->medicationAdm.context=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference";
+      cdaText->medicationAdm.medication = create('CodeableConcept') as codecon then{
+        cdaText -> codecon.text = 'string' "text";
+      }"code";
+      src ->medicationAdm.effective = create('Period') as period then{
+        src->period.start=(start.now())"low";
+        src->period.end=(end.now())"high";
+        }"Period";
+        src where sub.statusCode.exists().not() then {
+          src->medicationAdm.status ='completed'"status";
+        }"statuscode";
+        cdaText -> medicationAdm.note as note then{
+        cdaText as t ->note.text =t "reference";
+      }"reference";
+    }"cdaText";
+  }"where";  
+
   src.entry as entry1 -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('MedicationAdministration') as medicationAdm,  medicationAdm.id = uuid() as uuid1,  e1.fullUrl = append('https://example/MedicationAdministration/', uuid1), request.url = 'MedicationAdministration', tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/MedicationAdministration/' + %medicationAdm.id) then {
     entry1->medicationAdm.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";     
     entry1->medicationAdm.context=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference";
@@ -698,9 +844,9 @@ group ClinicalDocumentSectionTerapiaFarmacologicaDuranteRicovero(source cda : Cl
                                 value -> denominator.value = 1 "valueD";
                             } "denominator";
                         }"amount";
-                  }"quantità";
+                  }"quantita";
               }"obs";
-          }"entry Rr";
+          }"entryRr";
 
         }"medication";
           sa.entryRelationship as entryRelationship then{
@@ -710,7 +856,7 @@ group ClinicalDocumentSectionTerapiaFarmacologicaDuranteRicovero(source cda : Cl
                 sup.quantity as q -> quantity.value = (q.value);
               }"quantity";              
             }"sub";           
-          }"entry R";
+          }"entryR";
       
       sa.participant as participant then {
         participant.time as t -> medicationRq.authoredOn = (t.value);     
@@ -810,7 +956,7 @@ group ClinicalDocumentSottoSectionMS(source src : Section,  target tgt, target b
 
 
 group Observation (source obs : Observation, target patient : Patient, target encounter : Encounter, target ob : Observation, target bundle : Bundle) {
-    
+
   obs->ob.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";     
   obs->ob.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "reference";  
   obs.code -> ob.code;
@@ -822,6 +968,11 @@ group Observation (source obs : Observation, target patient : Patient, target en
   obs->ob.status ='final'"status";
   }"statuscode";
   obs.effectiveTime as effectiveTime -> ob.effective = create('dateTime') as value then TSDateTime(effectiveTime, value) "value2";
+
+  obs where effectiveTime.low.exists() or effectiveTime.high.exists() then {
+  obs.effectiveTime as eff -> ob.effective = create('Period') as period then IVLTSPeriod(eff,period) "value3";
+  }"where";
+
   obs.value:INT as int->ob.value=(int.value) "value";
   obs.value:BL as boolean ->ob.value=(boolean.value)"boolean";
   obs.value:CD as val then{
@@ -879,13 +1030,6 @@ group Observation (source obs : Observation, target patient : Patient, target en
   obs.value:ST as value->ob.value =create('string'),ob.value= (value.dataString) "value";
   obs.interpretationCode -> ob.interpretation;
     obs.methodCode -> ob.method;
-
-    
-    obs.effectiveTime as eff -> ob.effective = create('Period') as per then{
-      eff.low as l -> per.start = (l.value) "val";
-      eff.high as h -> per.end = (h.value) "val2";
-    }"eff";
-    
     obs.referenceRange as refRange -> ob.referenceRange = create('BackboneElement') as ref then {
       refRange.observationRange as obsRange -> ref.low = create('SimpleQuantity') as Low  then {
           obsRange.value: IVL_PQ as v  then {
@@ -893,7 +1037,7 @@ group Observation (source obs : Observation, target patient : Patient, target en
               l1.value as decValue-> Low.value = decValue;
               l1.unit as Unit-> Low.unit = Unit;
             }"decValue";          
-          }"IVL_PQ";                      
+          }"IVLPQ";                      
       }"obsRange";              
     }"refRange";  
 }
@@ -911,8 +1055,10 @@ group ObservationConsulenza (source obs : Observation, target patient : Patient,
   obs where obs.statusCode.exists().not() then {
     obs->ob.status ='final'"status";
     }"statuscode";
-  obs.effectiveTime as effectiveTime -> ob.effective = create('dateTime') as value then TSDateTime(effectiveTime, value) "value2";
-
+  obs.effectiveTime as effectiveTime -> ob.effective = create('dateTime') as value then TSDateTime(effectiveTime, value) "value2c";
+  obs where effectiveTime.low.exists() or effectiveTime.high.exists() then {
+  obs.effectiveTime as eff -> ob.effective = create('Period') as period then IVLTSPeriod(eff,period) "value3c";
+   }"where";
   obs.value:INT as int->ob.value=(int.value) "value";
   obs.value:BL as boolean ->ob.value=(boolean.value)"boolean";
   obs.value:CE as val then{
@@ -978,13 +1124,6 @@ group ObservationConsulenza (source obs : Observation, target patient : Patient,
     obs->ob.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "reference";
     obs.interpretationCode -> ob.interpretation;
     obs.methodCode -> ob.method;
-
-    
-    obs.effectiveTime as eff -> ob.effective = create('Period') as per then{
-      eff.low as l -> per.start = (l.value) "val";
-      eff.high as h -> per.end = (h.value) "val2";
-    }"eff";
-    
     obs.referenceRange as refRange -> ob.referenceRange = create('BackboneElement') as ref then {
       refRange.observationRange as obsRange -> ref.low = create('SimpleQuantity') as Low  then {
           obsRange.value: IVL_PQ as v  then {
@@ -992,7 +1131,7 @@ group ObservationConsulenza (source obs : Observation, target patient : Patient,
               l1.value as decValue-> Low.value = decValue;
               l1.unit as Unit-> Low.unit = Unit;
             }"decValue";          
-          }"IVL_PQ";                      
+          }"IVLPQ";                      
       }"obsRange";              
     }"refRange";  
 
@@ -1068,8 +1207,10 @@ group ObservationEsamiDuranteRicovero (source obs : Observation, target patient 
   obs where obs.statusCode.exists().not() then {
     obs->ob.status ='final'"status";
     }"statuscode";
-  obs.effectiveTime as effectiveTime -> ob.effective = create('dateTime') as value then TSDateTime(effectiveTime, value) "value2";
-
+  obs.effectiveTime as effectiveTime -> ob.effective = create('dateTime') as value then TSDateTime(effectiveTime, value) "value2r";
+  obs where effectiveTime.low.exists() or effectiveTime.high.exists() then {
+  obs.effectiveTime as eff -> ob.effective = create('Period') as period then IVLTSPeriod(eff,period) "value3r";
+  }"where";
   obs.value:INT as int->ob.value=(int.value) "value";
   obs.value:BL as boolean ->ob.value=(boolean.value)"boolean";
   obs.value:CE as val then{
@@ -1135,13 +1276,7 @@ group ObservationEsamiDuranteRicovero (source obs : Observation, target patient 
     obs->ob.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "reference";
     obs.interpretationCode -> ob.interpretation;
     obs.methodCode -> ob.method;
-
-    
-    obs.effectiveTime as eff -> ob.effective = create('Period') as per then{
-      eff.low as l -> per.start = (l.value) "val";
-      eff.high as h -> per.end = (h.value) "val2";
-    }"eff";
-    
+    obs.effectiveTime as eff -> ob.effective = create('Period') as per then IVLTSPeriod(eff,per);
     obs.referenceRange as refRange -> ob.referenceRange = create('BackboneElement') as ref then {
       refRange.observationRange as obsRange -> ref.low = create('SimpleQuantity') as Low  then {
           obsRange.value: IVL_PQ as v  then {
@@ -1149,7 +1284,7 @@ group ObservationEsamiDuranteRicovero (source obs : Observation, target patient 
               l1.value as decValue-> Low.value = decValue;
               l1.unit as Unit-> Low.unit = Unit;
             }"decValue";          
-          }"IVL_PQ";                      
+          }"IVLPQ";                      
       }"obsRange";              
     }"refRange";  
 
@@ -1228,7 +1363,10 @@ group Act (source cda: Act, target pat : Patient, target ac : DiagnosticReport, 
   cda.statusCode as statusc where (code='active') -> ob.status ='registered';
   cda.statusCode as statusc where (code='aborted') -> ob.status ='cancelled';
   cda.statusCode as statusc where (code='suspended') -> ob.status ='partial';
-  cda.effectiveTime as effectiveTime -> ac.effective = create('dateTime') as value then TSDateTime(effectiveTime, value) "value3";
+  cda.effectiveTime as effectiveTime -> ac.effective = create('dateTime') as value then TSDateTime(effectiveTime, value) "value2a";
+  obs where effectiveTime.low.exists() or effectiveTime.high.exists() then {
+  cda.effectiveTime as eff -> ac.effective = create('Period') as period then IVLTSPeriod(eff,period) "value3a";
+   }"where";
   cda -> ac.subject=create('Reference') as reference,  reference.reference = ('https://example/' + %pat.id) "reference";
   cda -> ac.encounter=create('Reference') as reference,  reference.reference = ('https://example/' + %enc.id) "reference";
   cda.participant  as part->  enc.participant as participant then{
@@ -1270,10 +1408,27 @@ group Act (source cda: Act, target pat : Patient, target ac : DiagnosticReport, 
 group ClinicalDocumentSectionTerapiaDimissione (source cda : ClinicalDocument, source src : Section, target patient : Patient, target tgt, target bundle : Bundle, target enc : Encounter){
   src.title as t -> tgt.title = (t.dataString);
   src.code -> tgt.code;
-  src.text as cdaText -> tgt.text as fhirText then {
-    cdaText -> fhirText.status = 'generated' "narrativeStatus";
-    cdaText as t -> fhirText.div = t "narrativeText";
-       } "cdaText";
+  src where src.entry.exists() then {
+    src.text as cdaText -> tgt.text as fhirText then {
+      cdaText -> fhirText.status = 'generated' "narrativeStatus";
+      cdaText as t -> fhirText.div = t "narrativeText";
+    } "cdaText";  
+  }"exist";
+
+  src where src.entry.exists().not() then {
+    src.text as cdaText -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('MedicationRequest') as medicationRq,  medicationRq.id = uuid() as uuid1,  e1.fullUrl = append('https://example/MedicationRequest/', uuid1), request.url = 'MedicationRequest', tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/MedicationRequest/' + %medicationRq.id) then {
+      src-> medicationRq.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";     
+      src-> medicationRq.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference";
+      src -> medicationRq.status='active'"status";
+      src -> medicationRq.intent='order'"intent";
+      cdaText->medicationRq.medication = create('CodeableConcept') as codecon then{
+        cdaText -> codecon.text = 'string' "text";
+      }"code";
+      cdaText -> medicationRq.note as note then{
+        cdaText as t ->note.text =t "reference";
+      }"reference";
+    }"cdaText";
+  }"where";
 
   src.entry as entry1 -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('MedicationRequest') as medicationRq,  medicationRq.id = uuid() as uuid1,  e1.fullUrl = append('https://example/MedicationRequest/', uuid1), request.url = 'MedicationRequest', tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/MedicationRequest/' + %medicationRq.id) then {
         src-> medicationRq.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";     
@@ -1316,9 +1471,9 @@ group ClinicalDocumentSectionTerapiaDimissione (source cda : ClinicalDocument, s
                                     value -> denominator.value = 1 "valueD";
                                 } "denominator";
                             }"amount";
-                       }"quantità";
+                       }"quantita";
                    }"obs";
-              }"entry R";
+              }"entryR";
       
               substract.entryRelationship as entryRelationship then{
                 entryRelationship.supply as sup -> medicationRq.dispenseRequest as dispreq then {              
@@ -1337,10 +1492,7 @@ group ClinicalDocumentSectionTerapiaDimissione (source cda : ClinicalDocument, s
           substract.effectiveTime: IVL_TS as eff -> medicationRq.dosageInstruction = create('Dosage') as dosage then{
             eff -> dosage.timing = create('Timing') as timing then {
               eff -> timing.repeat as rep then {
-                eff -> rep.bounds = create('Period') as period then{
-                  eff.low as lo1 -> period.start = (lo1 .value);
-                  eff.high as hi1 -> period.end = (hi1.value);  
-                }"period";
+                eff -> rep.bounds = create('Period') as period then IVLTSPeriod(eff,period)"period";
               }"rep";
             }"timing";
           }"period";

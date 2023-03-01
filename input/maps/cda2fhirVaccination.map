@@ -56,13 +56,13 @@ group ClinicalDocumentToBundle(source cda : ClinicalDocument, target patient : P
   cda -> bundle.id = uuid() "id";
   cda.id -> bundle.identifier "identifier";
   cda -> bundle.type = 'transaction' "type";
-  cda.effectiveTime -> bundle.timestamp;
+  cda -> bundle.timestamp=(timestamp.now()) "date";
   cda then ClinicalDocumentComposition(cda, composition, patient, encounter, bundle, DocumentReference) "composition";  
   cda.component as component then {
     component.structuredBody as body then {
       body.component as component  then {       
 	     component.section as srcSection then {
-        srcSection -> composition.section as tgtSection  then ClinicalDocumentSection(cda, srcSection, patient, tgtSection, bundle,encounter) "Terapia Farmacologica alla dimissione";
+        srcSection -> composition.section as tgtSection  then ClinicalDocumentSection(cda, srcSection, patient, tgtSection, bundle,encounter) "TerapiaFarmacologicaAllaDimissione";
        };
       };
     } "body";
@@ -90,7 +90,9 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
         substance.statusCode  as statusc where (code='aborted') -> immunization.status ='final';  
         substance.statusCode  as statusc where (code='suspended') -> immunization.status ='enterer-in-error';  
         substance.statusCode  as statusc where (code='cancelled') -> immunization.status ='not-done';          
-        substance.effectiveTime as time -> immunization.occurrence = (time.value) "efftime";
+        substance.effectiveTime as eff where (value.exists()) -> immunization.occurrence = create('dateTime') as value then TSDateTime(eff, value) "value1";
+        substance.effectiveTime as eff where (low.exists()) -> immunization.occurrence = create('Period') as value then IVLTSPeriod(eff, value) "valuePeriod";
+
         substance.routeCode -> immunization.route "route";
 
         substance.approachSiteCode -> immunization.site "site";
@@ -162,7 +164,7 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
               entrirel4.observation as obs  then {          
                 obs.code where( code = '75323-6') then {
                 obs.value -> prot.targetDisease;
-                }"code control";
+                }"codeControl";
               }"entrirel2";
           entrirel4.observation as obsdosenumber  then {          
              obsdosenumber.code where( code = '30973-2') then {
@@ -172,7 +174,7 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
                 //  obsdosenumber.value as v then {
                 //    v.value as int -> prot.doseNumber  = cast(int,'positiveInt') "val"; 
                 //  }"value"; 
-            }"code control";
+            }"codeControl";
           }"entrirel2";
         }"entrirel4";
       }"protocolAp";
@@ -185,7 +187,7 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
                   h.value as date-> immunization.expirationDate= truncate(date, 10);
              }"da";
               }"value";
-            }"code control";
+            }"codeControl";
           }"obs";
         }"entrirel2";
 
@@ -194,7 +196,7 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
           entrirel3.observation as obs then{          
             obs.code where( code = '95715-9') -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('Observation') as observation,  observation.id = uuid() as uuid1,  e1.fullUrl = append('https://example/Observation/', uuid1), request.url = 'Observation' , immunization.reasonReference  = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %observation.id) then {
               obs then Observation(entrirel3,patient,tgt,bundle,enc,observation) "observation";
-            }"code control";
+            }"codeControl";
           }"obs";
         }"entrirel2";
 
@@ -202,7 +204,7 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
           entrirel4.observation as obs then{          
             obs.code where( code = '59785-6') -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('Observation') as observation,  observation.id = uuid() as uuid1,  e1.fullUrl = append('https://example/Observation/', uuid1), request.url = 'Observation' , immunization.reasonReference  = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %observation.id) then {
               obs then Observation1(entrirel4,patient,tgt,bundle,enc,observation) "observation";
-            }"code control";
+            }"codeControl";
           }"obs";
         }"entrirel2";
 
@@ -210,12 +212,12 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
           entrirel4.observation as obs then{          
             obs.code where( code = '31044-1') -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('Observation') as observation,  observation.id = uuid() as uuid1,  e1.fullUrl = append('https://example/Observation/', uuid1), request.url = 'Observation' , immunization.reasonReference  = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %observation.id) then {
               obs then Observation1(entrirel4,patient,tgt,bundle,enc,observation) "observation";
-            }"code control";
+            }"codeControl";
           }"obs";
         }"entrirel2";
 
 
-      }"Controllo+Immunization";
+      }"ControlloImmunization";
 
       substance.templateId where(root = '2.16.840.1.113883.2.9.10.1.11.4.2') -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',   e1.resource = create('Immunization') as immunization,  immunization.id = uuid() as uuid1,  e1.fullUrl = append('https://example/Immunization/', uuid1), request.url = 'Immunization' ,tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/Immunization/' + %immunization.id) then{
         substance -> immunization.patient  = create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "patientRef"; 
@@ -226,7 +228,9 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
         substance.statusCode  as statusc where (code='aborted') -> immunization.status ='final';  
         substance.statusCode  as statusc where (code='suspended') -> immunization.status ='enterer-in-error';  
         substance.statusCode  as statusc where (code='cancelled') -> immunization.status ='not-done';          
-        substance.effectiveTime as time -> immunization.occurrence = (time.value);
+        
+        substance.effectiveTime as eff where (value.exists()) -> immunization.occurrence = create('dateTime') as value then TSDateTime(eff, value) "value1";
+        substance.effectiveTime as eff where (low.exists()) -> immunization.occurrence = create('Period') as value then IVLTSPeriod(eff, value) "valuePeriod";
 
         substance.consumable as cons then{
           cons.manufacturedProduct as manufact then{
@@ -266,7 +270,7 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
                         
                     obs.value -> prot.targetDisease;
                     
-                  }"code control";
+                  }"codeControl";
                 }"entrirel2";
             entrirel4.observation as obsdosenumber  then {          
                obsdosenumber.code where( code = '30973-2') then {
@@ -276,7 +280,7 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
                 //   obsdosenumber.value as v then {
                 //   v.value as int -> prot.doseNumber  = cast(int,'positiveInt') "val"; 
                 // }"value"; 
-              }"code control";
+              }"codeControl";
             }"entrirel2";
           }"entrirel4";
         }"protocolAp";
@@ -285,14 +289,14 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
           entrirel1.observation as obs then{          
             obs.code where( code = '85714-4') then {
               obs.code -> immunization.statusReason;
-            }"code control";
+            }"codeControl";
             obs.code where( code = '59784-9') then {
               obs.value as val then{
                 val.originalText as original -> immunization.statusReason = create('CodeableConcept') as cod then{
                   original.reference as reff -> cod.text = (reff.value);
                 }"cod";
               }"val";
-            }"code control";
+            }"codeControl";
           }"obs";
         }"entrirel1";
 
@@ -353,7 +357,10 @@ group Observation1(source entrirel4: entryRelationship, target patient : Patient
     observation.statusCode as statusc where (code='suspended') -> obs.status ='partial';
     observation-> obs.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";
     observation-> obs.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference";  
+
+    observation.effectiveTime as eff where (value.exists()) -> obs.effective = create('dateTime') as value then TSDateTime(eff, value) "value1";
     observation.effectiveTime as eff -> obs.effective = create('Period') as period then IVLTSPeriod(eff,period) "period";
+    
     observation -> obs.value = create('CodeableConcept') as concept then{      
       observation.value -> concept.coding = create('Coding') as coding then{
         observation.value as v -> coding.code = (v.code);

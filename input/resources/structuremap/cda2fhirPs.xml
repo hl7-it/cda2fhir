@@ -8,7 +8,7 @@
 
 conceptmap &quot;OBSstatus&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-statusCode&quot;
-  prefix t = &quot;http://hl7.org/fhir/ValueSet/diagnostic-report-status&quot;
+  prefix t = &quot;http://hl7.org/fhir/observation-status&quot;
 
   s:completed == t:final
   s:active == t:registered
@@ -55,7 +55,7 @@ conceptmap &quot;cm-v3-administrative-gender&quot; {
 
 conceptmap &quot;AllergyTypeMap&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-type&quot;
-  prefix t = &quot;http://hl7.org/fhir/ValueSet/allergy-intolerance-type&quot;
+  prefix t = &quot;http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical&quot;
 
   s:OINT == t:intolerance
   s:ALG == t:allergy
@@ -73,7 +73,7 @@ conceptmap &quot;AllergyTypeMap&quot; {
 
 conceptmap &quot;AllergyCategoryMap&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-type&quot;
-  prefix t = &quot;http://hl7.org/fhir/ValueSet/allergy-intolerance-type&quot;
+  prefix t = &quot;http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical&quot;
 
   s:DALG == t:medication
   s:EALG == t:enviroment
@@ -131,7 +131,7 @@ imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes&quot;
 imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader&quot;
 
 group CdaToBundle(source cda : ClinicalDocument, target bundle : Bundle) {
-  cda -&gt;  bundle.entry as e,  e.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e.resource = create(&apos;Composition&apos;) as composition,  composition.id = uuid() as uuid1,  e.fullUrl = append(&apos;https://example/Composition/&apos;, uuid1),  request.url = &apos;Composition&apos;,  bundle.entry as e2,  e2.request = create('BackboneElement') as requestPAT,  requestPAT.method = 'PUT',  e2.resource = create('Patient') as patient,  patient.id = uuid() as uuid2,  e2.fullUrl = append('https://example/Patient/', uuid2),  bundle.entry as e3,  e3.request = create('BackboneElement') as request,  request.method = 'POST',  e3.resource = create('Encounter') as encounter,  encounter.id = uuid() as uuid3,  e3.fullUrl = append('https://example/Encounter/', uuid3),  request.url = 'Encounter',  bundle.entry as e4,  e4.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e4.resource = create(&apos;DocumentReference&apos;) as DocumentReference,  DocumentReference.id = uuid() as uuid4,  e4.fullUrl = append(&apos;https://example/DocumentReference/&apos;, uuid4),  request.url = &apos;DocumentReference&apos; then {
+  cda -&gt;  bundle.entry as e,  e.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e.resource = create(&apos;Composition&apos;) as composition,  composition.id = uuid() as uuid1,  e.fullUrl = append(&apos;https://example/Composition/&apos;, uuid1),  request.url = 'Composition',  bundle.entry as e2,  e2.request = create('BackboneElement') as requestPAT,  requestPAT.method = 'PUT',  e2.resource = create('Patient') as patient,  patient.id = uuid() as uuid2,  e2.fullUrl = append('https://example/Patient/', uuid2),  bundle.entry as e3,  e3.request = create('BackboneElement') as request,  request.method = 'POST',  e3.resource = create('Encounter') as encounter,  encounter.id = uuid() as uuid3,  e3.fullUrl = append('https://example/Encounter/', uuid3),  request.url = 'Encounter&apos;,  bundle.entry as e4,  e4.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e4.resource = create(&apos;DocumentReference&apos;) as DocumentReference,  DocumentReference.id = uuid() as uuid4,  e4.fullUrl = append(&apos;https://example/DocumentReference/&apos;, uuid4),  request.url = &apos;DocumentReference&apos; then {
     cda then ClinicalDocumentToBundle(cda, patient, composition, encounter, bundle, DocumentReference) &quot;cdatobundle&quot;;
     cda.recordTarget as recordTarget then {
       recordTarget.patientRole as patient then {
@@ -156,7 +156,8 @@ group ClinicalDocumentToBundle(source cda : ClinicalDocument, target patient : P
   cda -&gt; bundle.id = uuid() &quot;id&quot;;
   cda.id -&gt; bundle.identifier &quot;identifier&quot;;
   cda -&gt; bundle.type = &apos;transaction&apos; &quot;type&quot;;
-  cda.effectiveTime -&gt; bundle.timestamp;
+  // cda.effectiveTime -&gt; bundle.timestamp;
+  cda -&gt; bundle.timestamp = (timestamp.now()) &quot;date&quot;;
   cda then ClinicalDocumentComposition(cda, composition, patient, encounter, bundle, DocumentReference) &quot;composition&quot;;
   cda.component as component then {
     component.structuredBody as body then {
@@ -177,7 +178,7 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
       cdaText -&gt; fhirText.status = &apos;generated&apos; &quot;narrativeStatus&quot;;
       cdaText as t -&gt; fhirText.div = t &quot;narrativeText&quot;;
     } &quot;cdaText&quot;;
-    // nuova section Indagini diagn
+    // sezioni che sono strutturate
     src.code where (code = &apos;30954-2&apos;) then {
       entry.organizer as organizer -&gt;  bundle.entry as e0,  e0.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e0.resource = create(&apos;DiagnosticReport&apos;) as dia,  dia.id = uuid() as uuid0,  e0.fullUrl = append(&apos;https://example/DiagnosticReport/&apos;, uuid0),  request.url = &apos;DiagnosticReport&apos;,  tgt.entry = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/DiagnosticReport/&apos; + %dia.id) then DiagnosticReportFunction(organizer, patient, enc, dia, bundle) &quot;diagnostic&quot;;
     } &quot;entryObs&quot;;
@@ -190,12 +191,12 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
     } &quot;organizer&quot;;
     src.code where code = &apos;11450-4&apos; then {
       entry.act as act -&gt;  bundle.entry as e3,  e3.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e3.resource = create(&apos;Condition&apos;) as condition,  condition.id = uuid() as uuid3,  e3.fullUrl = append(&apos;https://example/Condition/&apos;, uuid3),  request.url = &apos;Condition&apos;,  tgt.entry = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Condition/&apos; + %condition.id) then ConditionFunction(act, condition, patient, enc, bundle) &quot;condition&quot;;
-    } &quot;lista dei problemi&quot;;
+    } &quot;listaDeiProblemi&quot;;
     src.code where (code = &apos;48765-2&apos;) then {
       entry.act as act -&gt;  bundle.entry as e5,  e5.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e5.resource = create(&apos;AllergyIntolerance&apos;) as allergy,  allergy.id = uuid() as uuid5,  e5.fullUrl = append(&apos;https://example/AllergyIntolerance/&apos;, uuid5),  request.url = &apos;AllergyIntolerance&apos;,  tgt.entry = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/AllergyIntolerance/&apos; + %allergy.id) then allergyFunction(act, allergy, patient, enc) &quot;allergy&quot;;
     } &quot;entryAct&quot;;
     src.code where code = &apos;10160-0&apos; then {
-      entry.substanceAdministration as subAdmin -&gt;  bundle.entry as e6,  e6.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e6.resource = create(&apos;MedicationStatement&apos;) as medicationstatement,  medicationstatement.id = uuid() as uuid6,  e6.fullUrl = append(&apos;https://example/MedicationStatement/&apos;, uuid6),  request.url = &apos;MedicationStatement&apos;,  tgt.entry = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/MedicationStatement/&apos; + %medicationstatement.id) then MedicationStatement(subAdmin, medicationstatement, patient, enc, bundle) &quot;Terapia farmacologica&quot;;
+      entry.substanceAdministration as subAdmin -&gt;  bundle.entry as e6,  e6.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e6.resource = create(&apos;MedicationStatement&apos;) as medicationstatement,  medicationstatement.id = uuid() as uuid6,  e6.fullUrl = append(&apos;https://example/MedicationStatement/&apos;, uuid6),  request.url = &apos;MedicationStatement&apos;,  tgt.entry = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/MedicationStatement/&apos; + %medicationstatement.id) then MedicationStatement(subAdmin, medicationstatement, patient, enc, bundle) &quot;TerapiaFarmacologica&quot;;
     } &quot;terapia&quot;;
     src.code where code = &apos;11369-6&apos; then {
       entry.substanceAdministration as subVACC -&gt;  bundle.entry as e7,  e7.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e7.resource = create(&apos;Immunization&apos;) as immunization,  immunization.id = uuid() as uuid7,  e7.fullUrl = append(&apos;https://example/Immunization/&apos;, uuid7),  request.url = &apos;Immunization&apos;,  tgt.entry = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Immunization/&apos; + %immunization.id) then Immunization(subVACC, patient, enc, immunization, bundle) &quot;immunization&quot;;
@@ -208,41 +209,66 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
     } &quot;impianti&quot;;
     src.code where code = &apos;47519-4&apos; then {
       entry.procedure as procedure -&gt;  bundle.entry as e9,  e9.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e9.resource = create(&apos;Procedure&apos;) as procedure2,  procedure2.id = uuid() as uuid9,  e9.fullUrl = append(&apos;https://example/Procedure/&apos;, uuid9),  request.url = &apos;Procedure&apos;,  tgt.entry = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Procedure/&apos; + %procedure2.id) then Procedure(procedure, patient, enc, procedure2, bundle) &quot;tratt&quot;;
-    } &quot;trattamenti e procedure&quot;;
+    } &quot;trattamentiProcedure&quot;;
     src.code where code = &apos;46240-8&apos; then {
       // entry.encounter as encounter -&gt; enc then{
       entry.encounter as encounter -&gt;  bundle.entry as e9,  e9.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e9.resource = create(&apos;Encounter&apos;) as encounterF,  encounterF.id = uuid() as uuid9,  e9.fullUrl = append(&apos;https://example/Encounter/&apos;, uuid9),  request.url = &apos;Encounter&apos;,  tgt.entry = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Encounter/&apos; + %encounterF.id) then EncounterFunction(encounter, patient, enc, encounterF, bundle);
-    } &quot;visite e ricoveri&quot;;
+    } &quot;visiteRicoveri&quot;;
     src.code where code = &apos;57827-8&apos; then {
       entry.act as act -&gt;  bundle.entry as e13,  e13.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e13.resource = create(&apos;Coverage&apos;) as coverage,  coverage.id = uuid() as uuid13,  e13.fullUrl = append(&apos;https://example/Coverage/&apos;, uuid13),  request.url = &apos;Coverage&apos;,  tgt.entry = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Coverage/&apos; + %coverage.id) then Coverage(act, patient, enc, coverage, bundle) &quot;esen&quot;;
     } &quot;esenzioni&quot;;
     src.code where code = &apos;PSSIT99&apos; then {
-      entry.act as act -&gt;  bundle.entry as e14,  e14.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e14.resource = create(&apos;OrganizationAffiliation&apos;) as affiliation,  affiliation.id = uuid() as uuid14,  e14.fullUrl = append(&apos;https://example/OrganizationAffiliation/&apos;, uuid14),  request.url = &apos;OrganizationAffiliation&apos;,  tgt.entry = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/OrganizationAffiliation/&apos; + %affiliation.id) then OrganizationAffiliation(act, patient, enc, affiliation, bundle) &quot;Org affiliation&quot;;
-    } &quot;reti di patologia&quot;;
+      entry.act as act -&gt;  bundle.entry as e14,  e14.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e14.resource = create(&apos;OrganizationAffiliation&apos;) as affiliation,  affiliation.id = uuid() as uuid14,  e14.fullUrl = append(&apos;https://example/OrganizationAffiliation/&apos;, uuid14),  request.url = &apos;OrganizationAffiliation&apos;,  tgt.entry = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/OrganizationAffiliation/&apos; + %affiliation.id) then OrganizationAffiliation(act, patient, enc, affiliation, bundle) &quot;OrgAffiliation&quot;;
+    } &quot;retiPatologia&quot;;
+    src.code where code = &apos;18776-5&apos; then {
+      src -&gt;  bundle.entry as e11,  e11.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e11.resource = create(&apos;CarePlan&apos;) as careplan,  careplan.id = uuid() as uuid11,  e11.fullUrl = append(&apos;https://example/CarePlan/&apos;, uuid11),  request.url = &apos;CarePlan&apos;,  tgt.entry = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/CarePlan/&apos; + %careplan.id) then {
+        src.entry as entry then CarePlanFunction(entry, careplan, patient, enc, bundle) &quot;prestazioni&quot;;
+      } &quot;pianiCura&quot;;
+    } &quot;raccoglitore&quot;;
   };
-  src.code where code = &apos;18776-5&apos; then {
-    src -&gt;  bundle.entry as e11,  e11.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e11.resource = create(&apos;CarePlan&apos;) as careplan,  careplan.id = uuid() as uuid11,  e11.fullUrl = append(&apos;https://example/CarePlan/&apos;, uuid11),  request.url = &apos;CarePlan&apos;,  tgt.entry = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/CarePlan/&apos; + %careplan.id) then {
-      src.entry as entry then CarePlanFunction(entry, careplan, patient, enc, bundle) &quot;prestazioni&quot;;
-    } &quot;piani di cura&quot;;
-  } &quot;raccoglitore&quot;;
   src where src.entry.exists().not() then {
-    src.text as text -&gt;  bundle.entry as e13,  e13.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e13.resource = create(&apos;Observation&apos;) as obs1,  obs1.id = uuid() as uuid13,  e13.fullUrl = append(&apos;https://example/Observation/&apos;, uuid13),  request.url = &apos;Observation&apos;,  tgt.entry = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Observation/&apos; + %obs1.id) then {
-      src -&gt;  obs1.subject = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;reference&quot;;
-      src -&gt;  obs1.encounter = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Encounter/&apos; + %enc.id) &quot;reference&quot;;
-      src -&gt; obs1.status = &apos;preliminary&apos; &quot;obsst&quot;;
-      src.code -&gt; obs1.code &quot;obscde&quot;;
-      src -&gt; obs1.status = &apos;final&apos; &quot;statusS&quot;;
-      text -&gt; obs1.note as note then {
-        text as t -&gt; note.text = create(&apos;string&apos;) as textNote then EDstring(t, textNote) &quot;note&quot;;
-      } &quot;narrative&quot;;
-    } &quot;txtsec&quot;;
-  } &quot;narrative&quot;;
+    // Anmanesi Familiare narrativa
+    src.code where code = &apos;10157-6&apos; then {
+      src.text as text -&gt;  bundle.entry as e12,  e12.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e12.resource = create(&apos;FamilyMemberHistory&apos;) as familyMember,  familyMember.id = uuid() as uuid12,  e12.fullUrl = append(&apos;https://example/FamilyMemberHistory/&apos;, uuid12),  request.url = &apos;FamilyMemberHistory&apos;,  tgt.entry = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/FamilyMemberHistory/&apos; + %familyMember.id) then {
+        src -&gt;  familyMember.patient = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;reference&quot;;
+        src -&gt; familyMember.status = &apos;health-unknown&apos; &quot;statusS&quot;;
+        text -&gt; familyMember.note as note then {
+          text as t -&gt; note.text = t &quot;reference&quot;;
+        } &quot;reference&quot;;
+        text -&gt; familyMember.relationship = create(&apos;CodeableConcept&apos;) as relation then {
+          text as txt -&gt; relation.text = txt &quot;text&quot;;
+        } &quot;medication&quot;;
+      } &quot;family&quot;;
+    } &quot;familyraccoglitore&quot;;
+    // Piano di cura narrativa
+    src.code where code = &apos;18776-5&apos; then {
+      src.text as text -&gt;  bundle.entry as e11,  e11.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e11.resource = create(&apos;CarePlan&apos;) as careplan,  careplan.id = uuid() as uuid11,  e11.fullUrl = append(&apos;https://example/CarePlan/&apos;, uuid11),  request.url = &apos;CarePlan&apos;,  tgt.entry = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/CarePlan/&apos; + %careplan.id) then {
+        src -&gt;  careplan.subject = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;reference&quot;;
+        src -&gt;  careplan.encounter = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Encounter/&apos; + %enc.id) &quot;reference&quot;;
+        src -&gt; careplan.status = &apos;active&apos; &quot;status&quot;;
+        src -&gt; careplan.intent = &apos;order&apos; &quot;intent&quot;;
+        text -&gt; careplan.note as note then {
+          text as t -&gt; note.text = t &quot;reference&quot;;
+        } &quot;reference&quot;;
+      } &quot;pianiCura&quot;;
+    } &quot;raccoglitore&quot;;
+    // sezioni che sono narrative
+    src.code where (code = &apos;30954-2&apos;) or (code = &apos;29762-2&apos;) or (code = &apos;8716-3&apos;) or (code = &apos;47420-5&apos;) or (code = &apos;42348-3&apos;) then {
+      src.text as text -&gt;  bundle.entry as e13,  e13.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e13.resource = create(&apos;Observation&apos;) as obs1,  obs1.id = uuid() as uuid13,  e13.fullUrl = append(&apos;https://example/Observation/&apos;, uuid13),  request.url = &apos;Observation&apos;,  tgt.entry = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Observation/&apos; + %obs1.id) then {
+        src -&gt;  obs1.subject = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;reference&quot;;
+        src -&gt;  obs1.encounter = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Encounter/&apos; + %enc.id) &quot;reference&quot;;
+        src -&gt; obs1.status = &apos;preliminary&apos; &quot;obsst&quot;;
+        src.code -&gt; obs1.code &quot;obscde&quot;;
+        src -&gt; obs1.status = &apos;final&apos; &quot;statusS&quot;;
+        text -&gt; obs1.note as note then {
+          text as t -&gt; note.text = create(&apos;string&apos;) as textNote then EDstring(t, textNote) &quot;note&quot;;
+        } &quot;narrative&quot;;
+      } &quot;txtsec&quot;;
+    } &quot;narrative&quot;;
+  } &quot;code&quot;;
   src.component as component then {
     component.section as sec -&gt; tgt.section as tgtSection then ClinicalDocumentSection(cda, sec, patient, tgtSection, bundle, enc, dReport);
   };
-}
-
-group NarrativeSectionFunction(source section : section, source src : clinicalDocument, target tgt : section, target bundle : Bundle, target encounter : Encounter, target patient : Patient) {
 }
 
 group Procedure(source src : cdaElement, target patient : Patient, target encounter : Encounter, target tgt : Procedure, target bundle : Bundle) {
@@ -267,7 +293,7 @@ group Procedure(source src : cdaElement, target patient : Patient, target encoun
     } &quot;device&quot;;
     src.effectiveTime as effectiveTime where (value.exists()) -&gt; tgt.performed = create(&apos;dateTime&apos;) as value then TSDateTime(effectiveTime, value) &quot;value1&quot;;
     src.effectiveTime as effectiveTime where (low.exists()) -&gt; tgt.performed = create(&apos;Period&apos;) as value then IVLTSPeriod(effectiveTime, value) &quot;valuePeriod&quot;;
-  } &quot;presenza protesi/impianto&quot;;
+  } &quot;presenzaProtesiImpianto&quot;;
   src.templateId where root = &apos;2.16.840.1.113883.2.9.10.1.4.3.9.2&apos; then {
     src.code as code -&gt; tgt.note as note then {
       code.displayName as displayName -&gt; note.text = (displayName) &quot;text&quot;;
@@ -280,8 +306,8 @@ group Procedure(source src : cdaElement, target patient : Patient, target encoun
     src.effectiveTime as effectiveTime where (low.exists()) -&gt; tgt.performed = create(&apos;Period&apos;) as value then IVLTSPeriod(effectiveTime, value) &quot;valuePeriod&quot;;
     src.entryRelationship as entryR then {
       entryR.observation as observation -&gt;  bundle.entry as e3,  e3.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e3.resource = create(&apos;Observation&apos;) as obs1,  obs1.id = uuid() as uuid3,  e3.fullUrl = append(&apos;https://example/Observation/&apos;, uuid3),  request.url = &apos;Observation&apos;,  tgt.reasonReference = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Observation/&apos; + %obs1.id) then Observation(observation, patient, encounter, obs1, bundle);
-    } &quot;entryRel Procedure&quot;;
-  } &quot;procedure e trattamenti&quot;;
+    } &quot;entryRelProcedure&quot;;
+  } &quot;procedureTrattamenti&quot;;
 }
 
 group Observation(source cda, target patient : Patient, target encounter : Encounter, target ob : Observation, target bundle : Bundle) {
@@ -293,7 +319,7 @@ group Observation(source cda, target patient : Patient, target encounter : Encou
   // value datatype
   cda.value : ST as st -&gt;  ob.value = create(&apos;string&apos;),  ob.value = (st.dataString);
   cda.value : BL as boolean -&gt; ob.value = (boolean.value) &quot;boolean&quot;;
-  cda.value : INT as int -&gt; ob.value = (int.value) &quot;int val&quot;;
+  cda.value : INT as int -&gt; ob.value = (int.value) &quot;intval&quot;;
   cda.value : CE as val then {
     val -&gt; ob.value = create(&apos;CodeableConcept&apos;) as ce then {
       val.originalText as originalText then {
@@ -406,10 +432,10 @@ group Coverage(source src : act, target patient : Patient, target encounter : En
   src.statusCode as statusCode then {
     statusCode.code as s -&gt; tgt.status = translate(s, &apos;#FinancialStatus&apos;, &apos;code&apos;) &quot;status&quot;;
   } &quot;sc&quot;;
-  src where statusCode.exists().not() -&gt; tgt.status = &apos;active&apos; &quot;status Absent&quot;;
-  src.effectiveTime as effectiveTime -&gt; tgt.period as period then {
-    effectiveTime.low as l -&gt; period.start = (l.value);
-  } &quot;period&quot;;
+  src where statusCode.exists().not() -&gt; tgt.status = &apos;active&apos; &quot;statusAbsent&quot;;
+  // src.effectiveTime as effectiveTime -&gt; tgt.period as period then{
+  src.effectiveTime as effectiveTime where (value.exists()) -&gt; tgt.period = create(&apos;dateTime&apos;) as value then TSDateTime(effectiveTime, value) &quot;value1&quot;;
+  src.effectiveTime as effectiveTime where (low.exists()) -&gt; tgt.period = create(&apos;Period&apos;) as value then IVLTSPeriod(effectiveTime, value) &quot;valuePeriod&quot;;
   src.entryRelationship as entryRelationship then {
     entryRelationship.act as ac -&gt; tgt.class as class then {
       ac.text as text -&gt; class.type as type then {
@@ -425,7 +451,7 @@ group allergyFunction(source src : cdaElement, target tgt : AllergyIntolerance, 
   src -&gt;  tgt.encounter = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Encounter/&apos; + %encounter.id) &quot;reference&quot;;
   // toASK
   src.effectiveTime as effTime then {
-    effTime.low as l -&gt; tgt.recordedDate = (l.value) &quot;value&quot;;
+    effTime.low as l -&gt; tgt.recordedDate as r then TSDateTime(l, r) &quot;value&quot;;
   } &quot;efftime&quot;;
   src.entryRelationship as entryRelationship1 then {
     entryRelationship1.observation as observation1 then {
@@ -434,8 +460,10 @@ group allergyFunction(source src : cdaElement, target tgt : AllergyIntolerance, 
         observation1 -&gt; code.coding as coding then {
           observation1 -&gt; coding.code = &apos;No known allergy&apos; &quot;code&quot;;
         } &quot;code&quot;;
+        src.effectiveTime as effectiveTime where (value.exists()) -&gt; tgt.onset = create(&apos;dateTime&apos;) as value then TSDateTime(effectiveTime, value) &quot;value1&quot;;
         src.effectiveTime as effectiveTime -&gt; tgt.onset = create(&apos;Period&apos;) as value then IVLTSPeriod(effectiveTime, value) &quot;valuePeriod&quot;;
-      } &quot;No allergy&quot;;
+      } &quot;Noallergy&quot;;
+      observation1.effectiveTime as effectiveTime where (value.exists()) -&gt; tgt.onset = create(&apos;dateTime&apos;) as value then TSDateTime(effectiveTime, value) &quot;value1&quot;;
       observation1.effectiveTime as effectiveTime -&gt; tgt.onset = create(&apos;Period&apos;) as value then IVLTSPeriod(effectiveTime, value) &quot;valuePeriod&quot;;
       observation1.value as code then {
         code.code as code1 -&gt; tgt.type = translate(code1, &apos;#AllergyTypeMap&apos;, &apos;code&apos;) &quot;type&quot;;
@@ -516,11 +544,8 @@ group MedicationStatement(source src : subAdmin, target tgt : Medicationstatemen
   src.text as text -&gt; tgt.note as note then {
     text.reference as reference -&gt; note.text = (reference.value) &quot;text&quot;;
   } &quot;note&quot;;
-  // src.effectiveTime: IVL_TS as eff -&gt; tgt.dosage = create(&apos;Dosage&apos;) as dosage, dosage.timing = create(&apos;Timing&apos;) as timing, timing.event = (eff.value) &quot;tim&quot;;
-  src.effectiveTime : IVL_TS as eff -&gt; tgt.effective = create(&apos;Period&apos;) as period then {
-    eff.low as l -&gt; period.start = (l.value);
-    eff.high as h -&gt; period.end = (h.value);
-  } &quot;period&quot;;
+  src.effectiveTime as eff where (value.exists()) -&gt; tgt.effective = create(&apos;dateTime&apos;) as value then TSDateTime(eff, value) &quot;value1&quot;;
+  src.effectiveTime : IVL_TS as eff -&gt; tgt.effective = create(&apos;Period&apos;) as value then IVLTSPeriod(eff, value) &quot;valuePeriod&quot;;
   src -&gt; tgt.dosage = create(&apos;Dosage&apos;) as dosage then {
     src.effectiveTime : PIVL_TS as eff then {
       eff -&gt; dosage.timing = create(&apos;Timing&apos;) as timing then periodTiming(eff, timing) &quot;cod&quot;;
@@ -614,9 +639,9 @@ group Medication(source src : ,, target tgt : Medication, target patient : Patie
             value -&gt; denominator.value = 1 &quot;valueD&quot;;
           } &quot;denominator&quot;;
         } &quot;amount&quot;;
-      } &quot;quantità&quot;;
+      } &quot;quantita&quot;;
     } &quot;obs&quot;;
-  } &quot;entry R&quot;;
+  } &quot;entryR&quot;;
 }
 
 group Immunization(source substance : substanceAdministration, target patient : Patient, target encounter : Encounter, target tgt : immunization, target bundle : Bundle) {
@@ -632,7 +657,7 @@ group Immunization(source substance : substanceAdministration, target patient : 
   substance.statusCode as statusc where (code = &apos;aborted&apos;) -&gt; tgt.status = &apos;final&apos;;
   substance.statusCode as statusc where (code = &apos;suspended&apos;) -&gt; tgt.status = &apos;enterer-in-error&apos;;
   substance.statusCode as statusc where (code = &apos;cancelled&apos;) -&gt; tgt.status = &apos;not-done&apos;;
-  substance.effectiveTime as time -&gt; tgt.occurrence = (time.value) &quot;efftime&quot;;
+  substance.effectiveTime as time -&gt; tgt.occurrence = create(&apos;dateTime&apos;) as value then TSDateTime(time, value) &quot;efftime&quot;;
   substance.routeCode -&gt; tgt.route;
   substance.approachSiteCode -&gt; tgt.site;
   substance -&gt; tgt.doseQuantity = create(&apos;SimpleQuantity&apos;) as quantity then {
@@ -662,7 +687,7 @@ group Immunization(source substance : substanceAdministration, target patient : 
         manufactOrg -&gt; organization.meta as meta then {
           manufactOrg -&gt; meta.tag = create(&apos;Coding&apos;) as coding then {
             manufactOrg -&gt; coding.system = &apos;http://algoritmodiscoring&apos; &quot;system&quot;;
-            manufactOrg -&gt; coding.code = &apos;ClinicalDocument/body/cda2fhirVaccination/manufacturerOrganization&apos; &quot;code&quot;;
+            manufactOrg -&gt; coding.code = &apos;ClinicalDocument/body/Vaccinazioni/manufacturerOrganization&apos; &quot;code&quot;;
           } &quot;coding&quot;;
         } &quot;meta&quot;;
       } &quot;manufactOrg&quot;;
@@ -696,7 +721,7 @@ group Immunization(source substance : substanceAdministration, target patient : 
             v.value as int -&gt; prot.doseNumber = (int.toString());
           };
         } &quot;val&quot;;
-      } &quot;code control&quot;;
+      } &quot;codecontrol&quot;;
     } &quot;obs&quot;;
   } &quot;entrirel1&quot;;
   substance.entryRelationship as entrirel2 then {
@@ -707,21 +732,21 @@ group Immunization(source substance : substanceAdministration, target patient : 
             h.value as value -&gt; tgt.expirationDate = truncate(value, 10);
           } &quot;val&quot;;
         };
-      } &quot;code control&quot;;
+      } &quot;codecontrol&quot;;
     } &quot;obs&quot;;
   } &quot;entrirel2&quot;;
   substance.entryRelationship as entrirel4 then {
     entrirel4.observation as obs then {
       obs.code where (code = &apos;59785-6&apos;) -&gt;  bundle.entry as e1,  e1.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e1.resource = create(&apos;Observation&apos;) as observation,  observation.id = uuid() as uuid1,  e1.fullUrl = append(&apos;https://example/Observation/&apos;, uuid1),  request.url = &apos;Observation&apos;,  tgt.reasonReference = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Observation/&apos; + %observation.id) then {
         obs then Observation1(entrirel4, patient, tgt, bundle, enc, observation) &quot;observation&quot;;
-      } &quot;code control&quot;;
+      } &quot;codecontrol&quot;;
     } &quot;obs&quot;;
   } &quot;entrirel4&quot;;
   substance.entryRelationship as entrirel5 then {
     entrirel5.observation as obs then {
       obs.code where (code = &apos;75321-0&apos;) or (code = &apos;5321-0&apos;) -&gt; tgt.reaction as reaction then {
         obs -&gt;  bundle.entry as e1,  e1.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e1.resource = create(&apos;Observation&apos;) as observation,  observation.id = uuid() as uuid1,  e1.fullUrl = append(&apos;https://example/Observation/&apos;, uuid1),  request.url = &apos;Observation&apos;,  reaction.detail = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Observation/&apos; + %observation.id) then Observation(obs, patient, encounter, observation, bundle) &quot;observation&quot;;
-      } &quot;code control&quot;;
+      } &quot;codecontrol&quot;;
     } &quot;obs&quot;;
   } &quot;entrirel5&quot;;
   substance.entryRelationship as entrirel5 then {
@@ -745,6 +770,7 @@ group ConditionFunction(source src : cdaElement, target tgt : Condition, target 
     } &quot;coding&quot;;
   } &quot;verifstatus&quot;;
   src where entryRelationship.exists().not() then {
+    src.effectiveTime as effectiveTime where (value.exists()) -&gt; tgt.onset = create(&apos;dateTime&apos;) as value then TSDateTime(effectiveTime, value) &quot;value1&quot;;
     src.effectiveTime as effectiveTime -&gt; tgt.onset = create(&apos;Period&apos;) as value then IVLTSPeriod(effectiveTime, value) &quot;valuePeriod&quot;;
   } &quot;onset&quot;;
   src.entryRelationship as entryRelationship then {
@@ -752,6 +778,7 @@ group ConditionFunction(source src : cdaElement, target tgt : Condition, target 
       // toASK
       obsentry.value -&gt; tgt.code;
       obsentry.code -&gt; tgt.category;
+      obsentry.effectiveTime as effectiveTime where (value.exists()) -&gt; tgt.onset = create(&apos;dateTime&apos;) as value then TSDateTime(effectiveTime, value) &quot;value1&quot;;
       obsentry.effectiveTime as effectiveTime -&gt; tgt.onset = create(&apos;Period&apos;) as value then IVLTSPeriod(effectiveTime, value) &quot;valuePeriod&quot;;
       obsentry.text as text -&gt; tgt.note as note then {
         text.reference as reference -&gt; note.text = (reference.value) &quot;text&quot;;
@@ -796,7 +823,7 @@ group FamilyMemberFunction(source src : organizer, target tgt : familyMember, ta
   src.effectiveTime as effectiveTime -&gt; tgt.date = create(&apos;date&apos;) as value then TSDate(effectiveTime, value) &quot;date&quot;;
   src.subject as subject then {
     subject.relatedSubject as relatedSubject then {
-      relatedSubject.code -&gt; tgt.relationship &quot;relationship code&quot;;
+      relatedSubject.code -&gt; tgt.relationship &quot;relationshipCode&quot;;
       relatedSubject.subject as subject -&gt; tgt.sex as sex then {
         subject.administrativeGenderCode as administrativeGenderCode -&gt; sex.coding as coding then {
           administrativeGenderCode.code as sexCode -&gt; coding.code = translate(sexCode, &apos;#cm-v3-administrative-gender&apos;, &apos;code&apos;) &quot;gender&quot;;
@@ -842,9 +869,9 @@ group FamilyMemberFunction(source src : organizer, target tgt : familyMember, ta
 group Practitioner(source src : performer, target tgt : Encounter, target bundle : Bundle) {
   src -&gt;  bundle.entry as e22,  e22.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;PUT&apos;,  e22.resource = create(&apos;Practitioner&apos;) as practitioner1 then {
     src.assignedEntity as assignedEntity -&gt; tgt.participant as participant then {
-      src.time as time -&gt; participant.period as period then {
-        time -&gt; period.start &quot;start&quot;;
-      } &quot;period&quot;;
+      src.time as time where (value.exists()) -&gt; participant.period = create(&apos;dateTime&apos;) as value then TSDateTime(time, value) &quot;value1&quot;;
+      src.time as time where (low.exists()) -&gt; participant.period = create(&apos;Period&apos;) as value then IVLTSPeriod(time, value) &quot;valuePeriod&quot;;
+      // src.time as time -&gt; participant.period as period then{
       assignedEntity.id as id -&gt; practitioner1.identifier as identifier then {
         id.root as r -&gt; identifier.system = translate(r, &apos;http://hl7.org/fhir/ConceptMap/special-oid2uri&apos;, &apos;uri&apos;) &quot;root1&quot;;
         id.extension as ext -&gt; identifier.value = ext &quot;ext&quot;;
@@ -890,7 +917,7 @@ group CarePlanFunction(source src : entry, target tgt : CarePlan, target patient
       src.procedure as procedureC -&gt;  bundle.entry as e8,  e8.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e8.resource = create(&apos;Procedure&apos;) as procedure,  procedure.id = uuid() as uuid8,  e8.fullUrl = append(&apos;https://example/Procedure/&apos;, uuid8),  request.url = &apos;Procedure&apos;,  activity.outcomeReference = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Procedure/&apos; + %procedure.id) then Procedure(procedureC, patient, encounter, procedure, bundle) &quot;proc&quot;;
       src.encounter as encounterCDA -&gt;  bundle.entry as e3,  e3.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e3.resource = create(&apos;Encounter&apos;) as encounterFHIR,  encounterFHIR.id = uuid() as uuid3,  e3.fullUrl = append(&apos;https://example/Encounter/&apos;, uuid3),  request.url = &apos;Encounter&apos;,  tgt.encounter = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Encounter/&apos; + %encounterFHIR.id) then {
         encounterCDA -&gt;  encounterFHIR.partOf = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Encounter/&apos; + %encounter.id) &quot;encounterHeader&quot;;
-        encounterCDA -&gt;  encounterFHIR.subject = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;ref Patient&quot;;
+        encounterCDA -&gt;  encounterFHIR.subject = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;refPatient&quot;;
         encounterCDA.id -&gt; encounterFHIR.identifier;
         encounterCDA.statusCode -&gt; encounterFHIR.status;
         encounterCDA where statusCode.exists().not() -&gt; encounterFHIR.status = &apos;unknown&apos; &quot;status&quot;;
@@ -903,8 +930,8 @@ group CarePlanFunction(source src : entry, target tgt : CarePlan, target patient
           text.reference as reference -&gt; type.text = (reference.value) &quot;value&quot;;
         };
         encounterCDA.effectiveTime as effectiveTime -&gt; encounterFHIR.period = create(&apos;Period&apos;) as period then {
-          effectiveTime -&gt; period.start = (effectiveTime.value) &quot;p&quot;;
-        };
+          effectiveTime -&gt; period.start = create(&apos;dateTime&apos;) as start then TSDateTime(effectiveTime, start) &quot;val&quot;;
+        } &quot;efft&quot;;
       } &quot;viste&quot;;
       src.act as act then {
         act.id -&gt; tgt.identifier;
@@ -913,12 +940,12 @@ group CarePlanFunction(source src : entry, target tgt : CarePlan, target patient
           text.reference as reference -&gt; progress.text = (reference.value) &quot;value&quot;;
         };
         act.effectiveTime as effectiveTime -&gt; detail.scheduled = create(&apos;Period&apos;) as period then {
-          effectiveTime -&gt; period.start = (effectiveTime.value) &quot;val&quot;;
-        };
+          effectiveTime -&gt; period.start = create(&apos;dateTime&apos;) as start then TSDateTime(effectiveTime, start) &quot;val&quot;;
+        } &quot;efft&quot;;
         act -&gt; detail.status = &apos;completed&apos; &quot;status&quot;;
       };
     } &quot;detail&quot;;
-  } &quot;activity Ini&quot;;
+  } &quot;activityIni&quot;;
 }
 
 group MedicationRequest(source src : substanceAdministration, target patient : Patient, target encounter : Encounter, target tgt : MedicationRequest, target bundle : Bundle) {
@@ -937,10 +964,7 @@ group MedicationRequest(source src : substanceAdministration, target patient : P
   src.effectiveTime : IVL_TS as eff -&gt; tgt.dosageInstruction = create(&apos;Dosage&apos;) as dosage then {
     eff -&gt; dosage.timing = create(&apos;Timing&apos;) as timing then {
       eff -&gt; timing.repeat as rep then {
-        eff -&gt; rep.bounds = create(&apos;Period&apos;) as period then {
-          eff.low as lo1 -&gt; period.start = (lo1.value);
-          eff.high as hi1 -&gt; period.end = (hi1.value);
-        } &quot;period&quot;;
+        eff -&gt; rep.bounds = create(&apos;Period&apos;) as value then IVLTSPeriod(eff, value) &quot;valuePeriod&quot;;
       } &quot;rep&quot;;
     } &quot;timing&quot;;
   } &quot;period&quot;;
@@ -1040,7 +1064,8 @@ group DiagnosticReportFunction(source src : organizer, target patient : Patient,
   src -&gt;  tgt.encounter = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Encounter/&apos; + %enc.id) &quot;reference&quot;;
   src.code -&gt; tgt.code;
   src.statusCode where code = &apos;completed&apos; -&gt; tgt.status = &apos;final&apos;;
-  src.effectiveTime as eff -&gt; tgt.effective = (eff.value) &quot;ett&quot;;
+  src.effectiveTime as eff where (value.exists()) -&gt; tgt.effective = create(&apos;dateTime&apos;) as value then TSDateTime(eff, value) &quot;value1&quot;;
+  src.effectiveTime as eff where (low.exists()) -&gt; tgt.effective = create(&apos;Period&apos;) as value then IVLTSPeriod(effectiveTime, value) &quot;valuePeriod&quot;;
   src.component as component then {
     component.observation as observation -&gt;  bundle.entry as ei,  ei.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  ei.resource = create(&apos;Observation&apos;) as obsi,  obsi.id = uuid() as uuidi,  ei.fullUrl = append(&apos;https://example/Observation/&apos;, uuidi),  request.url = &apos;Observation&apos;,  tgt.result = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Observation/&apos; + %obsi.id) then Observation(observation, patient, enc, obsi, bundle) &quot;hasMember&quot;;
   };
@@ -1055,16 +1080,23 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
     code -&gt; class.display = (code.displayName) &quot;display&quot;;
     code.codeSystem as r -&gt; class.system = translate(r, &apos;http://hl7.org/fhir/ConceptMap/special-oid2uri&apos;, &apos;uri&apos;) &quot;root1&quot;;
   } &quot;co&quot;;
-  src.effectiveTime as effective -&gt; tgt.period as period then {
-    effective.low as l -&gt; period.start = (l.value) &quot;value&quot;;
-    effective.high as h -&gt; period.end = (h.value) &quot;value&quot;;
-  } &quot;eff&quot;;
+  // src.effectiveTime as effective -&gt; tgt.period as period then{
+  src where effectiveTime.low.exists() or effectiveTime.high.exists() then {
+    src.effectiveTime as eff -&gt; tgt.period = create(&apos;Period&apos;) as period then IVLTSPeriod(eff, period);
+  } &quot;where&quot;;
+  // effectiveTime = time-stamp
+  src where effectiveTime.low.exists().not() or effectiveTime.high.exists().not() then {
+    src.effectiveTime as effectivetime1 -&gt; tgt.period = create(&apos;Period&apos;) as period then {
+      effectivetime1 -&gt; period.start = create(&apos;dateTime&apos;) as start then TSDateTime(effectivetime1, start) &quot;val&quot;;
+    } &quot;efft&quot;;
+  } &quot;where&quot;;
+  // src.effectiveTime as eff where (value.exists()) -&gt; tgt.period = create(&apos;dateTime&apos;) as value then TSDateTime(eff, value) &quot;value1&quot;;
   src.text as tx -&gt; tgt.type as ty then {
     tx.reference as reff -&gt; ty.text = (reff.value) &quot;textType&quot;;
   };
   src.performer as performer -&gt; tgt.participant as part then {
     performer -&gt; part.period as period then {
-      performer.time as time -&gt; period.start = (time.value);
+      performer.time as time -&gt; period.start as start then TSDateTime(time, start) &quot;val&quot;;
     } &quot;period&quot;;
     performer.assignedEntity as assentity -&gt;  bundle.entry as e1,  e1.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e1.resource = create(&apos;PractitionerRole&apos;) as practitionerRole,  practitionerRole.id = uuid() as uuid1,  e1.fullUrl = append(&apos;https://example/PractitionerRole/&apos;, uuid1),  request.url = &apos;PractitionerRole&apos;,  tgt.participant = create(&apos;BackboneElement&apos;) as participant1,  participant1.individual = create(&apos;Reference&apos;) as referencepart,  referencepart.reference = (&apos;https://example/PractitionerRole/&apos; + %practitionerRole.id) then {
       assentity.code -&gt; practitionerRole.code;
@@ -1081,7 +1113,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
          <status value="draft"/>
          <group>
             <source value="http://terminology.hl7.org/ValueSet/v3-statusCode"/>
-            <target value="http://hl7.org/fhir/ValueSet/diagnostic-report-status"/>
+            <target value="http://hl7.org/fhir/observation-status"/>
             <element>
                <code value="completed"/>
                <target>
@@ -1250,7 +1282,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
          <status value="draft"/>
          <group>
             <source value="http://terminology.hl7.org/ValueSet/v3-type"/>
-            <target value="http://hl7.org/fhir/ValueSet/allergy-intolerance-type"/>
+            <target value="http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical"/>
             <element>
                <code value="OINT"/>
                <target>
@@ -1344,7 +1376,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
          <status value="draft"/>
          <group>
             <source value="http://terminology.hl7.org/ValueSet/v3-type"/>
-            <target value="http://hl7.org/fhir/ValueSet/allergy-intolerance-type"/>
+            <target value="http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical"/>
             <element>
                <code value="DALG"/>
                <target>
@@ -2133,19 +2165,20 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
          </target>
       </rule>
       <rule>
-         <name value="effectiveTime"/>
+         <name value="date"/>
          <source>
             <context value="cda"/>
-            <element value="effectiveTime"/>
-            <variable value="vvv"/>
          </source>
          <target>
             <context value="bundle"/>
             <contextType value="variable"/>
             <element value="timestamp"/>
-            <variable value="vvv"/>
-            <transform value="create"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="timestamp.now()"/>
+            </parameter>
          </target>
+         <documentation value="cda.effectiveTime -> bundle.timestamp;"/>
       </rule>
       <rule>
          <name value="composition"/>
@@ -2516,7 +2549,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                   </variable>
                </dependent>
             </rule>
-            <documentation value="nuova section Indagini diagn"/>
+            <documentation value="sezioni che sono strutturate"/>
          </rule>
          <rule>
             <name value="entryObs"/>
@@ -2899,7 +2932,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
             </rule>
          </rule>
          <rule>
-            <name value="lista dei problemi"/>
+            <name value="listaDeiProblemi"/>
             <source>
                <context value="src"/>
                <element value="code"/>
@@ -3153,7 +3186,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                <condition value="code = '10160-0'"/>
             </source>
             <rule>
-               <name value="Terapia farmacologica"/>
+               <name value="TerapiaFarmacologica"/>
                <source>
                   <context value="entry"/>
                   <element value="substanceAdministration"/>
@@ -3640,7 +3673,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
             </rule>
          </rule>
          <rule>
-            <name value="trattamenti e procedure"/>
+            <name value="trattamentiProcedure"/>
             <source>
                <context value="src"/>
                <element value="code"/>
@@ -3766,7 +3799,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
             </rule>
          </rule>
          <rule>
-            <name value="visite e ricoveri"/>
+            <name value="visiteRicoveri"/>
             <source>
                <context value="src"/>
                <element value="code"/>
@@ -4019,14 +4052,14 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
             </rule>
          </rule>
          <rule>
-            <name value="reti di patologia"/>
+            <name value="retiPatologia"/>
             <source>
                <context value="src"/>
                <element value="code"/>
                <condition value="code = 'PSSIT99'"/>
             </source>
             <rule>
-               <name value="Org affiliation"/>
+               <name value="OrgAffiliation"/>
                <source>
                   <context value="entry"/>
                   <element value="act"/>
@@ -4144,243 +4177,85 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                </dependent>
             </rule>
          </rule>
-      </rule>
-      <rule>
-         <name value="raccoglitore"/>
-         <source>
-            <context value="src"/>
-            <element value="code"/>
-            <condition value="code = '18776-5'"/>
-         </source>
          <rule>
-            <name value="piani di cura"/>
+            <name value="raccoglitore"/>
             <source>
                <context value="src"/>
+               <element value="code"/>
+               <condition value="code = '18776-5'"/>
             </source>
-            <target>
-               <context value="bundle"/>
-               <contextType value="variable"/>
-               <element value="entry"/>
-               <variable value="e11"/>
-            </target>
-            <target>
-               <context value="e11"/>
-               <contextType value="variable"/>
-               <element value="request"/>
-               <variable value="request"/>
-               <transform value="create"/>
-               <parameter>
-                  <valueString value="BackboneElement"/>
-               </parameter>
-            </target>
-            <target>
-               <context value="request"/>
-               <contextType value="variable"/>
-               <element value="method"/>
-               <transform value="copy"/>
-               <parameter>
-                  <valueString value="POST"/>
-               </parameter>
-            </target>
-            <target>
-               <context value="e11"/>
-               <contextType value="variable"/>
-               <element value="resource"/>
-               <variable value="careplan"/>
-               <transform value="create"/>
-               <parameter>
-                  <valueString value="CarePlan"/>
-               </parameter>
-            </target>
-            <target>
-               <context value="careplan"/>
-               <contextType value="variable"/>
-               <element value="id"/>
-               <variable value="uuid11"/>
-               <transform value="uuid"/>
-            </target>
-            <target>
-               <context value="e11"/>
-               <contextType value="variable"/>
-               <element value="fullUrl"/>
-               <transform value="append"/>
-               <parameter>
-                  <valueString value="https://example/CarePlan/"/>
-               </parameter>
-               <parameter>
-                  <valueId value="uuid11"/>
-               </parameter>
-            </target>
-            <target>
-               <context value="request"/>
-               <contextType value="variable"/>
-               <element value="url"/>
-               <transform value="copy"/>
-               <parameter>
-                  <valueString value="CarePlan"/>
-               </parameter>
-            </target>
-            <target>
-               <context value="tgt"/>
-               <contextType value="variable"/>
-               <element value="entry"/>
-               <variable value="reference"/>
-               <transform value="create"/>
-               <parameter>
-                  <valueString value="Reference"/>
-               </parameter>
-            </target>
-            <target>
-               <context value="reference"/>
-               <contextType value="variable"/>
-               <element value="reference"/>
-               <transform value="evaluate"/>
-               <parameter>
-                  <valueString value="'https://example/CarePlan/' + %careplan.id"/>
-               </parameter>
-            </target>
             <rule>
-               <name value="prestazioni"/>
+               <name value="pianiCura"/>
                <source>
                   <context value="src"/>
+               </source>
+               <target>
+                  <context value="bundle"/>
+                  <contextType value="variable"/>
                   <element value="entry"/>
-                  <variable value="entry"/>
-               </source>
-               <dependent>
-                  <name value="CarePlanFunction"/>
-                  <variable value="entry">
-                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
-                        <valueUrl value="id"/>
-                     </extension>
-                  </variable>
-                  <variable value="careplan">
-                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
-                        <valueUrl value="id"/>
-                     </extension>
-                  </variable>
-                  <variable value="patient">
-                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
-                        <valueUrl value="id"/>
-                     </extension>
-                  </variable>
-                  <variable value="enc">
-                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
-                        <valueUrl value="id"/>
-                     </extension>
-                  </variable>
-                  <variable value="bundle">
-                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
-                        <valueUrl value="id"/>
-                     </extension>
-                  </variable>
-               </dependent>
-            </rule>
-         </rule>
-      </rule>
-      <rule>
-         <name value="narrative"/>
-         <source>
-            <context value="src"/>
-            <condition value="src.entry.exists().not()"/>
-         </source>
-         <rule>
-            <name value="txtsec"/>
-            <source>
-               <context value="src"/>
-               <element value="text"/>
-               <variable value="text"/>
-            </source>
-            <target>
-               <context value="bundle"/>
-               <contextType value="variable"/>
-               <element value="entry"/>
-               <variable value="e13"/>
-            </target>
-            <target>
-               <context value="e13"/>
-               <contextType value="variable"/>
-               <element value="request"/>
-               <variable value="request"/>
-               <transform value="create"/>
-               <parameter>
-                  <valueString value="BackboneElement"/>
-               </parameter>
-            </target>
-            <target>
-               <context value="request"/>
-               <contextType value="variable"/>
-               <element value="method"/>
-               <transform value="copy"/>
-               <parameter>
-                  <valueString value="POST"/>
-               </parameter>
-            </target>
-            <target>
-               <context value="e13"/>
-               <contextType value="variable"/>
-               <element value="resource"/>
-               <variable value="obs1"/>
-               <transform value="create"/>
-               <parameter>
-                  <valueString value="Observation"/>
-               </parameter>
-            </target>
-            <target>
-               <context value="obs1"/>
-               <contextType value="variable"/>
-               <element value="id"/>
-               <variable value="uuid13"/>
-               <transform value="uuid"/>
-            </target>
-            <target>
-               <context value="e13"/>
-               <contextType value="variable"/>
-               <element value="fullUrl"/>
-               <transform value="append"/>
-               <parameter>
-                  <valueString value="https://example/Observation/"/>
-               </parameter>
-               <parameter>
-                  <valueId value="uuid13"/>
-               </parameter>
-            </target>
-            <target>
-               <context value="request"/>
-               <contextType value="variable"/>
-               <element value="url"/>
-               <transform value="copy"/>
-               <parameter>
-                  <valueString value="Observation"/>
-               </parameter>
-            </target>
-            <target>
-               <context value="tgt"/>
-               <contextType value="variable"/>
-               <element value="entry"/>
-               <variable value="reference"/>
-               <transform value="create"/>
-               <parameter>
-                  <valueString value="Reference"/>
-               </parameter>
-            </target>
-            <target>
-               <context value="reference"/>
-               <contextType value="variable"/>
-               <element value="reference"/>
-               <transform value="evaluate"/>
-               <parameter>
-                  <valueString value="'https://example/Observation/' + %obs1.id"/>
-               </parameter>
-            </target>
-            <rule>
-               <name value="reference"/>
-               <source>
-                  <context value="src"/>
-               </source>
+                  <variable value="e11"/>
+               </target>
                <target>
-                  <context value="obs1"/>
+                  <context value="e11"/>
                   <contextType value="variable"/>
-                  <element value="subject"/>
+                  <element value="request"/>
+                  <variable value="request"/>
+                  <transform value="create"/>
+                  <parameter>
+                     <valueString value="BackboneElement"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="request"/>
+                  <contextType value="variable"/>
+                  <element value="method"/>
+                  <transform value="copy"/>
+                  <parameter>
+                     <valueString value="POST"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="e11"/>
+                  <contextType value="variable"/>
+                  <element value="resource"/>
+                  <variable value="careplan"/>
+                  <transform value="create"/>
+                  <parameter>
+                     <valueString value="CarePlan"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="careplan"/>
+                  <contextType value="variable"/>
+                  <element value="id"/>
+                  <variable value="uuid11"/>
+                  <transform value="uuid"/>
+               </target>
+               <target>
+                  <context value="e11"/>
+                  <contextType value="variable"/>
+                  <element value="fullUrl"/>
+                  <transform value="append"/>
+                  <parameter>
+                     <valueString value="https://example/CarePlan/"/>
+                  </parameter>
+                  <parameter>
+                     <valueId value="uuid11"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="request"/>
+                  <contextType value="variable"/>
+                  <element value="url"/>
+                  <transform value="copy"/>
+                  <parameter>
+                     <valueString value="CarePlan"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="tgt"/>
+                  <contextType value="variable"/>
+                  <element value="entry"/>
                   <variable value="reference"/>
                   <transform value="create"/>
                   <parameter>
@@ -4393,115 +4268,39 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                   <element value="reference"/>
                   <transform value="evaluate"/>
                   <parameter>
-                     <valueString value="'https://example/Patient/' + %patient.id"/>
+                     <valueString value="'https://example/CarePlan/' + %careplan.id"/>
                   </parameter>
-               </target>
-            </rule>
-            <rule>
-               <name value="reference"/>
-               <source>
-                  <context value="src"/>
-               </source>
-               <target>
-                  <context value="obs1"/>
-                  <contextType value="variable"/>
-                  <element value="encounter"/>
-                  <variable value="reference"/>
-                  <transform value="create"/>
-                  <parameter>
-                     <valueString value="Reference"/>
-                  </parameter>
-               </target>
-               <target>
-                  <context value="reference"/>
-                  <contextType value="variable"/>
-                  <element value="reference"/>
-                  <transform value="evaluate"/>
-                  <parameter>
-                     <valueString value="'https://example/Encounter/' + %enc.id"/>
-                  </parameter>
-               </target>
-            </rule>
-            <rule>
-               <name value="obsst"/>
-               <source>
-                  <context value="src"/>
-               </source>
-               <target>
-                  <context value="obs1"/>
-                  <contextType value="variable"/>
-                  <element value="status"/>
-                  <transform value="copy"/>
-                  <parameter>
-                     <valueString value="preliminary"/>
-                  </parameter>
-               </target>
-            </rule>
-            <rule>
-               <name value="obscde"/>
-               <source>
-                  <context value="src"/>
-                  <element value="code"/>
-                  <variable value="vvv"/>
-               </source>
-               <target>
-                  <context value="obs1"/>
-                  <contextType value="variable"/>
-                  <element value="code"/>
-                  <variable value="vvv"/>
-                  <transform value="create"/>
-               </target>
-            </rule>
-            <rule>
-               <name value="statusS"/>
-               <source>
-                  <context value="src"/>
-               </source>
-               <target>
-                  <context value="obs1"/>
-                  <contextType value="variable"/>
-                  <element value="status"/>
-                  <transform value="copy"/>
-                  <parameter>
-                     <valueString value="final"/>
-                  </parameter>
-               </target>
-            </rule>
-            <rule>
-               <name value="narrative"/>
-               <source>
-                  <context value="text"/>
-               </source>
-               <target>
-                  <context value="obs1"/>
-                  <contextType value="variable"/>
-                  <element value="note"/>
-                  <variable value="note"/>
                </target>
                <rule>
-                  <name value="note"/>
+                  <name value="prestazioni"/>
                   <source>
-                     <context value="text"/>
-                     <variable value="t"/>
+                     <context value="src"/>
+                     <element value="entry"/>
+                     <variable value="entry"/>
                   </source>
-                  <target>
-                     <context value="note"/>
-                     <contextType value="variable"/>
-                     <element value="text"/>
-                     <variable value="textNote"/>
-                     <transform value="create"/>
-                     <parameter>
-                        <valueString value="string"/>
-                     </parameter>
-                  </target>
                   <dependent>
-                     <name value="EDstring"/>
-                     <variable value="t">
+                     <name value="CarePlanFunction"/>
+                     <variable value="entry">
                         <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
                            <valueUrl value="id"/>
                         </extension>
                      </variable>
-                     <variable value="textNote">
+                     <variable value="careplan">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                     <variable value="patient">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                     <variable value="enc">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                     <variable value="bundle">
                         <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
                            <valueUrl value="id"/>
                         </extension>
@@ -4509,6 +4308,655 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                   </dependent>
                </rule>
             </rule>
+         </rule>
+      </rule>
+      <rule>
+         <name value="code"/>
+         <source>
+            <context value="src"/>
+            <condition value="src.entry.exists().not()"/>
+         </source>
+         <rule>
+            <name value="familyraccoglitore"/>
+            <source>
+               <context value="src"/>
+               <element value="code"/>
+               <condition value="code = '10157-6'"/>
+            </source>
+            <rule>
+               <name value="family"/>
+               <source>
+                  <context value="src"/>
+                  <element value="text"/>
+                  <variable value="text"/>
+               </source>
+               <target>
+                  <context value="bundle"/>
+                  <contextType value="variable"/>
+                  <element value="entry"/>
+                  <variable value="e12"/>
+               </target>
+               <target>
+                  <context value="e12"/>
+                  <contextType value="variable"/>
+                  <element value="request"/>
+                  <variable value="request"/>
+                  <transform value="create"/>
+                  <parameter>
+                     <valueString value="BackboneElement"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="request"/>
+                  <contextType value="variable"/>
+                  <element value="method"/>
+                  <transform value="copy"/>
+                  <parameter>
+                     <valueString value="POST"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="e12"/>
+                  <contextType value="variable"/>
+                  <element value="resource"/>
+                  <variable value="familyMember"/>
+                  <transform value="create"/>
+                  <parameter>
+                     <valueString value="FamilyMemberHistory"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="familyMember"/>
+                  <contextType value="variable"/>
+                  <element value="id"/>
+                  <variable value="uuid12"/>
+                  <transform value="uuid"/>
+               </target>
+               <target>
+                  <context value="e12"/>
+                  <contextType value="variable"/>
+                  <element value="fullUrl"/>
+                  <transform value="append"/>
+                  <parameter>
+                     <valueString value="https://example/FamilyMemberHistory/"/>
+                  </parameter>
+                  <parameter>
+                     <valueId value="uuid12"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="request"/>
+                  <contextType value="variable"/>
+                  <element value="url"/>
+                  <transform value="copy"/>
+                  <parameter>
+                     <valueString value="FamilyMemberHistory"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="tgt"/>
+                  <contextType value="variable"/>
+                  <element value="entry"/>
+                  <variable value="reference"/>
+                  <transform value="create"/>
+                  <parameter>
+                     <valueString value="Reference"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="reference"/>
+                  <contextType value="variable"/>
+                  <element value="reference"/>
+                  <transform value="evaluate"/>
+                  <parameter>
+                     <valueString value="'https://example/FamilyMemberHistory/' + %familyMember.id"/>
+                  </parameter>
+               </target>
+               <rule>
+                  <name value="reference"/>
+                  <source>
+                     <context value="src"/>
+                  </source>
+                  <target>
+                     <context value="familyMember"/>
+                     <contextType value="variable"/>
+                     <element value="patient"/>
+                     <variable value="reference"/>
+                     <transform value="create"/>
+                     <parameter>
+                        <valueString value="Reference"/>
+                     </parameter>
+                  </target>
+                  <target>
+                     <context value="reference"/>
+                     <contextType value="variable"/>
+                     <element value="reference"/>
+                     <transform value="evaluate"/>
+                     <parameter>
+                        <valueString value="'https://example/Patient/' + %patient.id"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="statusS"/>
+                  <source>
+                     <context value="src"/>
+                  </source>
+                  <target>
+                     <context value="familyMember"/>
+                     <contextType value="variable"/>
+                     <element value="status"/>
+                     <transform value="copy"/>
+                     <parameter>
+                        <valueString value="health-unknown"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="reference"/>
+                  <source>
+                     <context value="text"/>
+                  </source>
+                  <target>
+                     <context value="familyMember"/>
+                     <contextType value="variable"/>
+                     <element value="note"/>
+                     <variable value="note"/>
+                  </target>
+                  <rule>
+                     <name value="reference"/>
+                     <source>
+                        <context value="text"/>
+                        <variable value="t"/>
+                     </source>
+                     <target>
+                        <context value="note"/>
+                        <contextType value="variable"/>
+                        <element value="text"/>
+                        <transform value="copy"/>
+                        <parameter>
+                           <valueId value="t"/>
+                        </parameter>
+                     </target>
+                  </rule>
+               </rule>
+               <rule>
+                  <name value="medication"/>
+                  <source>
+                     <context value="text"/>
+                  </source>
+                  <target>
+                     <context value="familyMember"/>
+                     <contextType value="variable"/>
+                     <element value="relationship"/>
+                     <variable value="relation"/>
+                     <transform value="create"/>
+                     <parameter>
+                        <valueString value="CodeableConcept"/>
+                     </parameter>
+                  </target>
+                  <rule>
+                     <name value="text"/>
+                     <source>
+                        <context value="text"/>
+                        <variable value="txt"/>
+                     </source>
+                     <target>
+                        <context value="relation"/>
+                        <contextType value="variable"/>
+                        <element value="text"/>
+                        <transform value="copy"/>
+                        <parameter>
+                           <valueId value="txt"/>
+                        </parameter>
+                     </target>
+                  </rule>
+               </rule>
+            </rule>
+            <documentation value="Anmanesi Familiare narrativa"/>
+         </rule>
+         <rule>
+            <name value="raccoglitore"/>
+            <source>
+               <context value="src"/>
+               <element value="code"/>
+               <condition value="code = '18776-5'"/>
+            </source>
+            <rule>
+               <name value="pianiCura"/>
+               <source>
+                  <context value="src"/>
+                  <element value="text"/>
+                  <variable value="text"/>
+               </source>
+               <target>
+                  <context value="bundle"/>
+                  <contextType value="variable"/>
+                  <element value="entry"/>
+                  <variable value="e11"/>
+               </target>
+               <target>
+                  <context value="e11"/>
+                  <contextType value="variable"/>
+                  <element value="request"/>
+                  <variable value="request"/>
+                  <transform value="create"/>
+                  <parameter>
+                     <valueString value="BackboneElement"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="request"/>
+                  <contextType value="variable"/>
+                  <element value="method"/>
+                  <transform value="copy"/>
+                  <parameter>
+                     <valueString value="POST"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="e11"/>
+                  <contextType value="variable"/>
+                  <element value="resource"/>
+                  <variable value="careplan"/>
+                  <transform value="create"/>
+                  <parameter>
+                     <valueString value="CarePlan"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="careplan"/>
+                  <contextType value="variable"/>
+                  <element value="id"/>
+                  <variable value="uuid11"/>
+                  <transform value="uuid"/>
+               </target>
+               <target>
+                  <context value="e11"/>
+                  <contextType value="variable"/>
+                  <element value="fullUrl"/>
+                  <transform value="append"/>
+                  <parameter>
+                     <valueString value="https://example/CarePlan/"/>
+                  </parameter>
+                  <parameter>
+                     <valueId value="uuid11"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="request"/>
+                  <contextType value="variable"/>
+                  <element value="url"/>
+                  <transform value="copy"/>
+                  <parameter>
+                     <valueString value="CarePlan"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="tgt"/>
+                  <contextType value="variable"/>
+                  <element value="entry"/>
+                  <variable value="reference"/>
+                  <transform value="create"/>
+                  <parameter>
+                     <valueString value="Reference"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="reference"/>
+                  <contextType value="variable"/>
+                  <element value="reference"/>
+                  <transform value="evaluate"/>
+                  <parameter>
+                     <valueString value="'https://example/CarePlan/' + %careplan.id"/>
+                  </parameter>
+               </target>
+               <rule>
+                  <name value="reference"/>
+                  <source>
+                     <context value="src"/>
+                  </source>
+                  <target>
+                     <context value="careplan"/>
+                     <contextType value="variable"/>
+                     <element value="subject"/>
+                     <variable value="reference"/>
+                     <transform value="create"/>
+                     <parameter>
+                        <valueString value="Reference"/>
+                     </parameter>
+                  </target>
+                  <target>
+                     <context value="reference"/>
+                     <contextType value="variable"/>
+                     <element value="reference"/>
+                     <transform value="evaluate"/>
+                     <parameter>
+                        <valueString value="'https://example/Patient/' + %patient.id"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="reference"/>
+                  <source>
+                     <context value="src"/>
+                  </source>
+                  <target>
+                     <context value="careplan"/>
+                     <contextType value="variable"/>
+                     <element value="encounter"/>
+                     <variable value="reference"/>
+                     <transform value="create"/>
+                     <parameter>
+                        <valueString value="Reference"/>
+                     </parameter>
+                  </target>
+                  <target>
+                     <context value="reference"/>
+                     <contextType value="variable"/>
+                     <element value="reference"/>
+                     <transform value="evaluate"/>
+                     <parameter>
+                        <valueString value="'https://example/Encounter/' + %enc.id"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="status"/>
+                  <source>
+                     <context value="src"/>
+                  </source>
+                  <target>
+                     <context value="careplan"/>
+                     <contextType value="variable"/>
+                     <element value="status"/>
+                     <transform value="copy"/>
+                     <parameter>
+                        <valueString value="active"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="intent"/>
+                  <source>
+                     <context value="src"/>
+                  </source>
+                  <target>
+                     <context value="careplan"/>
+                     <contextType value="variable"/>
+                     <element value="intent"/>
+                     <transform value="copy"/>
+                     <parameter>
+                        <valueString value="order"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="reference"/>
+                  <source>
+                     <context value="text"/>
+                  </source>
+                  <target>
+                     <context value="careplan"/>
+                     <contextType value="variable"/>
+                     <element value="note"/>
+                     <variable value="note"/>
+                  </target>
+                  <rule>
+                     <name value="reference"/>
+                     <source>
+                        <context value="text"/>
+                        <variable value="t"/>
+                     </source>
+                     <target>
+                        <context value="note"/>
+                        <contextType value="variable"/>
+                        <element value="text"/>
+                        <transform value="copy"/>
+                        <parameter>
+                           <valueId value="t"/>
+                        </parameter>
+                     </target>
+                  </rule>
+               </rule>
+            </rule>
+            <documentation value="Piano di cura narrativa"/>
+         </rule>
+         <rule>
+            <name value="narrative"/>
+            <source>
+               <context value="src"/>
+               <element value="code"/>
+               <condition value="(code = '30954-2') or (code = '29762-2') or (code = '8716-3') or (code = '47420-5') or (code = '42348-3')"/>
+            </source>
+            <rule>
+               <name value="txtsec"/>
+               <source>
+                  <context value="src"/>
+                  <element value="text"/>
+                  <variable value="text"/>
+               </source>
+               <target>
+                  <context value="bundle"/>
+                  <contextType value="variable"/>
+                  <element value="entry"/>
+                  <variable value="e13"/>
+               </target>
+               <target>
+                  <context value="e13"/>
+                  <contextType value="variable"/>
+                  <element value="request"/>
+                  <variable value="request"/>
+                  <transform value="create"/>
+                  <parameter>
+                     <valueString value="BackboneElement"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="request"/>
+                  <contextType value="variable"/>
+                  <element value="method"/>
+                  <transform value="copy"/>
+                  <parameter>
+                     <valueString value="POST"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="e13"/>
+                  <contextType value="variable"/>
+                  <element value="resource"/>
+                  <variable value="obs1"/>
+                  <transform value="create"/>
+                  <parameter>
+                     <valueString value="Observation"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="obs1"/>
+                  <contextType value="variable"/>
+                  <element value="id"/>
+                  <variable value="uuid13"/>
+                  <transform value="uuid"/>
+               </target>
+               <target>
+                  <context value="e13"/>
+                  <contextType value="variable"/>
+                  <element value="fullUrl"/>
+                  <transform value="append"/>
+                  <parameter>
+                     <valueString value="https://example/Observation/"/>
+                  </parameter>
+                  <parameter>
+                     <valueId value="uuid13"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="request"/>
+                  <contextType value="variable"/>
+                  <element value="url"/>
+                  <transform value="copy"/>
+                  <parameter>
+                     <valueString value="Observation"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="tgt"/>
+                  <contextType value="variable"/>
+                  <element value="entry"/>
+                  <variable value="reference"/>
+                  <transform value="create"/>
+                  <parameter>
+                     <valueString value="Reference"/>
+                  </parameter>
+               </target>
+               <target>
+                  <context value="reference"/>
+                  <contextType value="variable"/>
+                  <element value="reference"/>
+                  <transform value="evaluate"/>
+                  <parameter>
+                     <valueString value="'https://example/Observation/' + %obs1.id"/>
+                  </parameter>
+               </target>
+               <rule>
+                  <name value="reference"/>
+                  <source>
+                     <context value="src"/>
+                  </source>
+                  <target>
+                     <context value="obs1"/>
+                     <contextType value="variable"/>
+                     <element value="subject"/>
+                     <variable value="reference"/>
+                     <transform value="create"/>
+                     <parameter>
+                        <valueString value="Reference"/>
+                     </parameter>
+                  </target>
+                  <target>
+                     <context value="reference"/>
+                     <contextType value="variable"/>
+                     <element value="reference"/>
+                     <transform value="evaluate"/>
+                     <parameter>
+                        <valueString value="'https://example/Patient/' + %patient.id"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="reference"/>
+                  <source>
+                     <context value="src"/>
+                  </source>
+                  <target>
+                     <context value="obs1"/>
+                     <contextType value="variable"/>
+                     <element value="encounter"/>
+                     <variable value="reference"/>
+                     <transform value="create"/>
+                     <parameter>
+                        <valueString value="Reference"/>
+                     </parameter>
+                  </target>
+                  <target>
+                     <context value="reference"/>
+                     <contextType value="variable"/>
+                     <element value="reference"/>
+                     <transform value="evaluate"/>
+                     <parameter>
+                        <valueString value="'https://example/Encounter/' + %enc.id"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="obsst"/>
+                  <source>
+                     <context value="src"/>
+                  </source>
+                  <target>
+                     <context value="obs1"/>
+                     <contextType value="variable"/>
+                     <element value="status"/>
+                     <transform value="copy"/>
+                     <parameter>
+                        <valueString value="preliminary"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="obscde"/>
+                  <source>
+                     <context value="src"/>
+                     <element value="code"/>
+                     <variable value="vvv"/>
+                  </source>
+                  <target>
+                     <context value="obs1"/>
+                     <contextType value="variable"/>
+                     <element value="code"/>
+                     <variable value="vvv"/>
+                     <transform value="create"/>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="statusS"/>
+                  <source>
+                     <context value="src"/>
+                  </source>
+                  <target>
+                     <context value="obs1"/>
+                     <contextType value="variable"/>
+                     <element value="status"/>
+                     <transform value="copy"/>
+                     <parameter>
+                        <valueString value="final"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="narrative"/>
+                  <source>
+                     <context value="text"/>
+                  </source>
+                  <target>
+                     <context value="obs1"/>
+                     <contextType value="variable"/>
+                     <element value="note"/>
+                     <variable value="note"/>
+                  </target>
+                  <rule>
+                     <name value="note"/>
+                     <source>
+                        <context value="text"/>
+                        <variable value="t"/>
+                     </source>
+                     <target>
+                        <context value="note"/>
+                        <contextType value="variable"/>
+                        <element value="text"/>
+                        <variable value="textNote"/>
+                        <transform value="create"/>
+                        <parameter>
+                           <valueString value="string"/>
+                        </parameter>
+                     </target>
+                     <dependent>
+                        <name value="EDstring"/>
+                        <variable value="t">
+                           <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                              <valueUrl value="id"/>
+                           </extension>
+                        </variable>
+                        <variable value="textNote">
+                           <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                              <valueUrl value="id"/>
+                           </extension>
+                        </variable>
+                     </dependent>
+                  </rule>
+               </rule>
+            </rule>
+            <documentation value="sezioni che sono narrative"/>
          </rule>
       </rule>
       <rule>
@@ -4571,40 +5019,6 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
             </dependent>
          </rule>
       </rule>
-   </group>
-   <group>
-      <name value="NarrativeSectionFunction"/>
-      <typeMode value="none"/>
-      <input>
-         <name value="section"/>
-         <type value="section"/>
-         <mode value="source"/>
-      </input>
-      <input>
-         <name value="src"/>
-         <type value="clinicalDocument"/>
-         <mode value="source"/>
-      </input>
-      <input>
-         <name value="tgt"/>
-         <type value="section"/>
-         <mode value="target"/>
-      </input>
-      <input>
-         <name value="bundle"/>
-         <type value="Bundle"/>
-         <mode value="target"/>
-      </input>
-      <input>
-         <name value="encounter"/>
-         <type value="Encounter"/>
-         <mode value="target"/>
-      </input>
-      <input>
-         <name value="patient"/>
-         <type value="Patient"/>
-         <mode value="target"/>
-      </input>
    </group>
    <group>
       <name value="Procedure"/>
@@ -4804,7 +5218,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
          </target>
       </rule>
       <rule>
-         <name value="presenza protesi/impianto"/>
+         <name value="presenzaProtesiImpianto"/>
          <source>
             <context value="src"/>
             <element value="templateId"/>
@@ -5043,7 +5457,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
          </rule>
       </rule>
       <rule>
-         <name value="procedure e trattamenti"/>
+         <name value="procedureTrattamenti"/>
          <source>
             <context value="src"/>
             <element value="templateId"/>
@@ -5144,7 +5558,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
             </dependent>
          </rule>
          <rule>
-            <name value="entryRel Procedure"/>
+            <name value="entryRelProcedure"/>
             <source>
                <context value="src"/>
                <element value="entryRelationship"/>
@@ -5440,7 +5854,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
          </target>
       </rule>
       <rule>
-         <name value="int val"/>
+         <name value="intval"/>
          <source>
             <context value="cda"/>
             <type value="INT"/>
@@ -6933,7 +7347,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
          </rule>
       </rule>
       <rule>
-         <name value="status Absent"/>
+         <name value="statusAbsent"/>
          <source>
             <context value="src"/>
             <condition value="statusCode.exists().not()"/>
@@ -6949,35 +7363,69 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
          </target>
       </rule>
       <rule>
-         <name value="period"/>
+         <name value="value1"/>
          <source>
             <context value="src"/>
             <element value="effectiveTime"/>
             <variable value="effectiveTime"/>
+            <condition value="(value.exists())"/>
          </source>
          <target>
             <context value="tgt"/>
             <contextType value="variable"/>
             <element value="period"/>
-            <variable value="period"/>
+            <variable value="value"/>
+            <transform value="create"/>
+            <parameter>
+               <valueString value="dateTime"/>
+            </parameter>
          </target>
-         <rule>
-            <name value="low"/>
-            <source>
-               <context value="effectiveTime"/>
-               <element value="low"/>
-               <variable value="l"/>
-            </source>
-            <target>
-               <context value="period"/>
-               <contextType value="variable"/>
-               <element value="start"/>
-               <transform value="evaluate"/>
-               <parameter>
-                  <valueString value="l.value"/>
-               </parameter>
-            </target>
-         </rule>
+         <dependent>
+            <name value="TSDateTime"/>
+            <variable value="effectiveTime">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+            <variable value="value">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+         </dependent>
+         <documentation value="src.effectiveTime as effectiveTime -> tgt.period as period then{"/>
+      </rule>
+      <rule>
+         <name value="valuePeriod"/>
+         <source>
+            <context value="src"/>
+            <element value="effectiveTime"/>
+            <variable value="effectiveTime"/>
+            <condition value="(low.exists())"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="period"/>
+            <variable value="value"/>
+            <transform value="create"/>
+            <parameter>
+               <valueString value="Period"/>
+            </parameter>
+         </target>
+         <dependent>
+            <name value="IVLTSPeriod"/>
+            <variable value="effectiveTime">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+            <variable value="value">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+         </dependent>
       </rule>
       <rule>
          <name value="entryr"/>
@@ -7139,11 +7587,21 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                <context value="tgt"/>
                <contextType value="variable"/>
                <element value="recordedDate"/>
-               <transform value="evaluate"/>
-               <parameter>
-                  <valueString value="l.value"/>
-               </parameter>
+               <variable value="r"/>
             </target>
+            <dependent>
+               <name value="TSDateTime"/>
+               <variable value="l">
+                  <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                     <valueUrl value="id"/>
+                  </extension>
+               </variable>
+               <variable value="r">
+                  <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                     <valueUrl value="id"/>
+                  </extension>
+               </variable>
+            </dependent>
          </rule>
          <documentation value="toASK"/>
       </rule>
@@ -7177,7 +7635,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                </target>
             </rule>
             <rule>
-               <name value="No allergy"/>
+               <name value="Noallergy"/>
                <source>
                   <context value="observation1"/>
                   <element value="templateId"/>
@@ -7217,6 +7675,38 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                   </rule>
                </rule>
                <rule>
+                  <name value="value1"/>
+                  <source>
+                     <context value="src"/>
+                     <element value="effectiveTime"/>
+                     <variable value="effectiveTime"/>
+                     <condition value="(value.exists())"/>
+                  </source>
+                  <target>
+                     <context value="tgt"/>
+                     <contextType value="variable"/>
+                     <element value="onset"/>
+                     <variable value="value"/>
+                     <transform value="create"/>
+                     <parameter>
+                        <valueString value="dateTime"/>
+                     </parameter>
+                  </target>
+                  <dependent>
+                     <name value="TSDateTime"/>
+                     <variable value="effectiveTime">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                     <variable value="value">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                  </dependent>
+               </rule>
+               <rule>
                   <name value="valuePeriod"/>
                   <source>
                      <context value="src"/>
@@ -7247,6 +7737,38 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                      </variable>
                   </dependent>
                </rule>
+            </rule>
+            <rule>
+               <name value="value1"/>
+               <source>
+                  <context value="observation1"/>
+                  <element value="effectiveTime"/>
+                  <variable value="effectiveTime"/>
+                  <condition value="(value.exists())"/>
+               </source>
+               <target>
+                  <context value="tgt"/>
+                  <contextType value="variable"/>
+                  <element value="onset"/>
+                  <variable value="value"/>
+                  <transform value="create"/>
+                  <parameter>
+                     <valueString value="dateTime"/>
+                  </parameter>
+               </target>
+               <dependent>
+                  <name value="TSDateTime"/>
+                  <variable value="effectiveTime">
+                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                        <valueUrl value="id"/>
+                     </extension>
+                  </variable>
+                  <variable value="value">
+                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                        <valueUrl value="id"/>
+                     </extension>
+                  </variable>
+               </dependent>
             </rule>
             <rule>
                <name value="valuePeriod"/>
@@ -8031,7 +8553,39 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
          </rule>
       </rule>
       <rule>
-         <name value="period"/>
+         <name value="value1"/>
+         <source>
+            <context value="src"/>
+            <element value="effectiveTime"/>
+            <variable value="eff"/>
+            <condition value="(value.exists())"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="effective"/>
+            <variable value="value"/>
+            <transform value="create"/>
+            <parameter>
+               <valueString value="dateTime"/>
+            </parameter>
+         </target>
+         <dependent>
+            <name value="TSDateTime"/>
+            <variable value="eff">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+            <variable value="value">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+         </dependent>
+      </rule>
+      <rule>
+         <name value="valuePeriod"/>
          <source>
             <context value="src"/>
             <type value="IVL_TS"/>
@@ -8042,47 +8596,25 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
             <context value="tgt"/>
             <contextType value="variable"/>
             <element value="effective"/>
-            <variable value="period"/>
+            <variable value="value"/>
             <transform value="create"/>
             <parameter>
                <valueString value="Period"/>
             </parameter>
          </target>
-         <rule>
-            <name value="low"/>
-            <source>
-               <context value="eff"/>
-               <element value="low"/>
-               <variable value="l"/>
-            </source>
-            <target>
-               <context value="period"/>
-               <contextType value="variable"/>
-               <element value="start"/>
-               <transform value="evaluate"/>
-               <parameter>
-                  <valueString value="l.value"/>
-               </parameter>
-            </target>
-         </rule>
-         <rule>
-            <name value="high"/>
-            <source>
-               <context value="eff"/>
-               <element value="high"/>
-               <variable value="h"/>
-            </source>
-            <target>
-               <context value="period"/>
-               <contextType value="variable"/>
-               <element value="end"/>
-               <transform value="evaluate"/>
-               <parameter>
-                  <valueString value="h.value"/>
-               </parameter>
-            </target>
-         </rule>
-         <documentation value="src.effectiveTime: IVL_TS as eff -> tgt.dosage = create('Dosage') as dosage, dosage.timing = create('Timing') as timing, timing.event = (eff.value) &quot;tim&quot;;"/>
+         <dependent>
+            <name value="IVLTSPeriod"/>
+            <variable value="eff">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+            <variable value="value">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+         </dependent>
       </rule>
       <rule>
          <name value="dos"/>
@@ -8768,7 +9300,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
          </rule>
       </rule>
       <rule>
-         <name value="entry R"/>
+         <name value="entryR"/>
          <source>
             <context value="src"/>
             <element value="entryRelationship"/>
@@ -8919,7 +9451,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                </rule>
             </rule>
             <rule>
-               <name value="quantità"/>
+               <name value="quantita"/>
                <source>
                   <context value="observation"/>
                   <element value="code"/>
@@ -9226,11 +9758,25 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
             <context value="tgt"/>
             <contextType value="variable"/>
             <element value="occurrence"/>
-            <transform value="evaluate"/>
+            <variable value="value"/>
+            <transform value="create"/>
             <parameter>
-               <valueString value="time.value"/>
+               <valueString value="dateTime"/>
             </parameter>
          </target>
+         <dependent>
+            <name value="TSDateTime"/>
+            <variable value="time">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+            <variable value="value">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+         </dependent>
       </rule>
       <rule>
          <name value="routeCode"/>
@@ -9633,7 +10179,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                            <element value="code"/>
                            <transform value="copy"/>
                            <parameter>
-                              <valueString value="ClinicalDocument/body/cda2fhirVaccination/manufacturerOrganization"/>
+                              <valueString value="ClinicalDocument/body/Vaccinazioni/manufacturerOrganization"/>
                            </parameter>
                         </target>
                      </rule>
@@ -9925,7 +10471,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                <variable value="obs"/>
             </source>
             <rule>
-               <name value="code control"/>
+               <name value="codecontrol"/>
                <source>
                   <context value="obs"/>
                   <element value="code"/>
@@ -9990,7 +10536,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                <variable value="obs"/>
             </source>
             <rule>
-               <name value="code control"/>
+               <name value="codecontrol"/>
                <source>
                   <context value="obs"/>
                   <element value="code"/>
@@ -10050,7 +10596,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                <variable value="obs"/>
             </source>
             <rule>
-               <name value="code control"/>
+               <name value="codecontrol"/>
                <source>
                   <context value="obs"/>
                   <element value="code"/>
@@ -10195,7 +10741,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                <variable value="obs"/>
             </source>
             <rule>
-               <name value="code control"/>
+               <name value="codecontrol"/>
                <source>
                   <context value="obs"/>
                   <element value="code"/>
@@ -10554,6 +11100,38 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
             <condition value="entryRelationship.exists().not()"/>
          </source>
          <rule>
+            <name value="value1"/>
+            <source>
+               <context value="src"/>
+               <element value="effectiveTime"/>
+               <variable value="effectiveTime"/>
+               <condition value="(value.exists())"/>
+            </source>
+            <target>
+               <context value="tgt"/>
+               <contextType value="variable"/>
+               <element value="onset"/>
+               <variable value="value"/>
+               <transform value="create"/>
+               <parameter>
+                  <valueString value="dateTime"/>
+               </parameter>
+            </target>
+            <dependent>
+               <name value="TSDateTime"/>
+               <variable value="effectiveTime">
+                  <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                     <valueUrl value="id"/>
+                  </extension>
+               </variable>
+               <variable value="value">
+                  <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                     <valueUrl value="id"/>
+                  </extension>
+               </variable>
+            </dependent>
+         </rule>
+         <rule>
             <name value="valuePeriod"/>
             <source>
                <context value="src"/>
@@ -10629,6 +11207,38 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                   <variable value="vvv"/>
                   <transform value="create"/>
                </target>
+            </rule>
+            <rule>
+               <name value="value1"/>
+               <source>
+                  <context value="obsentry"/>
+                  <element value="effectiveTime"/>
+                  <variable value="effectiveTime"/>
+                  <condition value="(value.exists())"/>
+               </source>
+               <target>
+                  <context value="tgt"/>
+                  <contextType value="variable"/>
+                  <element value="onset"/>
+                  <variable value="value"/>
+                  <transform value="create"/>
+                  <parameter>
+                     <valueString value="dateTime"/>
+                  </parameter>
+               </target>
+               <dependent>
+                  <name value="TSDateTime"/>
+                  <variable value="effectiveTime">
+                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                        <valueUrl value="id"/>
+                     </extension>
+                  </variable>
+                  <variable value="value">
+                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                        <valueUrl value="id"/>
+                     </extension>
+                  </variable>
+               </dependent>
             </rule>
             <rule>
                <name value="valuePeriod"/>
@@ -11169,7 +11779,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                <variable value="relatedSubject"/>
             </source>
             <rule>
-               <name value="relationship code"/>
+               <name value="relationshipCode"/>
                <source>
                   <context value="relatedSubject"/>
                   <element value="code"/>
@@ -11638,29 +12248,68 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                <variable value="participant"/>
             </target>
             <rule>
-               <name value="period"/>
+               <name value="value1"/>
                <source>
                   <context value="src"/>
                   <element value="time"/>
                   <variable value="time"/>
+                  <condition value="(value.exists())"/>
                </source>
                <target>
                   <context value="participant"/>
                   <contextType value="variable"/>
                   <element value="period"/>
-                  <variable value="period"/>
+                  <variable value="value"/>
+                  <transform value="create"/>
+                  <parameter>
+                     <valueString value="dateTime"/>
+                  </parameter>
                </target>
-               <rule>
-                  <name value="start"/>
-                  <source>
-                     <context value="time"/>
-                  </source>
-                  <target>
-                     <context value="period"/>
-                     <contextType value="variable"/>
-                     <element value="start"/>
-                  </target>
-               </rule>
+               <dependent>
+                  <name value="TSDateTime"/>
+                  <variable value="time">
+                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                        <valueUrl value="id"/>
+                     </extension>
+                  </variable>
+                  <variable value="value">
+                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                        <valueUrl value="id"/>
+                     </extension>
+                  </variable>
+               </dependent>
+            </rule>
+            <rule>
+               <name value="valuePeriod"/>
+               <source>
+                  <context value="src"/>
+                  <element value="time"/>
+                  <variable value="time"/>
+                  <condition value="(low.exists())"/>
+               </source>
+               <target>
+                  <context value="participant"/>
+                  <contextType value="variable"/>
+                  <element value="period"/>
+                  <variable value="value"/>
+                  <transform value="create"/>
+                  <parameter>
+                     <valueString value="Period"/>
+                  </parameter>
+               </target>
+               <dependent>
+                  <name value="IVLTSPeriod"/>
+                  <variable value="time">
+                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                        <valueUrl value="id"/>
+                     </extension>
+                  </variable>
+                  <variable value="value">
+                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                        <valueUrl value="id"/>
+                     </extension>
+                  </variable>
+               </dependent>
             </rule>
             <rule>
                <name value="identifier"/>
@@ -11795,6 +12444,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                      </target>
                   </rule>
                </rule>
+               <documentation value="src.time as time -> participant.period as period then{"/>
             </rule>
             <rule>
                <name value="2.16.840.1.113883.2.9.4.3.2"/>
@@ -12038,7 +12688,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
          </target>
       </rule>
       <rule>
-         <name value="activity Ini"/>
+         <name value="activityIni"/>
          <source>
             <context value="src"/>
          </source>
@@ -12567,7 +13217,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                   </target>
                </rule>
                <rule>
-                  <name value="ref Patient"/>
+                  <name value="refPatient"/>
                   <source>
                      <context value="encounterCDA"/>
                   </source>
@@ -12746,7 +13396,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                   </rule>
                </rule>
                <rule>
-                  <name value="effectiveTime"/>
+                  <name value="efft"/>
                   <source>
                      <context value="encounterCDA"/>
                      <element value="effectiveTime"/>
@@ -12763,7 +13413,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                      </parameter>
                   </target>
                   <rule>
-                     <name value="p"/>
+                     <name value="val"/>
                      <source>
                         <context value="effectiveTime"/>
                      </source>
@@ -12771,11 +13421,25 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                         <context value="period"/>
                         <contextType value="variable"/>
                         <element value="start"/>
-                        <transform value="evaluate"/>
+                        <variable value="start"/>
+                        <transform value="create"/>
                         <parameter>
-                           <valueString value="effectiveTime.value"/>
+                           <valueString value="dateTime"/>
                         </parameter>
                      </target>
+                     <dependent>
+                        <name value="TSDateTime"/>
+                        <variable value="effectiveTime">
+                           <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                              <valueUrl value="id"/>
+                           </extension>
+                        </variable>
+                        <variable value="start">
+                           <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                              <valueUrl value="id"/>
+                           </extension>
+                        </variable>
+                     </dependent>
                   </rule>
                </rule>
             </rule>
@@ -12852,7 +13516,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                   </rule>
                </rule>
                <rule>
-                  <name value="effectiveTime"/>
+                  <name value="efft"/>
                   <source>
                      <context value="act"/>
                      <element value="effectiveTime"/>
@@ -12877,11 +13541,25 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                         <context value="period"/>
                         <contextType value="variable"/>
                         <element value="start"/>
-                        <transform value="evaluate"/>
+                        <variable value="start"/>
+                        <transform value="create"/>
                         <parameter>
-                           <valueString value="effectiveTime.value"/>
+                           <valueString value="dateTime"/>
                         </parameter>
                      </target>
+                     <dependent>
+                        <name value="TSDateTime"/>
+                        <variable value="effectiveTime">
+                           <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                              <valueUrl value="id"/>
+                           </extension>
+                        </variable>
+                        <variable value="start">
+                           <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                              <valueUrl value="id"/>
+                           </extension>
+                        </variable>
+                     </dependent>
                   </rule>
                </rule>
                <rule>
@@ -13135,7 +13813,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                   <variable value="rep"/>
                </target>
                <rule>
-                  <name value="period"/>
+                  <name value="valuePeriod"/>
                   <source>
                      <context value="eff"/>
                   </source>
@@ -13143,46 +13821,25 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                      <context value="rep"/>
                      <contextType value="variable"/>
                      <element value="bounds"/>
-                     <variable value="period"/>
+                     <variable value="value"/>
                      <transform value="create"/>
                      <parameter>
                         <valueString value="Period"/>
                      </parameter>
                   </target>
-                  <rule>
-                     <name value="low"/>
-                     <source>
-                        <context value="eff"/>
-                        <element value="low"/>
-                        <variable value="lo1"/>
-                     </source>
-                     <target>
-                        <context value="period"/>
-                        <contextType value="variable"/>
-                        <element value="start"/>
-                        <transform value="evaluate"/>
-                        <parameter>
-                           <valueString value="lo1.value"/>
-                        </parameter>
-                     </target>
-                  </rule>
-                  <rule>
-                     <name value="high"/>
-                     <source>
-                        <context value="eff"/>
-                        <element value="high"/>
-                        <variable value="hi1"/>
-                     </source>
-                     <target>
-                        <context value="period"/>
-                        <contextType value="variable"/>
-                        <element value="end"/>
-                        <transform value="evaluate"/>
-                        <parameter>
-                           <valueString value="hi1.value"/>
-                        </parameter>
-                     </target>
-                  </rule>
+                  <dependent>
+                     <name value="IVLTSPeriod"/>
+                     <variable value="eff">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                     <variable value="value">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                  </dependent>
                </rule>
             </rule>
          </rule>
@@ -14273,21 +14930,68 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
          </target>
       </rule>
       <rule>
-         <name value="ett"/>
+         <name value="value1"/>
          <source>
             <context value="src"/>
             <element value="effectiveTime"/>
             <variable value="eff"/>
+            <condition value="(value.exists())"/>
          </source>
          <target>
             <context value="tgt"/>
             <contextType value="variable"/>
             <element value="effective"/>
-            <transform value="evaluate"/>
+            <variable value="value"/>
+            <transform value="create"/>
             <parameter>
-               <valueString value="eff.value"/>
+               <valueString value="dateTime"/>
             </parameter>
          </target>
+         <dependent>
+            <name value="TSDateTime"/>
+            <variable value="eff">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+            <variable value="value">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+         </dependent>
+      </rule>
+      <rule>
+         <name value="valuePeriod"/>
+         <source>
+            <context value="src"/>
+            <element value="effectiveTime"/>
+            <variable value="eff"/>
+            <condition value="(low.exists())"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="effective"/>
+            <variable value="value"/>
+            <transform value="create"/>
+            <parameter>
+               <valueString value="Period"/>
+            </parameter>
+         </target>
+         <dependent>
+            <name value="IVLTSPeriod"/>
+            <variable value="effectiveTime">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+            <variable value="value">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+         </dependent>
       </rule>
       <rule>
          <name value="component"/>
@@ -14558,52 +15262,98 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
          </rule>
       </rule>
       <rule>
-         <name value="eff"/>
+         <name value="where"/>
          <source>
             <context value="src"/>
-            <element value="effectiveTime"/>
-            <variable value="effective"/>
+            <condition value="effectiveTime.low.exists() or effectiveTime.high.exists()"/>
          </source>
-         <target>
-            <context value="tgt"/>
-            <contextType value="variable"/>
-            <element value="period"/>
-            <variable value="period"/>
-         </target>
          <rule>
-            <name value="value"/>
+            <name value="effectiveTime"/>
             <source>
-               <context value="effective"/>
-               <element value="low"/>
-               <variable value="l"/>
+               <context value="src"/>
+               <element value="effectiveTime"/>
+               <variable value="eff"/>
             </source>
             <target>
-               <context value="period"/>
+               <context value="tgt"/>
                <contextType value="variable"/>
-               <element value="start"/>
-               <transform value="evaluate"/>
+               <element value="period"/>
+               <variable value="period"/>
+               <transform value="create"/>
                <parameter>
-                  <valueString value="l.value"/>
+                  <valueString value="Period"/>
                </parameter>
             </target>
+            <dependent>
+               <name value="IVLTSPeriod"/>
+               <variable value="eff">
+                  <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                     <valueUrl value="id"/>
+                  </extension>
+               </variable>
+               <variable value="period">
+                  <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                     <valueUrl value="id"/>
+                  </extension>
+               </variable>
+            </dependent>
          </rule>
+         <documentation value="src.effectiveTime as effective -> tgt.period as period then{"/>
+      </rule>
+      <rule>
+         <name value="where"/>
+         <source>
+            <context value="src"/>
+            <condition value="effectiveTime.low.exists().not() or effectiveTime.high.exists().not()"/>
+         </source>
          <rule>
-            <name value="value"/>
+            <name value="efft"/>
             <source>
-               <context value="effective"/>
-               <element value="high"/>
-               <variable value="h"/>
+               <context value="src"/>
+               <element value="effectiveTime"/>
+               <variable value="effectivetime1"/>
             </source>
             <target>
-               <context value="period"/>
+               <context value="tgt"/>
                <contextType value="variable"/>
-               <element value="end"/>
-               <transform value="evaluate"/>
+               <element value="period"/>
+               <variable value="period"/>
+               <transform value="create"/>
                <parameter>
-                  <valueString value="h.value"/>
+                  <valueString value="Period"/>
                </parameter>
             </target>
+            <rule>
+               <name value="val"/>
+               <source>
+                  <context value="effectivetime1"/>
+               </source>
+               <target>
+                  <context value="period"/>
+                  <contextType value="variable"/>
+                  <element value="start"/>
+                  <variable value="start"/>
+                  <transform value="create"/>
+                  <parameter>
+                     <valueString value="dateTime"/>
+                  </parameter>
+               </target>
+               <dependent>
+                  <name value="TSDateTime"/>
+                  <variable value="effectivetime1">
+                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                        <valueUrl value="id"/>
+                     </extension>
+                  </variable>
+                  <variable value="start">
+                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                        <valueUrl value="id"/>
+                     </extension>
+                  </variable>
+               </dependent>
+            </rule>
          </rule>
+         <documentation value="effectiveTime = time-stamp"/>
       </rule>
       <rule>
          <name value="text"/>
@@ -14635,6 +15385,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                </parameter>
             </target>
          </rule>
+         <documentation value="src.effectiveTime as eff where (value.exists()) -> tgt.period = create('dateTime') as value then TSDateTime(eff, value) &quot;value1&quot;;"/>
       </rule>
       <rule>
          <name value="performer"/>
@@ -14661,7 +15412,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                <variable value="period"/>
             </target>
             <rule>
-               <name value="time"/>
+               <name value="val"/>
                <source>
                   <context value="performer"/>
                   <element value="time"/>
@@ -14671,11 +15422,21 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                   <context value="period"/>
                   <contextType value="variable"/>
                   <element value="start"/>
-                  <transform value="evaluate"/>
-                  <parameter>
-                     <valueString value="time.value"/>
-                  </parameter>
+                  <variable value="start"/>
                </target>
+               <dependent>
+                  <name value="TSDateTime"/>
+                  <variable value="time">
+                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                        <valueUrl value="id"/>
+                     </extension>
+                  </variable>
+                  <variable value="start">
+                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                        <valueUrl value="id"/>
+                     </extension>
+                  </variable>
+               </dependent>
             </rule>
          </rule>
          <rule>

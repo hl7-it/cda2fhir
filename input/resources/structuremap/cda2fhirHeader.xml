@@ -72,7 +72,7 @@ group ClinicalDocumentToBundle(source cda : ClinicalDocument, target patient : P
   cda -&gt; bundle.id = uuid() &quot;id&quot;;
   cda.id -&gt; bundle.identifier &quot;identifier&quot;;
   cda -&gt; bundle.type = &apos;transaction&apos; &quot;type&quot;;
-  cda.effectiveTime -&gt; bundle.timestamp;
+  cda -&gt; bundle.timestamp = (timestamp.now()) &quot;date&quot;;
   cda then ClinicalDocumentComposition(cda, composition, patient, encounter, bundle, DocumentReference) &quot;composition&quot;;
 }
 
@@ -95,7 +95,7 @@ group ClinicalDocumentComposition(source src : ClinicalDocument, target tgt : Co
       code.displayName as display -&gt; tgt.title = cast(display, &apos;string&apos;);
     } &quot;display&quot;;
   } &quot;title&quot;;
-  src.effectiveTime -&gt; tgt.date;
+  src.effectiveTime as effectiveTime -&gt; tgt.date = create(&apos;dateTime&apos;) as value then TSDateTime(effectiveTime, value);
   src.versionNumber as versionNumber where (value &gt; 1) -&gt; tgt.extension as ext2 then ChExtEprVersionNumber(versionNumber, ext2);
   src.confidentialityCode -&gt; tgt.confidentiality;
   src.recordTarget as recordTarget then {
@@ -308,10 +308,11 @@ group ClinicalDocumentComposition(source src : ClinicalDocument, target tgt : Co
     } &quot;DataEnter&quot;;
   } &quot;srcAuthor&quot;;
   // START INFORMANT 1
-  src.informant as informant -&gt;  bundle.entry as e11,  e11.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e11.resource = create(&apos;PractitionerRole&apos;) as practitionerRole,  practitionerRole.id = uuid() as uuid1,  e11.fullUrl = append(&apos;https://example/Practitioner/&apos;, uuid1),  request.url = &apos;PractitionerRole&apos; then {
-    informant -&gt; tgt.attester as attester then {
-      informant -&gt; attester.mode = &apos;professional&apos; &quot;mode&quot;;
-      informant.assignedEntity as assignedEntity -&gt;  attester.party = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/PractitionerRole/&apos; + %practitionerRole.id) then {
+  src.informant as informant then {
+    informant.assignedEntity as assignedEntity -&gt;  bundle.entry as e11,  e11.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e11.resource = create(&apos;PractitionerRole&apos;) as practitionerRole,  practitionerRole.id = uuid() as uuid1,  e11.fullUrl = append(&apos;https://example/PractitionerRole/&apos;, uuid1),  request.url = &apos;PractitionerRole&apos; then {
+      informant -&gt; tgt.attester as attester then {
+        informant -&gt; attester.mode = &apos;professional&apos; &quot;mode&quot;;
+        informant -&gt;  attester.party = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/PractitionerRole/&apos; + %practitionerRole.id) &quot;reference&quot;;
         assignedEntity.code -&gt; practitionerRole.code;
         assignedEntity as entity -&gt;  bundle.entry as e12,  e12.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;PUT&apos;,  e12.resource = create(&apos;Practitioner&apos;) as practitioner then {
           entity -&gt; practitioner.meta as meta then {
@@ -410,18 +411,21 @@ group ClinicalDocumentComposition(source src : ClinicalDocument, target tgt : Co
     } &quot;informant&quot;;
   } &quot;inform&quot;;
   // START INFORMANT 2
-  src.informant as informant -&gt;  bundle.entry as e16,  e16.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e16.resource = create(&apos;RelatedPerson&apos;) as relatedPerson,  relatedPerson.id = uuid() as uuid1,  e16.fullUrl = append(&apos;https://example/RelatedPerson/&apos;, uuid1),  request.url = &apos;RelatedPerson&apos; then {
-    informant -&gt; tgt.attester as attester then {
-      informant -&gt; attester.mode = &apos;professional&apos; &quot;mode&quot;;
-      informant.relatedEntity as related -&gt;  attester.party = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/RelatedPerson/&apos; + %relatedPerson.id) then {
-        related.code -&gt; relatedPerson.relationship;
-        related.telecom -&gt; relatedPerson.telecom;
-        related.addr -&gt; relatedPerson.address;
-        related.name -&gt; relatedPerson.name;
-        related.birthTime as date then {
-          date.value as value -&gt; relatedPerson.birthDate = truncate(value, 10) &quot;valueD&quot;;
-        } &quot;BirthInformant&quot;;
-        related -&gt;  relatedPerson.patient = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patientResource.id) &quot;reference&quot;;
+  src.informant as informant then {
+    informant.relatedEntity as related -&gt;  bundle.entry as e16,  e16.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e16.resource = create(&apos;RelatedPerson&apos;) as relatedPerson,  relatedPerson.id = uuid() as uuid1,  e16.fullUrl = append(&apos;https://example/RelatedPerson/&apos;, uuid1),  request.url = &apos;RelatedPerson&apos; then {
+      informant -&gt; tgt.attester as attester then {
+        informant -&gt; attester.mode = &apos;professional&apos; &quot;mode&quot;;
+        informant -&gt;  attester.party = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/RelatedPerson/&apos; + %relatedPerson.id) &quot;reference&quot;;
+        related.relatedPerson as Person then {
+          related.code -&gt; relatedPerson.relationship;
+          related.telecom -&gt; relatedPerson.telecom;
+          related.addr -&gt; relatedPerson.address;
+          Person.name -&gt; relatedPerson.name;
+          related.birthTime as date then {
+            date.value as value -&gt; relatedPerson.birthDate = truncate(value, 10) &quot;valueD&quot;;
+          } &quot;birthinformant&quot;;
+          related -&gt;  relatedPerson.patient = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patientResource.id) &quot;reference&quot;;
+        } &quot;relatedPerson1&quot;;
       } &quot;relatedPerson&quot;;
     } &quot;informant&quot;;
   } &quot;inform2&quot;;
@@ -446,7 +450,7 @@ group ClinicalDocumentComposition(source src : ClinicalDocument, target tgt : Co
           } &quot;r&quot;;
         } &quot;identifier&quot;;
         assignedCustodian -&gt;  DocumentReference.custodian = create(&apos;Reference&apos;) as referenceCU,  referenceCU.reference = (&apos;https://example/Organization/&apos; + %Organization.id) &quot;RefCustodian&quot;;
-        representedCustodianOrganization -&gt;  tgt.custodian = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Organization/&apos; + %Organization.id) &quot;custodian&quot;;
+        representedCustodianOrganization -&gt;  tgt.custodian = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Organization/&apos; + %Organization.id) then CustodianOrganization(representedCustodianOrganization, Organization) &quot;custodian1&quot;;
       };
     } &quot;organization&quot;;
   };
@@ -506,7 +510,7 @@ group ClinicalDocumentComposition(source src : ClinicalDocument, target tgt : Co
             receivedOrganization.name as v -&gt; organization.name = (v.other);
             receivedOrganization.telecom -&gt; organization.telecom;
             receivedOrganization.addr -&gt; organization.address;
-            receivedOrganization.asOrganizationPartOf as asOrganizationPartOf -&gt;  bundle.entry as e21,  e21.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;PUT&apos;,  e21.resource = create(&apos;Organization&apos;) as organization2,  organization2.id = uuid() as uuid4,  e21.fullUrl = append(&apos;https://example/&apos;, uuid4),  organization.partOf = create(&apos;Reference&apos;) as referenceor,  referenceor.reference = (&apos;https://example/&apos; + %organization2.id) then {
+            receivedOrganization.asOrganizationPartOf as asOrganizationPartOf -&gt;  bundle.entry as e21,  e21.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;PUT&apos;,  e21.resource = create(&apos;Organization&apos;) as organization2,  organization2.id = uuid() as uuid4,  e21.fullUrl = append(&apos;https://example/Organization&apos;, uuid4),  organization.partOf = create(&apos;Reference&apos;) as referenceor,  referenceor.reference = (&apos;https://example/Organization&apos; + %organization2.id) then {
               asOrganizationPartOf -&gt; organization2.meta as meta then {
                 asOrganizationPartOf -&gt; meta.tag = create(&apos;Coding&apos;) as coding then {
                   asOrganizationPartOf -&gt; coding.system = &apos;http://algoritmodiscoring&apos; &quot;system&quot;;
@@ -622,14 +626,14 @@ group ClinicalDocumentComposition(source src : ClinicalDocument, target tgt : Co
                   } &quot;ext&quot;;
                   id.assigningAuthorityName as s -&gt;  identifier.assigner as a,  a.display = s;
                   id.root as r then {
-                    id.extension as ext -&gt;  organization.id = (r + &apos;-&apos; + ext) as uuid2,  e25.fullUrl = append(&apos;https://example/Organization/&apos;, uuid2),  practitionerRole.organization = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Organization/&apos; + %organization.id);
+                    id.extension as ext -&gt;  asorganization.id = (r + &apos;-&apos; + ext) as uuid2,  e26.fullUrl = append(&apos;https://example/Organization/&apos;, uuid2),  organization.partOf = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Organization/&apos; + %asorganization.id);
                   } &quot;r&quot;;
                 } &quot;identifier&quot;;
                 asOrgPartOf1.code -&gt; asorganization.type;
                 asOrgPartOf1.statusCode as status where (code = &apos;active&apos;) -&gt;  asorganization.active = create(&apos;boolean&apos;),  asorganization.active = true;
                 // asOrgPartOf1.effectiveTime -&gt;
                 asOrgPartOf1.wholeOrganization as wholeOrg then {
-                  wholeOrg as wholeOrg1 -&gt;  bundle.entry as e27,  e27.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;PUT&apos;,  e27.resource = create(&apos;Organization&apos;) as wholeorganization,  wholeorganization.id = uuid() as uuid4,  e27.fullUrl = append(&apos;https://example/Organization/&apos;, uuid4),  asorganization.partOf = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/&apos; + %wholeorganization.id) then {
+                  wholeOrg as wholeOrg1 -&gt;  bundle.entry as e27,  e27.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;PUT&apos;,  e27.resource = create(&apos;Organization&apos;) as wholeorganization,  wholeorganization.id = uuid() as uuid4,  e27.fullUrl = append(&apos;https://example/Organization/&apos;, uuid4),  asorganization.partOf = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Organization/&apos; + %wholeorganization.id) then {
                     wholeOrg1 -&gt; wholeorganization.meta as meta then {
                       wholeOrg1 -&gt; meta.tag = create(&apos;Coding&apos;) as coding then {
                         wholeOrg1 -&gt; coding.system = &apos;http://algoritmodiscoring&apos; &quot;system&quot;;
@@ -665,7 +669,7 @@ group ClinicalDocumentComposition(source src : ClinicalDocument, target tgt : Co
       Auth -&gt; attester.mode = &apos;professional&apos; &quot;mode&quot;;
       Auth.assignedEntity as entity -&gt;  attester.party = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/PractitionerRole/&apos; + %practitionerRole.id) then {
         entity.code -&gt; practitionerRole.code;
-        entity -&gt;  bundle.entry as e29,  e29.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;PUT&apos;,  e29.resource = create(&apos;Practitioner&apos;) as practitioner,  practitioner.id = uuid() as uuid2,  e29.fullUrl = append(&apos;https://example/&apos;, uuid2),  practitionerRole.practitioner = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/&apos; + %practitioner.id) then {
+        entity -&gt;  bundle.entry as e29,  e29.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;PUT&apos;,  e29.resource = create(&apos;Practitioner&apos;) as practitioner,  practitioner.id = uuid() as uuid2,  e29.fullUrl = append(&apos;https://example/Practitioner&apos;, uuid2),  practitionerRole.practitioner = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Practitioner&apos; + %practitioner.id) then {
           entity -&gt; practitioner.meta as meta then {
             entity -&gt; meta.tag = create(&apos;Coding&apos;) as coding then {
               entity -&gt; coding.system = &apos;http://algoritmodiscoring&apos; &quot;system&quot;;
@@ -726,12 +730,12 @@ group ClinicalDocumentComposition(source src : ClinicalDocument, target tgt : Co
               } &quot;ext&quot;;
               id.assigningAuthorityName as s -&gt;  identifier.assigner as a,  a.display = s;
               id.root as r then {
-                id.extension as ext -&gt;  asOrganizationpartof.id = (r + &apos;-&apos; + ext) as uuid4,  e31.fullUrl = &apos;Organization&apos;,  organization.partOf = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Organization/&apos; + %asOrganizationpartof.id);
+                id.extension as ext -&gt;  asOrganizationpartof.id = (r + &apos;-&apos; + ext) as uuid4,  e31.fullUrl = append(&apos;https://example/Organization/&apos;, uuid4),  organization.partOf = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Organization/&apos; + %asOrganizationpartof.id);
               } &quot;r&quot;;
             } &quot;identifier&quot;;
             organizationpartof.code -&gt; asOrganizationpartof.type;
             organizationpartof.statusCode as status where (code = &apos;active&apos;) -&gt;  asOrganizationpartof.active = create(&apos;boolean&apos;),  asOsrganizationpartof.active = &apos;true&apos;;
-            organizationpartof.wholeOrganization as wholeorg -&gt;  bundle.entry as e32,  e32.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;PUT&apos;,  e32.resource = create(&apos;Organization&apos;) as wholeOrganization,  wholeOrganization.id = uuid() as uuid5,  e32.fullUrl = append(&apos;https://example/&apos;, uuid5),  asOrganizationpartof.partOf = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/&apos; + %wholeOrganization.id) then {
+            organizationpartof.wholeOrganization as wholeorg -&gt;  bundle.entry as e32,  e32.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;PUT&apos;,  e32.resource = create(&apos;Organization&apos;) as wholeOrganization,  wholeOrganization.id = uuid() as uuid5,  e32.fullUrl = append(&apos;https://example/Organization/&apos;, uuid5),  asOrganizationpartof.partOf = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Organization/&apos; + %wholeOrganization.id) then {
               wholeorg -&gt; wholeOrganization.meta as meta then {
                 wholeorg -&gt; meta.tag = create(&apos;Coding&apos;) as coding then {
                   wholeorg -&gt; coding.system = &apos;http://algoritmodiscoring&apos; &quot;system&quot;;
@@ -760,7 +764,10 @@ group ClinicalDocumentComposition(source src : ClinicalDocument, target tgt : Co
   // PARTICIPANT
   src.participant as participant then {
     participant.associatedEntity as associetedEntity -&gt;  bundle.entry as e313,  e313.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e313.resource = create(&apos;PractitionerRole&apos;) as practitionerRole,  practitionerRole.id = uuid() as uuid1,  e313.fullUrl = append(&apos;https://example/PractitionerRole/&apos;, uuid1),  request.url = &apos;PractitionerRole&apos;,  encounter.participant = create(&apos;BackboneElement&apos;) as participant1 then {
-      participant.time as time -&gt;  participant1.period as period,  period.start = (time.value);
+      // participant.time as time-&gt;participant1.period as period ,period.start=(time.value);
+      participant -&gt; participant1.period = create(&apos;Period&apos;) as period then {
+        participant.time as time -&gt; period.start = create(&apos;dateTime&apos;) as start then TSDateTime(time, start);
+      } &quot;period&quot;;
       participant as p -&gt; participant1.type as type then {
         p -&gt; type.coding as coding then {
           p -&gt; coding.code = (p.typeCode) &quot;codice&quot;;
@@ -861,7 +868,10 @@ group ClinicalDocumentComposition(source src : ClinicalDocument, target tgt : Co
       } &quot;associetedEntity&quot;;
     } &quot;Participant&quot;;
     participant.associatedEntity as associetedEntity where (classCode = &apos;PROV&apos;) -&gt;  bundle.entry as e313,  e313.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e313.resource = create(&apos;PractitionerRole&apos;) as practitionerRole,  practitionerRole.id = uuid() as uuid1,  e313.fullUrl = append(&apos;https://example/PractitionerRole/&apos;, uuid1),  request.url = &apos;PractitionerRole&apos;,  encounter.participant = create(&apos;BackboneElement&apos;) as participant2 then {
-      participant.time as time -&gt;  participant2.period as period,  period.start = (time.value);
+      // participant.time as time-&gt;participant2.period as period, period.start=(time.value);
+      participant -&gt; participant2.period = create(&apos;Period&apos;) as period then {
+        participant.time as time -&gt; period.start = create(&apos;dateTime&apos;) as start then TSDateTime(time, start);
+      } &quot;period&quot;;
       participant as p -&gt; participant2.type as type then {
         p -&gt; type.coding as coding then {
           p -&gt; coding.code = (p.typeCode) &quot;codice&quot;;
@@ -1056,12 +1066,11 @@ group ClinicalDocumentComposition(source src : ClinicalDocument, target tgt : Co
     docOf.serviceEvent as serviceEvent -&gt; tgt.event as event then {
       serviceEvent.code -&gt; event.code &quot;eventCode&quot;;
       serviceEvent.effectiveTime as effectiveTime then {
-        effectiveTime -&gt; event.period as period then {
-          effectiveTime.low -&gt; period.start;
-          effectiveTime.high -&gt; period.end;
-          effectiveTime where (effectiveTime.value) -&gt; period.start = create(&apos;dateTime&apos;) as startP then TSDateTime(effectiveTime, startP) &quot;startP&quot;;
-        } &quot;Period-DT&quot;;
+        effectiveTime -&gt; event.period = create(&apos;Period&apos;) as period then IVLTSPeriod(effectiveTime, period) &quot;period&quot;;
       } &quot;eventDT&quot;;
+      serviceEvent.effectiveTime as effectivetime1 -&gt; event.period = create(&apos;Period&apos;) as period then {
+        effectivetime1 -&gt; period.start = create(&apos;dateTime&apos;) as start then TSDateTime(effectivetime1, start) &quot;val&quot;;
+      } &quot;efft&quot;;
       serviceEvent.performer as performer -&gt;  bundle.entry as e41,  e41.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e41.resource = create(&apos;PractitionerRole&apos;) as practitionerRole,  practitionerRole.id = uuid() as uuid1,  e41.fullUrl = append(&apos;https://example/PractitionerRole/&apos;, uuid1),  request.url = &apos;PractitionerRole&apos; then {
         performer -&gt;  event.detail = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/PractitionerRole/&apos; + %practitionerRole.id) then {
           performer.assignedEntity as assignedEntity -&gt;  bundle.entry as e42,  e42.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;PUT&apos;,  e42.resource = create(&apos;Practitioner&apos;) as practitioner then {
@@ -1159,20 +1168,11 @@ group ClinicalDocumentComposition(source src : ClinicalDocument, target tgt : Co
       } &quot;docOf&quot;;
     };
   };
-  src where src.componentOf.exists().not() -&gt;  tgt.encounter = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Encounter/&apos; + %encounter.id) &quot;encounterExist&quot;;
+  src where src.componentOf.exists().not() -&gt;  tgt.encounter = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Encounter/&apos; + %encounter.id) then ClinicalDocumentEncounter(src, bundle, encounter, patientResource) &quot;encounterExist&quot;;
   src.componentOf as comp then {
     comp where comp.encompassingEncounter.exists().not() -&gt;  tgt.encounter = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Encounter/&apos; + %encounter.id) then ClinicalDocumentEncounter(srcEnc, bundle, encounter, patientResource) &quot;enc&quot;;
     comp.encompassingEncounter as srcEnc -&gt;  tgt.encounter = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Encounter/&apos; + %encounter.id) then ClinicalDocumentEncounter(srcEnc, bundle, encounter, patientResource);
   } &quot;encompassingEncounter&quot;;
-  // Related document
-  src.relatedDocument as relatedDocument -&gt; tgt.relatesTo as relatesTo then {
-    relatedDocument where (typeCode = &apos;RPLC&apos;) -&gt; relatesTo.code = &apos;replaces&apos; &quot;code&quot;;
-    relatedDocument where (typeCode = &apos;APND&apos;) -&gt; relatesTo.code = &apos;appends&apos; &quot;code&quot;;
-    relatedDocument where (typeCode = &apos;XFRM&apos;) -&gt; relatesTo.code = &apos;trasnforms&apos; &quot;code&quot;;
-    relatedDocument.parentDocument as parentDocument then {
-      parentDocument -&gt;  relatesTo.target = create(&apos;Reference&apos;) as reference,  reference.reference = &apos;https://example/CompositionPadre/&apos; &quot;referenceComposition&quot;;
-    };
-  } &quot;relatto&quot;;
 }
 
 group ClinicalDocumentRelatesTo(source src : parentDocument, target tgt : composition) {
@@ -1382,9 +1382,16 @@ group ClinicalDocumentEncounter(source src : EncompassingEncounter, target bundl
   src -&gt;  encounter.subject = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;reference&quot;;
   src -&gt; encounter.status = &apos;finished&apos; &quot;status&quot;;
   // effectiveTime=period
-  src.effectiveTime -&gt; encounter.period;
+  src where effectiveTime.low.exists() or effectiveTime.high.exists() then {
+    src.effectiveTime as eff -&gt; encounter.period = create(&apos;Period&apos;) as period then IVLTSPeriod(eff, period);
+  } &quot;where&quot;;
   // effectiveTime = time-stamp
-  src.effectiveTime as effectivetime1 -&gt;  encounter.period as period,  period.start = (effectivetime1.value);
+  src where effectiveTime.low.exists().not() or effectiveTime.high.exists().not() then {
+    src.effectiveTime as effectivetime1 -&gt; encounter.period = create(&apos;Period&apos;) as period then {
+      effectivetime1 -&gt; period.start = create(&apos;dateTime&apos;) as start then TSDateTime(effectivetime1, start) &quot;val&quot;;
+    } &quot;efft&quot;;
+  } &quot;where&quot;;
+  // src.effectiveTime as effectivetime1 -&gt; encounter.period as period, period.start=(effectivetime1.value);
   src.dischargeDispositionCode as dischargeDispositionCode then {
     dischargeDispositionCode -&gt; encounter.hospitalization as hospitalization then {
       dischargeDispositionCode -&gt; hospitalization.dischargeDisposition &quot;disDisp&quot;;
@@ -1489,7 +1496,10 @@ group ClinicalDocumentEncounter(source src : EncompassingEncounter, target bundl
   } &quot;particpant&quot;;
   src.encounterParticipant as participant then {
     participant.assignedEntity as assignedEntity -&gt;  bundle.entry as e313,  e313.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e313.resource = create(&apos;PractitionerRole&apos;) as practitionerRole,  practitionerRole.id = uuid() as uuid1,  e313.fullUrl = append(&apos;https://example/PractitionerRole/&apos;, uuid1),  request.url = &apos;PractitionerRole&apos;,  encounter.participant = create(&apos;BackboneElement&apos;) as participant1 then {
-      participant.time as time -&gt;  participant1.period as period,  period.start = (time.value);
+      // participant.time as time-&gt;participant1.period as period ,period.start=(time.value);
+      participant -&gt; participant1.period = create(&apos;Period&apos;) as period then {
+        participant.time as time -&gt; period.start = create(&apos;dateTime&apos;) as start then TSDateTime(time, start);
+      } &quot;period&quot;;
       participant as p -&gt; participant1.type as type then {
         p -&gt; type.coding as coding then {
           p -&gt; coding.code = (p.typeCode) &quot;codice&quot;;
@@ -1990,7 +2000,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
       <alias value="Organization"/>
    </structure>
    <structure>
-      <url value="http://hl7.org/fhir/StructureDefinition/HealthCareFacility"/>
+      <url value="http://hl7.org/fhir/cda/StructureDefinition/HealthCareFacility"/>
       <mode value="queried"/>
       <alias value="HealthCareFacility"/>
    </structure>
@@ -2467,18 +2477,18 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
          </target>
       </rule>
       <rule>
-         <name value="effectiveTime"/>
+         <name value="date"/>
          <source>
             <context value="cda"/>
-            <element value="effectiveTime"/>
-            <variable value="vvv"/>
          </source>
          <target>
             <context value="bundle"/>
             <contextType value="variable"/>
             <element value="timestamp"/>
-            <variable value="vvv"/>
-            <transform value="create"/>
+            <transform value="evaluate"/>
+            <parameter>
+               <valueString value="timestamp.now()"/>
+            </parameter>
          </target>
       </rule>
       <rule>
@@ -2784,15 +2794,31 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
          <source>
             <context value="src"/>
             <element value="effectiveTime"/>
-            <variable value="vvv"/>
+            <variable value="effectiveTime"/>
          </source>
          <target>
             <context value="tgt"/>
             <contextType value="variable"/>
             <element value="date"/>
-            <variable value="vvv"/>
+            <variable value="value"/>
             <transform value="create"/>
+            <parameter>
+               <valueString value="dateTime"/>
+            </parameter>
          </target>
+         <dependent>
+            <name value="TSDateTime"/>
+            <variable value="effectiveTime">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+            <variable value="value">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+         </dependent>
       </rule>
       <rule>
          <name value="versionNumber"/>
@@ -5923,121 +5949,127 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
             <element value="informant"/>
             <variable value="informant"/>
          </source>
-         <target>
-            <context value="bundle"/>
-            <contextType value="variable"/>
-            <element value="entry"/>
-            <variable value="e11"/>
-         </target>
-         <target>
-            <context value="e11"/>
-            <contextType value="variable"/>
-            <element value="request"/>
-            <variable value="request"/>
-            <transform value="create"/>
-            <parameter>
-               <valueString value="BackboneElement"/>
-            </parameter>
-         </target>
-         <target>
-            <context value="request"/>
-            <contextType value="variable"/>
-            <element value="method"/>
-            <transform value="copy"/>
-            <parameter>
-               <valueString value="POST"/>
-            </parameter>
-         </target>
-         <target>
-            <context value="e11"/>
-            <contextType value="variable"/>
-            <element value="resource"/>
-            <variable value="practitionerRole"/>
-            <transform value="create"/>
-            <parameter>
-               <valueString value="PractitionerRole"/>
-            </parameter>
-         </target>
-         <target>
-            <context value="practitionerRole"/>
-            <contextType value="variable"/>
-            <element value="id"/>
-            <variable value="uuid1"/>
-            <transform value="uuid"/>
-         </target>
-         <target>
-            <context value="e11"/>
-            <contextType value="variable"/>
-            <element value="fullUrl"/>
-            <transform value="append"/>
-            <parameter>
-               <valueString value="https://example/Practitioner/"/>
-            </parameter>
-            <parameter>
-               <valueId value="uuid1"/>
-            </parameter>
-         </target>
-         <target>
-            <context value="request"/>
-            <contextType value="variable"/>
-            <element value="url"/>
-            <transform value="copy"/>
-            <parameter>
-               <valueString value="PractitionerRole"/>
-            </parameter>
-         </target>
          <rule>
             <name value="informant"/>
             <source>
                <context value="informant"/>
+               <element value="assignedEntity"/>
+               <variable value="assignedEntity"/>
             </source>
             <target>
-               <context value="tgt"/>
+               <context value="bundle"/>
                <contextType value="variable"/>
-               <element value="attester"/>
-               <variable value="attester"/>
+               <element value="entry"/>
+               <variable value="e11"/>
             </target>
-            <rule>
-               <name value="mode"/>
-               <source>
-                  <context value="informant"/>
-               </source>
-               <target>
-                  <context value="attester"/>
-                  <contextType value="variable"/>
-                  <element value="mode"/>
-                  <transform value="copy"/>
-                  <parameter>
-                     <valueString value="professional"/>
-                  </parameter>
-               </target>
-            </rule>
+            <target>
+               <context value="e11"/>
+               <contextType value="variable"/>
+               <element value="request"/>
+               <variable value="request"/>
+               <transform value="create"/>
+               <parameter>
+                  <valueString value="BackboneElement"/>
+               </parameter>
+            </target>
+            <target>
+               <context value="request"/>
+               <contextType value="variable"/>
+               <element value="method"/>
+               <transform value="copy"/>
+               <parameter>
+                  <valueString value="POST"/>
+               </parameter>
+            </target>
+            <target>
+               <context value="e11"/>
+               <contextType value="variable"/>
+               <element value="resource"/>
+               <variable value="practitionerRole"/>
+               <transform value="create"/>
+               <parameter>
+                  <valueString value="PractitionerRole"/>
+               </parameter>
+            </target>
+            <target>
+               <context value="practitionerRole"/>
+               <contextType value="variable"/>
+               <element value="id"/>
+               <variable value="uuid1"/>
+               <transform value="uuid"/>
+            </target>
+            <target>
+               <context value="e11"/>
+               <contextType value="variable"/>
+               <element value="fullUrl"/>
+               <transform value="append"/>
+               <parameter>
+                  <valueString value="https://example/PractitionerRole/"/>
+               </parameter>
+               <parameter>
+                  <valueId value="uuid1"/>
+               </parameter>
+            </target>
+            <target>
+               <context value="request"/>
+               <contextType value="variable"/>
+               <element value="url"/>
+               <transform value="copy"/>
+               <parameter>
+                  <valueString value="PractitionerRole"/>
+               </parameter>
+            </target>
             <rule>
                <name value="attester"/>
                <source>
                   <context value="informant"/>
-                  <element value="assignedEntity"/>
-                  <variable value="assignedEntity"/>
                </source>
                <target>
-                  <context value="attester"/>
+                  <context value="tgt"/>
                   <contextType value="variable"/>
-                  <element value="party"/>
-                  <variable value="reference"/>
-                  <transform value="create"/>
-                  <parameter>
-                     <valueString value="Reference"/>
-                  </parameter>
+                  <element value="attester"/>
+                  <variable value="attester"/>
                </target>
-               <target>
-                  <context value="reference"/>
-                  <contextType value="variable"/>
-                  <element value="reference"/>
-                  <transform value="evaluate"/>
-                  <parameter>
-                     <valueString value="'https://example/PractitionerRole/' + %practitionerRole.id"/>
-                  </parameter>
-               </target>
+               <rule>
+                  <name value="mode"/>
+                  <source>
+                     <context value="informant"/>
+                  </source>
+                  <target>
+                     <context value="attester"/>
+                     <contextType value="variable"/>
+                     <element value="mode"/>
+                     <transform value="copy"/>
+                     <parameter>
+                        <valueString value="professional"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="reference"/>
+                  <source>
+                     <context value="informant"/>
+                  </source>
+                  <target>
+                     <context value="attester"/>
+                     <contextType value="variable"/>
+                     <element value="party"/>
+                     <variable value="reference"/>
+                     <transform value="create"/>
+                     <parameter>
+                        <valueString value="Reference"/>
+                     </parameter>
+                  </target>
+                  <target>
+                     <context value="reference"/>
+                     <contextType value="variable"/>
+                     <element value="reference"/>
+                     <transform value="evaluate"/>
+                     <parameter>
+                        <valueString value="'https://example/PractitionerRole/' + %practitionerRole.id"/>
+                     </parameter>
+                  </target>
+               </rule>
                <rule>
                   <name value="code"/>
                   <source>
@@ -7329,218 +7361,111 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
             <element value="informant"/>
             <variable value="informant"/>
          </source>
-         <target>
-            <context value="bundle"/>
-            <contextType value="variable"/>
-            <element value="entry"/>
-            <variable value="e16"/>
-         </target>
-         <target>
-            <context value="e16"/>
-            <contextType value="variable"/>
-            <element value="request"/>
-            <variable value="request"/>
-            <transform value="create"/>
-            <parameter>
-               <valueString value="BackboneElement"/>
-            </parameter>
-         </target>
-         <target>
-            <context value="request"/>
-            <contextType value="variable"/>
-            <element value="method"/>
-            <transform value="copy"/>
-            <parameter>
-               <valueString value="POST"/>
-            </parameter>
-         </target>
-         <target>
-            <context value="e16"/>
-            <contextType value="variable"/>
-            <element value="resource"/>
-            <variable value="relatedPerson"/>
-            <transform value="create"/>
-            <parameter>
-               <valueString value="RelatedPerson"/>
-            </parameter>
-         </target>
-         <target>
-            <context value="relatedPerson"/>
-            <contextType value="variable"/>
-            <element value="id"/>
-            <variable value="uuid1"/>
-            <transform value="uuid"/>
-         </target>
-         <target>
-            <context value="e16"/>
-            <contextType value="variable"/>
-            <element value="fullUrl"/>
-            <transform value="append"/>
-            <parameter>
-               <valueString value="https://example/RelatedPerson/"/>
-            </parameter>
-            <parameter>
-               <valueId value="uuid1"/>
-            </parameter>
-         </target>
-         <target>
-            <context value="request"/>
-            <contextType value="variable"/>
-            <element value="url"/>
-            <transform value="copy"/>
-            <parameter>
-               <valueString value="RelatedPerson"/>
-            </parameter>
-         </target>
          <rule>
             <name value="informant"/>
             <source>
                <context value="informant"/>
+               <element value="relatedEntity"/>
+               <variable value="related"/>
             </source>
             <target>
-               <context value="tgt"/>
+               <context value="bundle"/>
                <contextType value="variable"/>
-               <element value="attester"/>
-               <variable value="attester"/>
+               <element value="entry"/>
+               <variable value="e16"/>
             </target>
-            <rule>
-               <name value="mode"/>
-               <source>
-                  <context value="informant"/>
-               </source>
-               <target>
-                  <context value="attester"/>
-                  <contextType value="variable"/>
-                  <element value="mode"/>
-                  <transform value="copy"/>
-                  <parameter>
-                     <valueString value="professional"/>
-                  </parameter>
-               </target>
-            </rule>
+            <target>
+               <context value="e16"/>
+               <contextType value="variable"/>
+               <element value="request"/>
+               <variable value="request"/>
+               <transform value="create"/>
+               <parameter>
+                  <valueString value="BackboneElement"/>
+               </parameter>
+            </target>
+            <target>
+               <context value="request"/>
+               <contextType value="variable"/>
+               <element value="method"/>
+               <transform value="copy"/>
+               <parameter>
+                  <valueString value="POST"/>
+               </parameter>
+            </target>
+            <target>
+               <context value="e16"/>
+               <contextType value="variable"/>
+               <element value="resource"/>
+               <variable value="relatedPerson"/>
+               <transform value="create"/>
+               <parameter>
+                  <valueString value="RelatedPerson"/>
+               </parameter>
+            </target>
+            <target>
+               <context value="relatedPerson"/>
+               <contextType value="variable"/>
+               <element value="id"/>
+               <variable value="uuid1"/>
+               <transform value="uuid"/>
+            </target>
+            <target>
+               <context value="e16"/>
+               <contextType value="variable"/>
+               <element value="fullUrl"/>
+               <transform value="append"/>
+               <parameter>
+                  <valueString value="https://example/RelatedPerson/"/>
+               </parameter>
+               <parameter>
+                  <valueId value="uuid1"/>
+               </parameter>
+            </target>
+            <target>
+               <context value="request"/>
+               <contextType value="variable"/>
+               <element value="url"/>
+               <transform value="copy"/>
+               <parameter>
+                  <valueString value="RelatedPerson"/>
+               </parameter>
+            </target>
             <rule>
                <name value="relatedPerson"/>
                <source>
                   <context value="informant"/>
-                  <element value="relatedEntity"/>
-                  <variable value="related"/>
                </source>
                <target>
-                  <context value="attester"/>
+                  <context value="tgt"/>
                   <contextType value="variable"/>
-                  <element value="party"/>
-                  <variable value="reference"/>
-                  <transform value="create"/>
-                  <parameter>
-                     <valueString value="Reference"/>
-                  </parameter>
-               </target>
-               <target>
-                  <context value="reference"/>
-                  <contextType value="variable"/>
-                  <element value="reference"/>
-                  <transform value="evaluate"/>
-                  <parameter>
-                     <valueString value="'https://example/RelatedPerson/' + %relatedPerson.id"/>
-                  </parameter>
+                  <element value="attester"/>
+                  <variable value="attester"/>
                </target>
                <rule>
-                  <name value="code"/>
+                  <name value="mode"/>
                   <source>
-                     <context value="related"/>
-                     <element value="code"/>
-                     <variable value="vvv"/>
+                     <context value="informant"/>
                   </source>
                   <target>
-                     <context value="relatedPerson"/>
+                     <context value="attester"/>
                      <contextType value="variable"/>
-                     <element value="relationship"/>
-                     <variable value="vvv"/>
-                     <transform value="create"/>
+                     <element value="mode"/>
+                     <transform value="copy"/>
+                     <parameter>
+                        <valueString value="professional"/>
+                     </parameter>
                   </target>
-               </rule>
-               <rule>
-                  <name value="telecom"/>
-                  <source>
-                     <context value="related"/>
-                     <element value="telecom"/>
-                     <variable value="vvv"/>
-                  </source>
-                  <target>
-                     <context value="relatedPerson"/>
-                     <contextType value="variable"/>
-                     <element value="telecom"/>
-                     <variable value="vvv"/>
-                     <transform value="create"/>
-                  </target>
-               </rule>
-               <rule>
-                  <name value="addr"/>
-                  <source>
-                     <context value="related"/>
-                     <element value="addr"/>
-                     <variable value="vvv"/>
-                  </source>
-                  <target>
-                     <context value="relatedPerson"/>
-                     <contextType value="variable"/>
-                     <element value="address"/>
-                     <variable value="vvv"/>
-                     <transform value="create"/>
-                  </target>
-               </rule>
-               <rule>
-                  <name value="name"/>
-                  <source>
-                     <context value="related"/>
-                     <element value="name"/>
-                     <variable value="vvv"/>
-                  </source>
-                  <target>
-                     <context value="relatedPerson"/>
-                     <contextType value="variable"/>
-                     <element value="name"/>
-                     <variable value="vvv"/>
-                     <transform value="create"/>
-                  </target>
-               </rule>
-               <rule>
-                  <name value="BirthInformant"/>
-                  <source>
-                     <context value="related"/>
-                     <element value="birthTime"/>
-                     <variable value="date"/>
-                  </source>
-                  <rule>
-                     <name value="valueD"/>
-                     <source>
-                        <context value="date"/>
-                        <element value="value"/>
-                        <variable value="value"/>
-                     </source>
-                     <target>
-                        <context value="relatedPerson"/>
-                        <contextType value="variable"/>
-                        <element value="birthDate"/>
-                        <transform value="truncate"/>
-                        <parameter>
-                           <valueId value="value"/>
-                        </parameter>
-                        <parameter>
-                           <valueInteger value="10"/>
-                        </parameter>
-                     </target>
-                  </rule>
                </rule>
                <rule>
                   <name value="reference"/>
                   <source>
-                     <context value="related"/>
+                     <context value="informant"/>
                   </source>
                   <target>
-                     <context value="relatedPerson"/>
+                     <context value="attester"/>
                      <contextType value="variable"/>
-                     <element value="patient"/>
+                     <element value="party"/>
                      <variable value="reference"/>
                      <transform value="create"/>
                      <parameter>
@@ -7553,9 +7478,130 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                      <element value="reference"/>
                      <transform value="evaluate"/>
                      <parameter>
-                        <valueString value="'https://example/Patient/' + %patientResource.id"/>
+                        <valueString value="'https://example/RelatedPerson/' + %relatedPerson.id"/>
                      </parameter>
                   </target>
+               </rule>
+               <rule>
+                  <name value="relatedPerson1"/>
+                  <source>
+                     <context value="related"/>
+                     <element value="relatedPerson"/>
+                     <variable value="Person"/>
+                  </source>
+                  <rule>
+                     <name value="code"/>
+                     <source>
+                        <context value="related"/>
+                        <element value="code"/>
+                        <variable value="vvv"/>
+                     </source>
+                     <target>
+                        <context value="relatedPerson"/>
+                        <contextType value="variable"/>
+                        <element value="relationship"/>
+                        <variable value="vvv"/>
+                        <transform value="create"/>
+                     </target>
+                  </rule>
+                  <rule>
+                     <name value="telecom"/>
+                     <source>
+                        <context value="related"/>
+                        <element value="telecom"/>
+                        <variable value="vvv"/>
+                     </source>
+                     <target>
+                        <context value="relatedPerson"/>
+                        <contextType value="variable"/>
+                        <element value="telecom"/>
+                        <variable value="vvv"/>
+                        <transform value="create"/>
+                     </target>
+                  </rule>
+                  <rule>
+                     <name value="addr"/>
+                     <source>
+                        <context value="related"/>
+                        <element value="addr"/>
+                        <variable value="vvv"/>
+                     </source>
+                     <target>
+                        <context value="relatedPerson"/>
+                        <contextType value="variable"/>
+                        <element value="address"/>
+                        <variable value="vvv"/>
+                        <transform value="create"/>
+                     </target>
+                  </rule>
+                  <rule>
+                     <name value="name"/>
+                     <source>
+                        <context value="Person"/>
+                        <element value="name"/>
+                        <variable value="vvv"/>
+                     </source>
+                     <target>
+                        <context value="relatedPerson"/>
+                        <contextType value="variable"/>
+                        <element value="name"/>
+                        <variable value="vvv"/>
+                        <transform value="create"/>
+                     </target>
+                  </rule>
+                  <rule>
+                     <name value="birthinformant"/>
+                     <source>
+                        <context value="related"/>
+                        <element value="birthTime"/>
+                        <variable value="date"/>
+                     </source>
+                     <rule>
+                        <name value="valueD"/>
+                        <source>
+                           <context value="date"/>
+                           <element value="value"/>
+                           <variable value="value"/>
+                        </source>
+                        <target>
+                           <context value="relatedPerson"/>
+                           <contextType value="variable"/>
+                           <element value="birthDate"/>
+                           <transform value="truncate"/>
+                           <parameter>
+                              <valueId value="value"/>
+                           </parameter>
+                           <parameter>
+                              <valueInteger value="10"/>
+                           </parameter>
+                        </target>
+                     </rule>
+                  </rule>
+                  <rule>
+                     <name value="reference"/>
+                     <source>
+                        <context value="related"/>
+                     </source>
+                     <target>
+                        <context value="relatedPerson"/>
+                        <contextType value="variable"/>
+                        <element value="patient"/>
+                        <variable value="reference"/>
+                        <transform value="create"/>
+                        <parameter>
+                           <valueString value="Reference"/>
+                        </parameter>
+                     </target>
+                     <target>
+                        <context value="reference"/>
+                        <contextType value="variable"/>
+                        <element value="reference"/>
+                        <transform value="evaluate"/>
+                        <parameter>
+                           <valueString value="'https://example/Patient/' + %patientResource.id"/>
+                        </parameter>
+                     </target>
+                  </rule>
                </rule>
             </rule>
          </rule>
@@ -7834,7 +7880,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                   </target>
                </rule>
                <rule>
-                  <name value="custodian"/>
+                  <name value="custodian1"/>
                   <source>
                      <context value="representedCustodianOrganization"/>
                   </source>
@@ -7857,6 +7903,19 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                         <valueString value="'https://example/Organization/' + %Organization.id"/>
                      </parameter>
                   </target>
+                  <dependent>
+                     <name value="CustodianOrganization"/>
+                     <variable value="representedCustodianOrganization">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                     <variable value="Organization">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                  </dependent>
                </rule>
             </rule>
          </rule>
@@ -8628,7 +8687,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                            <element value="fullUrl"/>
                            <transform value="append"/>
                            <parameter>
-                              <valueString value="https://example/"/>
+                              <valueString value="https://example/Organization"/>
                            </parameter>
                            <parameter>
                               <valueId value="uuid4"/>
@@ -8650,7 +8709,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                            <element value="reference"/>
                            <transform value="evaluate"/>
                            <parameter>
-                              <valueString value="'https://example/' + %organization2.id"/>
+                              <valueString value="'https://example/Organization' + %organization2.id"/>
                            </parameter>
                         </target>
                         <rule>
@@ -10226,7 +10285,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                                        <variable value="ext"/>
                                     </source>
                                     <target>
-                                       <context value="organization"/>
+                                       <context value="asorganization"/>
                                        <contextType value="variable"/>
                                        <element value="id"/>
                                        <variable value="uuid2"/>
@@ -10236,7 +10295,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                                        </parameter>
                                     </target>
                                     <target>
-                                       <context value="e25"/>
+                                       <context value="e26"/>
                                        <contextType value="variable"/>
                                        <element value="fullUrl"/>
                                        <transform value="append"/>
@@ -10248,9 +10307,9 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                                        </parameter>
                                     </target>
                                     <target>
-                                       <context value="practitionerRole"/>
+                                       <context value="organization"/>
                                        <contextType value="variable"/>
-                                       <element value="organization"/>
+                                       <element value="partOf"/>
                                        <variable value="reference"/>
                                        <transform value="create"/>
                                        <parameter>
@@ -10263,7 +10322,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                                        <element value="reference"/>
                                        <transform value="evaluate"/>
                                        <parameter>
-                                          <valueString value="'https://example/Organization/' + %organization.id"/>
+                                          <valueString value="'https://example/Organization/' + %asorganization.id"/>
                                        </parameter>
                                     </target>
                                  </rule>
@@ -10394,7 +10453,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                                     <element value="reference"/>
                                     <transform value="evaluate"/>
                                     <parameter>
-                                       <valueString value="'https://example/' + %wholeorganization.id"/>
+                                       <valueString value="'https://example/Organization/' + %wholeorganization.id"/>
                                     </parameter>
                                  </target>
                                  <rule>
@@ -10870,7 +10929,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                      <element value="fullUrl"/>
                      <transform value="append"/>
                      <parameter>
-                        <valueString value="https://example/"/>
+                        <valueString value="https://example/Practitioner"/>
                      </parameter>
                      <parameter>
                         <valueId value="uuid2"/>
@@ -10892,7 +10951,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                      <element value="reference"/>
                      <transform value="evaluate"/>
                      <parameter>
-                        <valueString value="'https://example/' + %practitioner.id"/>
+                        <valueString value="'https://example/Practitioner' + %practitioner.id"/>
                      </parameter>
                   </target>
                   <rule>
@@ -11719,9 +11778,12 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                                  <context value="e31"/>
                                  <contextType value="variable"/>
                                  <element value="fullUrl"/>
-                                 <transform value="copy"/>
+                                 <transform value="append"/>
                                  <parameter>
-                                    <valueString value="Organization"/>
+                                    <valueString value="https://example/Organization/"/>
+                                 </parameter>
+                                 <parameter>
+                                    <valueId value="uuid4"/>
                                  </parameter>
                               </target>
                               <target>
@@ -11843,7 +11905,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                            <element value="fullUrl"/>
                            <transform value="append"/>
                            <parameter>
-                              <valueString value="https://example/"/>
+                              <valueString value="https://example/Organization/"/>
                            </parameter>
                            <parameter>
                               <valueId value="uuid5"/>
@@ -11865,7 +11927,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                            <element value="reference"/>
                            <transform value="evaluate"/>
                            <parameter>
-                              <valueString value="'https://example/' + %wholeOrganization.id"/>
+                              <valueString value="'https://example/Organization/' + %wholeOrganization.id"/>
                            </parameter>
                         </target>
                         <rule>
@@ -12220,27 +12282,52 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                </parameter>
             </target>
             <rule>
-               <name value="time"/>
+               <name value="period"/>
                <source>
                   <context value="participant"/>
-                  <element value="time"/>
-                  <variable value="time"/>
                </source>
                <target>
                   <context value="participant1"/>
                   <contextType value="variable"/>
                   <element value="period"/>
                   <variable value="period"/>
-               </target>
-               <target>
-                  <context value="period"/>
-                  <contextType value="variable"/>
-                  <element value="start"/>
-                  <transform value="evaluate"/>
+                  <transform value="create"/>
                   <parameter>
-                     <valueString value="time.value"/>
+                     <valueString value="Period"/>
                   </parameter>
                </target>
+               <rule>
+                  <name value="time"/>
+                  <source>
+                     <context value="participant"/>
+                     <element value="time"/>
+                     <variable value="time"/>
+                  </source>
+                  <target>
+                     <context value="period"/>
+                     <contextType value="variable"/>
+                     <element value="start"/>
+                     <variable value="start"/>
+                     <transform value="create"/>
+                     <parameter>
+                        <valueString value="dateTime"/>
+                     </parameter>
+                  </target>
+                  <dependent>
+                     <name value="TSDateTime"/>
+                     <variable value="time">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                     <variable value="start">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                  </dependent>
+               </rule>
+               <documentation value="participant.time as time->participant1.period as period ,period.start=(time.value);"/>
             </rule>
             <rule>
                <name value="type"/>
@@ -13673,27 +13760,52 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                </parameter>
             </target>
             <rule>
-               <name value="time"/>
+               <name value="period"/>
                <source>
                   <context value="participant"/>
-                  <element value="time"/>
-                  <variable value="time"/>
                </source>
                <target>
                   <context value="participant2"/>
                   <contextType value="variable"/>
                   <element value="period"/>
                   <variable value="period"/>
-               </target>
-               <target>
-                  <context value="period"/>
-                  <contextType value="variable"/>
-                  <element value="start"/>
-                  <transform value="evaluate"/>
+                  <transform value="create"/>
                   <parameter>
-                     <valueString value="time.value"/>
+                     <valueString value="Period"/>
                   </parameter>
                </target>
+               <rule>
+                  <name value="time"/>
+                  <source>
+                     <context value="participant"/>
+                     <element value="time"/>
+                     <variable value="time"/>
+                  </source>
+                  <target>
+                     <context value="period"/>
+                     <contextType value="variable"/>
+                     <element value="start"/>
+                     <variable value="start"/>
+                     <transform value="create"/>
+                     <parameter>
+                        <valueString value="dateTime"/>
+                     </parameter>
+                  </target>
+                  <dependent>
+                     <name value="TSDateTime"/>
+                     <variable value="time">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                     <variable value="start">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                  </dependent>
+               </rule>
+               <documentation value="participant.time as time->participant2.period as period, period.start=(time.value);"/>
             </rule>
             <rule>
                <name value="type"/>
@@ -16317,7 +16429,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                   <variable value="effectiveTime"/>
                </source>
                <rule>
-                  <name value="Period-DT"/>
+                  <name value="period"/>
                   <source>
                      <context value="effectiveTime"/>
                   </source>
@@ -16326,67 +16438,71 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                      <contextType value="variable"/>
                      <element value="period"/>
                      <variable value="period"/>
+                     <transform value="create"/>
+                     <parameter>
+                        <valueString value="Period"/>
+                     </parameter>
                   </target>
-                  <rule>
-                     <name value="low"/>
-                     <source>
-                        <context value="effectiveTime"/>
-                        <element value="low"/>
-                        <variable value="vvv"/>
-                     </source>
-                     <target>
-                        <context value="period"/>
-                        <contextType value="variable"/>
-                        <element value="start"/>
-                        <variable value="vvv"/>
-                        <transform value="create"/>
-                     </target>
-                  </rule>
-                  <rule>
-                     <name value="high"/>
-                     <source>
-                        <context value="effectiveTime"/>
-                        <element value="high"/>
-                        <variable value="vvv"/>
-                     </source>
-                     <target>
-                        <context value="period"/>
-                        <contextType value="variable"/>
-                        <element value="end"/>
-                        <variable value="vvv"/>
-                        <transform value="create"/>
-                     </target>
-                  </rule>
-                  <rule>
-                     <name value="startP"/>
-                     <source>
-                        <context value="effectiveTime"/>
-                        <condition value="(effectiveTime.value)"/>
-                     </source>
-                     <target>
-                        <context value="period"/>
-                        <contextType value="variable"/>
-                        <element value="start"/>
-                        <variable value="startP"/>
-                        <transform value="create"/>
-                        <parameter>
-                           <valueString value="dateTime"/>
-                        </parameter>
-                     </target>
-                     <dependent>
-                        <name value="TSDateTime"/>
-                        <variable value="effectiveTime">
-                           <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
-                              <valueUrl value="id"/>
-                           </extension>
-                        </variable>
-                        <variable value="startP">
-                           <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
-                              <valueUrl value="id"/>
-                           </extension>
-                        </variable>
-                     </dependent>
-                  </rule>
+                  <dependent>
+                     <name value="IVLTSPeriod"/>
+                     <variable value="effectiveTime">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                     <variable value="period">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                  </dependent>
+               </rule>
+            </rule>
+            <rule>
+               <name value="efft"/>
+               <source>
+                  <context value="serviceEvent"/>
+                  <element value="effectiveTime"/>
+                  <variable value="effectivetime1"/>
+               </source>
+               <target>
+                  <context value="event"/>
+                  <contextType value="variable"/>
+                  <element value="period"/>
+                  <variable value="period"/>
+                  <transform value="create"/>
+                  <parameter>
+                     <valueString value="Period"/>
+                  </parameter>
+               </target>
+               <rule>
+                  <name value="val"/>
+                  <source>
+                     <context value="effectivetime1"/>
+                  </source>
+                  <target>
+                     <context value="period"/>
+                     <contextType value="variable"/>
+                     <element value="start"/>
+                     <variable value="start"/>
+                     <transform value="create"/>
+                     <parameter>
+                        <valueString value="dateTime"/>
+                     </parameter>
+                  </target>
+                  <dependent>
+                     <name value="TSDateTime"/>
+                     <variable value="effectivetime1">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                     <variable value="start">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                  </dependent>
                </rule>
             </rule>
             <rule>
@@ -17785,6 +17901,29 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                <valueString value="'https://example/Encounter/' + %encounter.id"/>
             </parameter>
          </target>
+         <dependent>
+            <name value="ClinicalDocumentEncounter"/>
+            <variable value="src">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+            <variable value="bundle">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+            <variable value="encounter">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+            <variable value="patientResource">
+               <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                  <valueUrl value="id"/>
+               </extension>
+            </variable>
+         </dependent>
       </rule>
       <rule>
          <name value="encompassingEncounter"/>
@@ -17892,102 +18031,6 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                </variable>
             </dependent>
          </rule>
-      </rule>
-      <rule>
-         <name value="relatto"/>
-         <source>
-            <context value="src"/>
-            <element value="relatedDocument"/>
-            <variable value="relatedDocument"/>
-         </source>
-         <target>
-            <context value="tgt"/>
-            <contextType value="variable"/>
-            <element value="relatesTo"/>
-            <variable value="relatesTo"/>
-         </target>
-         <rule>
-            <name value="code"/>
-            <source>
-               <context value="relatedDocument"/>
-               <condition value="(typeCode = 'RPLC')"/>
-            </source>
-            <target>
-               <context value="relatesTo"/>
-               <contextType value="variable"/>
-               <element value="code"/>
-               <transform value="copy"/>
-               <parameter>
-                  <valueString value="replaces"/>
-               </parameter>
-            </target>
-         </rule>
-         <rule>
-            <name value="code"/>
-            <source>
-               <context value="relatedDocument"/>
-               <condition value="(typeCode = 'APND')"/>
-            </source>
-            <target>
-               <context value="relatesTo"/>
-               <contextType value="variable"/>
-               <element value="code"/>
-               <transform value="copy"/>
-               <parameter>
-                  <valueString value="appends"/>
-               </parameter>
-            </target>
-         </rule>
-         <rule>
-            <name value="code"/>
-            <source>
-               <context value="relatedDocument"/>
-               <condition value="(typeCode = 'XFRM')"/>
-            </source>
-            <target>
-               <context value="relatesTo"/>
-               <contextType value="variable"/>
-               <element value="code"/>
-               <transform value="copy"/>
-               <parameter>
-                  <valueString value="trasnforms"/>
-               </parameter>
-            </target>
-         </rule>
-         <rule>
-            <name value="parentDocument"/>
-            <source>
-               <context value="relatedDocument"/>
-               <element value="parentDocument"/>
-               <variable value="parentDocument"/>
-            </source>
-            <rule>
-               <name value="referenceComposition"/>
-               <source>
-                  <context value="parentDocument"/>
-               </source>
-               <target>
-                  <context value="relatesTo"/>
-                  <contextType value="variable"/>
-                  <element value="target"/>
-                  <variable value="reference"/>
-                  <transform value="create"/>
-                  <parameter>
-                     <valueString value="Reference"/>
-                  </parameter>
-               </target>
-               <target>
-                  <context value="reference"/>
-                  <contextType value="variable"/>
-                  <element value="reference"/>
-                  <transform value="copy"/>
-                  <parameter>
-                     <valueString value="https://example/CompositionPadre/"/>
-                  </parameter>
-               </target>
-            </rule>
-         </rule>
-         <documentation value="Related document"/>
       </rule>
    </group>
    <group>
@@ -20779,43 +20822,97 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
          </target>
       </rule>
       <rule>
-         <name value="effectiveTime"/>
+         <name value="where"/>
          <source>
             <context value="src"/>
-            <element value="effectiveTime"/>
-            <variable value="vvv"/>
+            <condition value="effectiveTime.low.exists() or effectiveTime.high.exists()"/>
          </source>
-         <target>
-            <context value="encounter"/>
-            <contextType value="variable"/>
-            <element value="period"/>
-            <variable value="vvv"/>
-            <transform value="create"/>
-         </target>
+         <rule>
+            <name value="effectiveTime"/>
+            <source>
+               <context value="src"/>
+               <element value="effectiveTime"/>
+               <variable value="eff"/>
+            </source>
+            <target>
+               <context value="encounter"/>
+               <contextType value="variable"/>
+               <element value="period"/>
+               <variable value="period"/>
+               <transform value="create"/>
+               <parameter>
+                  <valueString value="Period"/>
+               </parameter>
+            </target>
+            <dependent>
+               <name value="IVLTSPeriod"/>
+               <variable value="eff">
+                  <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                     <valueUrl value="id"/>
+                  </extension>
+               </variable>
+               <variable value="period">
+                  <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                     <valueUrl value="id"/>
+                  </extension>
+               </variable>
+            </dependent>
+         </rule>
          <documentation value="effectiveTime=period"/>
       </rule>
       <rule>
-         <name value="effectiveTime"/>
+         <name value="where"/>
          <source>
             <context value="src"/>
-            <element value="effectiveTime"/>
-            <variable value="effectivetime1"/>
+            <condition value="effectiveTime.low.exists().not() or effectiveTime.high.exists().not()"/>
          </source>
-         <target>
-            <context value="encounter"/>
-            <contextType value="variable"/>
-            <element value="period"/>
-            <variable value="period"/>
-         </target>
-         <target>
-            <context value="period"/>
-            <contextType value="variable"/>
-            <element value="start"/>
-            <transform value="evaluate"/>
-            <parameter>
-               <valueString value="effectivetime1.value"/>
-            </parameter>
-         </target>
+         <rule>
+            <name value="efft"/>
+            <source>
+               <context value="src"/>
+               <element value="effectiveTime"/>
+               <variable value="effectivetime1"/>
+            </source>
+            <target>
+               <context value="encounter"/>
+               <contextType value="variable"/>
+               <element value="period"/>
+               <variable value="period"/>
+               <transform value="create"/>
+               <parameter>
+                  <valueString value="Period"/>
+               </parameter>
+            </target>
+            <rule>
+               <name value="val"/>
+               <source>
+                  <context value="effectivetime1"/>
+               </source>
+               <target>
+                  <context value="period"/>
+                  <contextType value="variable"/>
+                  <element value="start"/>
+                  <variable value="start"/>
+                  <transform value="create"/>
+                  <parameter>
+                     <valueString value="dateTime"/>
+                  </parameter>
+               </target>
+               <dependent>
+                  <name value="TSDateTime"/>
+                  <variable value="effectivetime1">
+                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                        <valueUrl value="id"/>
+                     </extension>
+                  </variable>
+                  <variable value="start">
+                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                        <valueUrl value="id"/>
+                     </extension>
+                  </variable>
+               </dependent>
+            </rule>
+         </rule>
          <documentation value="effectiveTime = time-stamp"/>
       </rule>
       <rule>
@@ -20848,6 +20945,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                </target>
             </rule>
          </rule>
+         <documentation value="src.effectiveTime as effectivetime1 -> encounter.period as period, period.start=(effectivetime1.value);"/>
       </rule>
       <rule>
          <name value="particpant"/>
@@ -22335,27 +22433,52 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                </parameter>
             </target>
             <rule>
-               <name value="time"/>
+               <name value="period"/>
                <source>
                   <context value="participant"/>
-                  <element value="time"/>
-                  <variable value="time"/>
                </source>
                <target>
                   <context value="participant1"/>
                   <contextType value="variable"/>
                   <element value="period"/>
                   <variable value="period"/>
-               </target>
-               <target>
-                  <context value="period"/>
-                  <contextType value="variable"/>
-                  <element value="start"/>
-                  <transform value="evaluate"/>
+                  <transform value="create"/>
                   <parameter>
-                     <valueString value="time.value"/>
+                     <valueString value="Period"/>
                   </parameter>
                </target>
+               <rule>
+                  <name value="time"/>
+                  <source>
+                     <context value="participant"/>
+                     <element value="time"/>
+                     <variable value="time"/>
+                  </source>
+                  <target>
+                     <context value="period"/>
+                     <contextType value="variable"/>
+                     <element value="start"/>
+                     <variable value="start"/>
+                     <transform value="create"/>
+                     <parameter>
+                        <valueString value="dateTime"/>
+                     </parameter>
+                  </target>
+                  <dependent>
+                     <name value="TSDateTime"/>
+                     <variable value="time">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                     <variable value="start">
+                        <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                           <valueUrl value="id"/>
+                        </extension>
+                     </variable>
+                  </dependent>
+               </rule>
+               <documentation value="participant.time as time->participant1.period as period ,period.start=(time.value);"/>
             </rule>
             <rule>
                <name value="type"/>
