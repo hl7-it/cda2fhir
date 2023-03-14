@@ -176,7 +176,9 @@ group ADAddress(source src : AD, target tgt : Address) extends Any &lt;&lt;types
   src.postalCode as v -&gt; tgt.postalCode = (v.dataString);
   src.streetAddressLine as v -&gt; tgt.line = (v.dataString);
   src -&gt; tgt.line as line then {
-    src.censusTract as v -&gt; line.extension as ext1 then CensusTract(v, ext1) &quot;line&quot;;
+    src where src.censusTract.exists() then {
+      src.censusTract as v -&gt; line.extension as ext1 then CensusTract(v, ext1) &quot;line&quot;;
+    } &quot;sfgfdsg&quot;;
   } &quot;CensusTract&quot;;
   // share firstline &quot;streetAddress&quot;;
   src.streetName as v -&gt; tgt.line = (v.dataString);
@@ -292,6 +294,7 @@ group CensusTract(source src : ST, target ext : Extension) {
    </contained>
    <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"/>
    <name value="cda2fhirDataTypes"/>
+   <status value="draft"/>
    <description value="Adapted from https://github.com/HL7/ccda-to-fhir/tree/master/mappings&#xd;&#xa;CDA:  http://build.fhir.org/ig/ahdis/cda-core-2.0/branches/master/index.html&#xd;&#xa;FHIR: http://hl7.org/fhir/r4/"/>
    <structure>
       <url value="http://hl7.org/fhir/cda/StructureDefinition/ED"/>
@@ -1698,31 +1701,38 @@ group CensusTract(source src : ST, target ext : Extension) {
             <variable value="line"/>
          </target>
          <rule>
-            <name value="line"/>
+            <name value="sfgfdsg"/>
             <source>
                <context value="src"/>
-               <element value="censusTract"/>
-               <variable value="v"/>
+               <condition value="src.censusTract.exists()"/>
             </source>
-            <target>
-               <context value="line"/>
-               <contextType value="variable"/>
-               <element value="extension"/>
-               <variable value="ext1"/>
-            </target>
-            <dependent>
-               <name value="CensusTract"/>
-               <variable value="v">
-                  <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
-                     <valueUrl value="id"/>
-                  </extension>
-               </variable>
-               <variable value="ext1">
-                  <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
-                     <valueUrl value="id"/>
-                  </extension>
-               </variable>
-            </dependent>
+            <rule>
+               <name value="line"/>
+               <source>
+                  <context value="src"/>
+                  <element value="censusTract"/>
+                  <variable value="v"/>
+               </source>
+               <target>
+                  <context value="line"/>
+                  <contextType value="variable"/>
+                  <element value="extension"/>
+                  <variable value="ext1"/>
+               </target>
+               <dependent>
+                  <name value="CensusTract"/>
+                  <variable value="v">
+                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                        <valueUrl value="id"/>
+                     </extension>
+                  </variable>
+                  <variable value="ext1">
+                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                        <valueUrl value="id"/>
+                     </extension>
+                  </variable>
+               </dependent>
+            </rule>
          </rule>
       </rule>
       <rule>

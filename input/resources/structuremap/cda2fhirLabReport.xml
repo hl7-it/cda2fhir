@@ -5,7 +5,6 @@
       <div xmlns="http://www.w3.org/1999/xhtml">
          <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirLabReport&quot; = &quot;cda2fhirLabReport&quot;
 
-
 uses &quot;http://hl7.org/fhir/cda/StructureDefinition/ClinicalDocument&quot; alias ClinicalDocument as source
 uses &quot;http://hl7.org/fhir/cda/StructureDefinition/AssignedAuthor&quot; alias AssignedAuthor as queried
 uses &quot;http://hl7.org/fhir/cda/StructureDefinition/AssignedEntity&quot; alias AssignedEntity as queried
@@ -35,7 +34,7 @@ imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes&quot;
 imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader&quot;
 
 group CdaToBundle(source cda : ClinicalDocument, target bundle : Bundle) {
-  cda -&gt;  bundle.entry as e,  e.request = create(&apos;BackboneElement&apos;) as request,  request.method = 'POST',  e.resource = create('Composition') as composition,  composition.id = uuid() as uuid1,  e.fullUrl = append('https://example/Composition/', uuid1),  request.url = 'Composition',  bundle.entry as e2,  e2.request = create('BackboneElement') as requestPAT,  requestPAT.method = 'PUT',  e2.resource = create('Patient') as patient,  patient.id = uuid() as uuid2,  e2.fullUrl = append('https://example/Patient/', uuid2),  bundle.entry as e3,  e3.request = create('BackboneElement') as request,  request.method = 'POST',  e3.resource = create('Encounter') as encounter,  encounter.id = uuid() as uuid3,  e3.fullUrl = append('https://example/Encounter/', uuid3),  request.url = 'Encounter',  bundle.entry as e6,  e6.request = create('BackboneElement') as request,  request.method = 'POST',  e6.resource = create('DocumentReference') as DocumentReference,  DocumentReference.id = uuid() as uuid6,  e6.fullUrl = append('https://example/DocumentReference/', uuid6),  request.url = 'DocumentReference' then {
+  cda -&gt;  bundle.entry as e,  e.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e.resource = create('Composition') as composition,  composition.id = uuid() as uuid1,  e.fullUrl = append('https://example/Composition/', uuid1),  request.url = 'Composition',  bundle.entry as e2,  e2.request = create('BackboneElement') as requestPAT,  requestPAT.method = 'PUT',  e2.resource = create('Patient') as patient,  patient.id = uuid() as uuid2,  e2.fullUrl = append('https://example/Patient/', uuid2),  bundle.entry as e3,  e3.request = create('BackboneElement') as request,  request.method = 'POST',  e3.resource = create('Encounter') as encounter,  encounter.id = uuid() as uuid3,  e3.fullUrl = append('https://example/Encounter/', uuid3),  request.url = 'Encounter',  bundle.entry as e6,  e6.request = create('BackboneElement') as request,  request.method = 'POST',  e6.resource = create('DocumentReference') as DocumentReference,  DocumentReference.id = uuid() as uuid6,  e6.fullUrl = append('https://example/DocumentReference/', uuid6),  request.url = 'DocumentReference' then {
     cda then ClinicalDocumentToBundle(cda, patient, composition, encounter, bundle, DocumentReference) &quot;cdatobundle&quot;;
     cda.recordTarget as recordTarget then {
       recordTarget.patientRole as patient then {
@@ -200,6 +199,9 @@ group Observation(source obs : Observation, target patient : Patient, target enc
           entity.id as id where (root = &apos;2.16.840.1.113883.2.9.4.3.2&apos;) then {
             id.extension as ext -&gt; request.url = append(&apos;Practitioner?identifier=&apos;, ext) &quot;UUID&quot;;
           } &quot;2&quot;;
+          entity.id as id where (root != &apos;2.16.840.1.113883.2.9.4.3.2&apos;) then {
+            id.extension as ext -&gt; request.url = append(&apos;Practitioner?identifier=&apos;, ext) &quot;UUID&quot;;
+          } &quot;diverso&quot;;
           entity.addr -&gt; practitioner.address;
           entity.telecom -&gt; practitioner.telecom;
           entity.assignedPerson as person then {
@@ -299,6 +301,9 @@ group Observation(source obs : Observation, target patient : Patient, target enc
           assignedAuthor.id as id where (root = &apos;2.16.840.1.113883.2.9.4.3.2&apos;) then {
             id.extension as ext -&gt; request.url = append(&apos;Practitioner?identifier=&apos;, ext) &quot;UUID&quot;;
           } &quot;2&quot;;
+          assignedAuthor.id as id where (root != &apos;2.16.840.1.113883.2.9.4.3.2&apos;) then {
+            id.extension as ext -&gt; request.url = append(&apos;Practitioner?identifier=&apos;, ext) &quot;UUID&quot;;
+          } &quot;diverso&quot;;
         } &quot;identifier&quot;;
         assignedAuthor.addr -&gt; practitioner.address;
         assignedAuthor.telecom -&gt; practitioner.telecom;
@@ -654,6 +659,9 @@ group Observation2(source obs : Observation, target patient : Patient, target en
           entity.id as id where (root = &apos;2.16.840.1.113883.2.9.4.3.2&apos;) then {
             id.extension as ext -&gt; request.url = append(&apos;Practitioner?identifier=&apos;, ext) &quot;UUID&quot;;
           } &quot;2&quot;;
+          entity.id as id where (root != &apos;2.16.840.1.113883.2.9.4.3.2&apos;) then {
+            id.extension as ext -&gt; request.url = append(&apos;Practitioner?identifier=&apos;, ext) &quot;UUID&quot;;
+          } &quot;diverso&quot;;
           entity.addr -&gt; practitioner.address;
           entity.telecom -&gt; practitioner.telecom;
           entity.assignedPerson as person then {
@@ -730,7 +738,7 @@ group Observation2(source obs : Observation, target patient : Patient, target en
     } &quot;practitionerRole&quot;;
   };
   // author
-  obs.author as srcAuthor -&gt;  bundle.entry as e6,  e6.request = create('BackboneElement') as request,  request.method = 'POST',  e6.resource = create('PractitionerRole') as practitionerRole,  practitionerRole.id = uuid() as uuid6,  e6.fullUrl = append('https://example/PractitionerRole/', uuid6),  request.url = 'PractitionerRole',  ob.performer = create('Reference') as referenceaut,  referenceaut.reference = ('https://example/PractitionerRole/' + %practitionerRole.id) then {
+  obs.author as srcAuthor -&gt;  bundle.entry as e6,  e6.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e6.resource = create(&apos;PractitionerRole&apos;) as practitionerRole,  practitionerRole.id = uuid() as uuid6,  e6.fullUrl = append(&apos;https://example/PractitionerRole/&apos;, uuid6),  request.url = &apos;PractitionerRole&apos;,  ob.performer = create(&apos;Reference&apos;) as referenceaut,  referenceaut.reference = (&apos;https://example/PractitionerRole/&apos; + %practitionerRole.id) then {
     srcAuthor.assignedAuthor as assignedAuthor then {
       assignedAuthor.code as codice -&gt; practitionerRole.code as code2 then CECodeableConcept(codice, code2);
       assignedAuthor -&gt;  bundle.entry as e7,  e7.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;PUT&apos;,  e7.resource = create(&apos;Practitioner&apos;) as practitioner,  practitioner.id = uuid() as uuid7 then {
@@ -753,6 +761,9 @@ group Observation2(source obs : Observation, target patient : Patient, target en
           assignedAuthor.id as id where (root = &apos;2.16.840.1.113883.2.9.4.3.2&apos;) then {
             id.extension as ext -&gt; request.url = append(&apos;Practitioner?identifier=&apos;, ext) &quot;UUID&quot;;
           } &quot;2&quot;;
+          assignedAuthor.id as id where (root != &apos;2.16.840.1.113883.2.9.4.3.2&apos;) then {
+            id.extension as ext -&gt; request.url = append(&apos;Practitioner?identifier=&apos;, ext) &quot;UUID&quot;;
+          } &quot;diverso&quot;;
         } &quot;identifier&quot;;
         assignedAuthor.addr -&gt; practitioner.address;
         assignedAuthor.telecom -&gt; practitioner.telecom;
@@ -1051,6 +1062,9 @@ group Observation3(source obs : Observation, target patient : Patient, target en
           entity.id as id where (root = &apos;2.16.840.1.113883.2.9.4.3.2&apos;) then {
             id.extension as ext -&gt; request.url = append(&apos;Practitioner?identifier=&apos;, ext) &quot;UUID&quot;;
           } &quot;2&quot;;
+          entity.id as id where (root != &apos;2.16.840.1.113883.2.9.4.3.2&apos;) then {
+            id.extension as ext -&gt; request.url = append(&apos;Practitioner?identifier=&apos;, ext) &quot;UUID&quot;;
+          } &quot;diverso&quot;;
           entity.addr -&gt; practitioner.address;
           entity.telecom -&gt; practitioner.telecom;
           entity.assignedPerson as person then {
@@ -1150,6 +1164,9 @@ group Observation3(source obs : Observation, target patient : Patient, target en
           assignedAuthor.id as id where (root = &apos;2.16.840.1.113883.2.9.4.3.2&apos;) then {
             id.extension as ext -&gt; request.url = append(&apos;Practitioner?identifier=&apos;, ext) &quot;UUID&quot;;
           } &quot;2&quot;;
+          assignedAuthor.id as id where (root != &apos;2.16.840.1.113883.2.9.4.3.2&apos;) then {
+            id.extension as ext -&gt; request.url = append(&apos;Practitioner?identifier=&apos;, ext) &quot;UUID&quot;;
+          } &quot;diverso&quot;;
         } &quot;identifier&quot;;
         assignedAuthor.addr -&gt; practitioner.address;
         assignedAuthor.telecom -&gt; practitioner.telecom;
@@ -1658,6 +1675,9 @@ group Act(source cda : Act, target pat : Patient, target ac : DiagnosticReport, 
         assignedAuthor.id as id where (root = &apos;2.16.840.1.113883.2.9.4.3.2&apos;) then {
           id.extension as ext -&gt; request.url = append(&apos;Practitioner?identifier=&apos;, ext) &quot;UUID&quot;;
         } &quot;2&quot;;
+        assignedAuthor.id as id where (root != &apos;2.16.840.1.113883.2.9.4.3.2&apos;) then {
+          id.extension as ext -&gt; request.url = append(&apos;Practitioner?identifier=&apos;, ext) &quot;UUID&quot;;
+        } &quot;diverso&quot;;
         assignedAuthor.addr -&gt; practitioner.address;
         assignedAuthor.telecom -&gt; practitioner.telecom;
         // person
@@ -1796,6 +1816,9 @@ group Organizer(source cda : Act, source org : Organizer, target patient : Patie
           entity.id as id where (root = &apos;2.16.840.1.113883.2.9.4.3.2&apos;) then {
             id.extension as ext -&gt; request.url = append(&apos;Practitioner?identifier=&apos;, ext) &quot;UUID&quot;;
           } &quot;2&quot;;
+          entity.id as id where (root != &apos;2.16.840.1.113883.2.9.4.3.2&apos;) then {
+            id.extension as ext -&gt; request.url = append(&apos;Practitioner?identifier=&apos;, ext) &quot;UUID&quot;;
+          } &quot;diverso&quot;;
           entity.addr -&gt; practitioner.address;
           entity.telecom -&gt; practitioner.telecom;
           entity.assignedPerson as person then {
@@ -1897,6 +1920,9 @@ group Organizer(source cda : Act, source org : Organizer, target patient : Patie
         assignedAuthor.id as id where (root = &apos;2.16.840.1.113883.2.9.4.3.2&apos;) then {
           id.extension as ext -&gt; request.url = append(&apos;Practitioner?identifier=&apos;, ext) &quot;UUID&quot;;
         } &quot;2&quot;;
+        assignedAuthor.id as id where (root != &apos;2.16.840.1.113883.2.9.4.3.2&apos;) then {
+          id.extension as ext -&gt; request.url = append(&apos;Practitioner?identifier=&apos;, ext) &quot;UUID&quot;;
+        } &quot;diverso&quot;;
         assignedAuthor.addr -&gt; practitioner.address;
         assignedAuthor.telecom -&gt; practitioner.telecom;
         // person
@@ -2023,6 +2049,9 @@ group Organizer(source cda : Act, source org : Organizer, target patient : Patie
         participantRole.id as id where (root = &apos;2.16.840.1.113883.2.9.4.3.2&apos;) then {
           id.extension as ext -&gt; request.url = append(&apos;Practitioner?identifier=&apos;, ext) &quot;UUID&quot;;
         } &quot;2&quot;;
+        participantRole.id as id where (root != &apos;2.16.840.1.113883.2.9.4.3.2&apos;) then {
+          id.extension as ext -&gt; request.url = append(&apos;Practitioner?identifier=&apos;, ext) &quot;UUID&quot;;
+        } &quot;diverso&quot;;
         participantRole.code -&gt; practitionerRole.code;
         participantRole.addr -&gt; practitioner.address;
         participantRole.telecom -&gt; practitioner.telecom;
@@ -2092,6 +2121,7 @@ group ExtSubjectAnimal(source src : relatedSubject, target ext : Extension) {
    </text>
    <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirLabReport"/>
    <name value="cda2fhirLabReport"/>
+   <status value="draft"/>
    <structure>
       <url value="http://hl7.org/fhir/cda/StructureDefinition/ClinicalDocument"/>
       <mode value="source"/>
@@ -4718,6 +4748,35 @@ group ExtSubjectAnimal(source src : relatedSubject, target ext : Extension) {
                      </rule>
                   </rule>
                   <rule>
+                     <name value="diverso"/>
+                     <source>
+                        <context value="entity"/>
+                        <element value="id"/>
+                        <variable value="id"/>
+                        <condition value="(root != '2.16.840.1.113883.2.9.4.3.2')"/>
+                     </source>
+                     <rule>
+                        <name value="UUID"/>
+                        <source>
+                           <context value="id"/>
+                           <element value="extension"/>
+                           <variable value="ext"/>
+                        </source>
+                        <target>
+                           <context value="request"/>
+                           <contextType value="variable"/>
+                           <element value="url"/>
+                           <transform value="append"/>
+                           <parameter>
+                              <valueString value="Practitioner?identifier="/>
+                           </parameter>
+                           <parameter>
+                              <valueId value="ext"/>
+                           </parameter>
+                        </target>
+                     </rule>
+                  </rule>
+                  <rule>
                      <name value="addr"/>
                      <source>
                         <context value="entity"/>
@@ -6103,6 +6162,35 @@ group ExtSubjectAnimal(source src : relatedSubject, target ext : Extension) {
                         <element value="id"/>
                         <variable value="id"/>
                         <condition value="(root = '2.16.840.1.113883.2.9.4.3.2')"/>
+                     </source>
+                     <rule>
+                        <name value="UUID"/>
+                        <source>
+                           <context value="id"/>
+                           <element value="extension"/>
+                           <variable value="ext"/>
+                        </source>
+                        <target>
+                           <context value="request"/>
+                           <contextType value="variable"/>
+                           <element value="url"/>
+                           <transform value="append"/>
+                           <parameter>
+                              <valueString value="Practitioner?identifier="/>
+                           </parameter>
+                           <parameter>
+                              <valueId value="ext"/>
+                           </parameter>
+                        </target>
+                     </rule>
+                  </rule>
+                  <rule>
+                     <name value="diverso"/>
+                     <source>
+                        <context value="assignedAuthor"/>
+                        <element value="id"/>
+                        <variable value="id"/>
+                        <condition value="(root != '2.16.840.1.113883.2.9.4.3.2')"/>
                      </source>
                      <rule>
                         <name value="UUID"/>
@@ -10591,6 +10679,35 @@ group ExtSubjectAnimal(source src : relatedSubject, target ext : Extension) {
                      </rule>
                   </rule>
                   <rule>
+                     <name value="diverso"/>
+                     <source>
+                        <context value="entity"/>
+                        <element value="id"/>
+                        <variable value="id"/>
+                        <condition value="(root != '2.16.840.1.113883.2.9.4.3.2')"/>
+                     </source>
+                     <rule>
+                        <name value="UUID"/>
+                        <source>
+                           <context value="id"/>
+                           <element value="extension"/>
+                           <variable value="ext"/>
+                        </source>
+                        <target>
+                           <context value="request"/>
+                           <contextType value="variable"/>
+                           <element value="url"/>
+                           <transform value="append"/>
+                           <parameter>
+                              <valueString value="Practitioner?identifier="/>
+                           </parameter>
+                           <parameter>
+                              <valueId value="ext"/>
+                           </parameter>
+                        </target>
+                     </rule>
+                  </rule>
+                  <rule>
                      <name value="addr"/>
                      <source>
                         <context value="entity"/>
@@ -11976,6 +12093,35 @@ group ExtSubjectAnimal(source src : relatedSubject, target ext : Extension) {
                         <element value="id"/>
                         <variable value="id"/>
                         <condition value="(root = '2.16.840.1.113883.2.9.4.3.2')"/>
+                     </source>
+                     <rule>
+                        <name value="UUID"/>
+                        <source>
+                           <context value="id"/>
+                           <element value="extension"/>
+                           <variable value="ext"/>
+                        </source>
+                        <target>
+                           <context value="request"/>
+                           <contextType value="variable"/>
+                           <element value="url"/>
+                           <transform value="append"/>
+                           <parameter>
+                              <valueString value="Practitioner?identifier="/>
+                           </parameter>
+                           <parameter>
+                              <valueId value="ext"/>
+                           </parameter>
+                        </target>
+                     </rule>
+                  </rule>
+                  <rule>
+                     <name value="diverso"/>
+                     <source>
+                        <context value="assignedAuthor"/>
+                        <element value="id"/>
+                        <variable value="id"/>
+                        <condition value="(root != '2.16.840.1.113883.2.9.4.3.2')"/>
                      </source>
                      <rule>
                         <name value="UUID"/>
@@ -15838,6 +15984,35 @@ group ExtSubjectAnimal(source src : relatedSubject, target ext : Extension) {
                      </rule>
                   </rule>
                   <rule>
+                     <name value="diverso"/>
+                     <source>
+                        <context value="entity"/>
+                        <element value="id"/>
+                        <variable value="id"/>
+                        <condition value="(root != '2.16.840.1.113883.2.9.4.3.2')"/>
+                     </source>
+                     <rule>
+                        <name value="UUID"/>
+                        <source>
+                           <context value="id"/>
+                           <element value="extension"/>
+                           <variable value="ext"/>
+                        </source>
+                        <target>
+                           <context value="request"/>
+                           <contextType value="variable"/>
+                           <element value="url"/>
+                           <transform value="append"/>
+                           <parameter>
+                              <valueString value="Practitioner?identifier="/>
+                           </parameter>
+                           <parameter>
+                              <valueId value="ext"/>
+                           </parameter>
+                        </target>
+                     </rule>
+                  </rule>
+                  <rule>
                      <name value="addr"/>
                      <source>
                         <context value="entity"/>
@@ -17223,6 +17398,35 @@ group ExtSubjectAnimal(source src : relatedSubject, target ext : Extension) {
                         <element value="id"/>
                         <variable value="id"/>
                         <condition value="(root = '2.16.840.1.113883.2.9.4.3.2')"/>
+                     </source>
+                     <rule>
+                        <name value="UUID"/>
+                        <source>
+                           <context value="id"/>
+                           <element value="extension"/>
+                           <variable value="ext"/>
+                        </source>
+                        <target>
+                           <context value="request"/>
+                           <contextType value="variable"/>
+                           <element value="url"/>
+                           <transform value="append"/>
+                           <parameter>
+                              <valueString value="Practitioner?identifier="/>
+                           </parameter>
+                           <parameter>
+                              <valueId value="ext"/>
+                           </parameter>
+                        </target>
+                     </rule>
+                  </rule>
+                  <rule>
+                     <name value="diverso"/>
+                     <source>
+                        <context value="assignedAuthor"/>
+                        <element value="id"/>
+                        <variable value="id"/>
+                        <condition value="(root != '2.16.840.1.113883.2.9.4.3.2')"/>
                      </source>
                      <rule>
                         <name value="UUID"/>
@@ -24616,6 +24820,35 @@ group ExtSubjectAnimal(source src : relatedSubject, target ext : Extension) {
                   </rule>
                </rule>
                <rule>
+                  <name value="diverso"/>
+                  <source>
+                     <context value="assignedAuthor"/>
+                     <element value="id"/>
+                     <variable value="id"/>
+                     <condition value="(root != '2.16.840.1.113883.2.9.4.3.2')"/>
+                  </source>
+                  <rule>
+                     <name value="UUID"/>
+                     <source>
+                        <context value="id"/>
+                        <element value="extension"/>
+                        <variable value="ext"/>
+                     </source>
+                     <target>
+                        <context value="request"/>
+                        <contextType value="variable"/>
+                        <element value="url"/>
+                        <transform value="append"/>
+                        <parameter>
+                           <valueString value="Practitioner?identifier="/>
+                        </parameter>
+                        <parameter>
+                           <valueId value="ext"/>
+                        </parameter>
+                     </target>
+                  </rule>
+               </rule>
+               <rule>
                   <name value="addr"/>
                   <source>
                      <context value="assignedAuthor"/>
@@ -26471,6 +26704,35 @@ group ExtSubjectAnimal(source src : relatedSubject, target ext : Extension) {
                      </rule>
                   </rule>
                   <rule>
+                     <name value="diverso"/>
+                     <source>
+                        <context value="entity"/>
+                        <element value="id"/>
+                        <variable value="id"/>
+                        <condition value="(root != '2.16.840.1.113883.2.9.4.3.2')"/>
+                     </source>
+                     <rule>
+                        <name value="UUID"/>
+                        <source>
+                           <context value="id"/>
+                           <element value="extension"/>
+                           <variable value="ext"/>
+                        </source>
+                        <target>
+                           <context value="request"/>
+                           <contextType value="variable"/>
+                           <element value="url"/>
+                           <transform value="append"/>
+                           <parameter>
+                              <valueString value="Practitioner?identifier="/>
+                           </parameter>
+                           <parameter>
+                              <valueId value="ext"/>
+                           </parameter>
+                        </target>
+                     </rule>
+                  </rule>
+                  <rule>
                      <name value="addr"/>
                      <source>
                         <context value="entity"/>
@@ -27850,6 +28112,35 @@ group ExtSubjectAnimal(source src : relatedSubject, target ext : Extension) {
                      <element value="id"/>
                      <variable value="id"/>
                      <condition value="(root = '2.16.840.1.113883.2.9.4.3.2')"/>
+                  </source>
+                  <rule>
+                     <name value="UUID"/>
+                     <source>
+                        <context value="id"/>
+                        <element value="extension"/>
+                        <variable value="ext"/>
+                     </source>
+                     <target>
+                        <context value="request"/>
+                        <contextType value="variable"/>
+                        <element value="url"/>
+                        <transform value="append"/>
+                        <parameter>
+                           <valueString value="Practitioner?identifier="/>
+                        </parameter>
+                        <parameter>
+                           <valueId value="ext"/>
+                        </parameter>
+                     </target>
+                  </rule>
+               </rule>
+               <rule>
+                  <name value="diverso"/>
+                  <source>
+                     <context value="assignedAuthor"/>
+                     <element value="id"/>
+                     <variable value="id"/>
+                     <condition value="(root != '2.16.840.1.113883.2.9.4.3.2')"/>
                   </source>
                   <rule>
                      <name value="UUID"/>
@@ -29598,6 +29889,35 @@ group ExtSubjectAnimal(source src : relatedSubject, target ext : Extension) {
                      <element value="id"/>
                      <variable value="id"/>
                      <condition value="(root = '2.16.840.1.113883.2.9.4.3.2')"/>
+                  </source>
+                  <rule>
+                     <name value="UUID"/>
+                     <source>
+                        <context value="id"/>
+                        <element value="extension"/>
+                        <variable value="ext"/>
+                     </source>
+                     <target>
+                        <context value="request"/>
+                        <contextType value="variable"/>
+                        <element value="url"/>
+                        <transform value="append"/>
+                        <parameter>
+                           <valueString value="Practitioner?identifier="/>
+                        </parameter>
+                        <parameter>
+                           <valueId value="ext"/>
+                        </parameter>
+                     </target>
+                  </rule>
+               </rule>
+               <rule>
+                  <name value="diverso"/>
+                  <source>
+                     <context value="participantRole"/>
+                     <element value="id"/>
+                     <variable value="id"/>
+                     <condition value="(root != '2.16.840.1.113883.2.9.4.3.2')"/>
                   </source>
                   <rule>
                      <name value="UUID"/>

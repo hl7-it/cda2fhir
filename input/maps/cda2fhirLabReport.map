@@ -201,6 +201,9 @@ group Observation (source obs : Observation, target patient : Patient, target en
           entity.id as id where (root='2.16.840.1.113883.2.9.4.3.2') then {
             id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
           }"2.16.840.1.113883.2.9.4.3.2";
+          entity.id as id where (root!='2.16.840.1.113883.2.9.4.3.2') then {
+            id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
+          }"diverso";
           entity.addr -> practitioner.address;      
           entity.telecom -> practitioner.telecom;
           entity.assignedPerson as person then {
@@ -301,6 +304,9 @@ group Observation (source obs : Observation, target patient : Patient, target en
           assignedAuthor.id as id where (root='2.16.840.1.113883.2.9.4.3.2') then {
             id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
           }"2.16.840.1.113883.2.9.4.3.2";
+          assignedAuthor.id as id where (root!='2.16.840.1.113883.2.9.4.3.2') then {
+            id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
+          }"diverso";
         }"identifier";
         assignedAuthor.addr -> practitioner.address;      
         assignedAuthor.telecom -> practitioner.telecom;
@@ -669,6 +675,9 @@ group Observation2 (source obs : Observation, target patient : Patient, target e
           entity.id as id where (root='2.16.840.1.113883.2.9.4.3.2') then {
             id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
           }"2.16.840.1.113883.2.9.4.3.2";
+          entity.id as id where (root!='2.16.840.1.113883.2.9.4.3.2') then {
+            id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
+          }"diverso";
           entity.addr -> practitioner.address;      
           entity.telecom -> practitioner.telecom;
           entity.assignedPerson as person then {
@@ -769,6 +778,9 @@ group Observation2 (source obs : Observation, target patient : Patient, target e
           assignedAuthor.id as id where (root='2.16.840.1.113883.2.9.4.3.2') then {
             id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
           }"2.16.840.1.113883.2.9.4.3.2";
+          assignedAuthor.id as id where (root!='2.16.840.1.113883.2.9.4.3.2') then {
+            id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
+          }"diverso";
         }"identifier";
         assignedAuthor.addr -> practitioner.address;      
         assignedAuthor.telecom -> practitioner.telecom;
@@ -1091,6 +1103,9 @@ group Observation3 (source obs : Observation, target patient : Patient, target e
           entity.id as id where (root='2.16.840.1.113883.2.9.4.3.2') then {
             id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
           }"2.16.840.1.113883.2.9.4.3.2";
+          entity.id as id where (root!='2.16.840.1.113883.2.9.4.3.2') then {
+            id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
+          }"diverso";
           entity.addr -> practitioner.address;      
           entity.telecom -> practitioner.telecom;
           entity.assignedPerson as person then {
@@ -1191,6 +1206,9 @@ group Observation3 (source obs : Observation, target patient : Patient, target e
           assignedAuthor.id as id where (root='2.16.840.1.113883.2.9.4.3.2') then {
             id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
           }"2.16.840.1.113883.2.9.4.3.2";
+          assignedAuthor.id as id where (root!='2.16.840.1.113883.2.9.4.3.2') then {
+            id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
+          }"diverso";
         }"identifier";
         assignedAuthor.addr -> practitioner.address;      
         assignedAuthor.telecom -> practitioner.telecom;
@@ -1717,6 +1735,9 @@ group Act (source cda: Act, target pat : Patient, target ac : DiagnosticReport, 
            assignedAuthor.id as id where (root='2.16.840.1.113883.2.9.4.3.2') then {
             id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
           }"2.16.840.1.113883.2.9.4.3.2";
+          assignedAuthor.id as id where (root!='2.16.840.1.113883.2.9.4.3.2') then {
+            id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
+          }"diverso";
         assignedAuthor.addr -> practitioner.address;      
         assignedAuthor.telecom -> practitioner.telecom;
         //person
@@ -1858,6 +1879,9 @@ group Organizer(source cda: Act, source org : Organizer, target patient : Patien
             entity.id as id where (root='2.16.840.1.113883.2.9.4.3.2') then {
               id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
             }"2.16.840.1.113883.2.9.4.3.2";
+            entity.id as id where (root!='2.16.840.1.113883.2.9.4.3.2') then {
+              id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
+            }"diverso";
             entity.addr -> practitioner.address;      
             entity.telecom -> practitioner.telecom;
             entity.assignedPerson as person then {
@@ -1961,6 +1985,9 @@ group Organizer(source cda: Act, source org : Organizer, target patient : Patien
         assignedAuthor.id as id where (root='2.16.840.1.113883.2.9.4.3.2') then {
           id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
         }"2.16.840.1.113883.2.9.4.3.2";
+        assignedAuthor.id as id where (root!='2.16.840.1.113883.2.9.4.3.2') then {
+          id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
+        }"diverso";
         assignedAuthor.addr -> practitioner.address;      
         assignedAuthor.telecom -> practitioner.telecom;
         //person
@@ -2088,6 +2115,9 @@ group Organizer(source cda: Act, source org : Organizer, target patient : Patien
         participantRole.id as id where (root='2.16.840.1.113883.2.9.4.3.2') then {
           id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
         }"2.16.840.1.113883.2.9.4.3.2";
+        participantRole.id as id where (root!='2.16.840.1.113883.2.9.4.3.2') then {
+          id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
+        }"diverso";
         participantRole.code -> practitionerRole.code;
         participantRole.addr -> practitioner.address;
         participantRole.telecom -> practitioner.telecom;

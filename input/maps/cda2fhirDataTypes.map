@@ -179,10 +179,13 @@ group ADAddress(source src : AD, target tgt : Address) extends Any <<types>> {
   src.city as v -> tgt.city = (v.dataString);
   src.postalCode as v -> tgt.postalCode = (v.dataString);
   src.streetAddressLine as v -> tgt.line=(v.dataString);
-   src   -> tgt.line  as line then { 
-    src.censusTract as v-> line.extension as ext1 then CensusTract(v, ext1) "line";
+   
+  src   -> tgt.line  as line then { 
+   src where src.censusTract.exists() then {
+    src.censusTract as v -> line.extension as ext1 then CensusTract(v, ext1) "line";
+   }"sfgfdsg";
   } "CensusTract";
- 
+
   //share firstline "streetAddress";
   //as streetAddress then{
     //src.censusTract as v->tgt.line as line, line.extension as ext1 then CensusTract(v, ext1) "line";

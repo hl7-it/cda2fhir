@@ -745,6 +745,9 @@ group ClinicalDocumentSectionTerapiaFarmacologicaDuranteRicovero(source cda : Cl
                     assEnty.id as id where (root='2.16.840.1.113883.2.9.4.3.2') then {
                       id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
                     }"2.16.840.1.113883.2.9.4.3.2";
+                    assEnty.id as id where (root!='2.16.840.1.113883.2.9.4.3.2') then {
+                      id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
+                    }"diverso";
                     assEnty.assignedPerson as assi then {
                         assi.name -> practitioner.name;
                       }"assi";
