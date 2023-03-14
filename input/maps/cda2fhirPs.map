@@ -234,12 +234,14 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
         src.code where code ='PSSIT99' then{
             entry.act as act -> bundle.entry as e14, e14.request = create('BackboneElement') as request, request.method = 'POST',   e14.resource = create('OrganizationAffiliation') as affiliation,  affiliation.id = uuid() as uuid14,  e14.fullUrl = append('https://example/OrganizationAffiliation/', uuid14), request.url = 'OrganizationAffiliation', tgt.entry  = create('Reference') as reference,  reference.reference = ('https://example/OrganizationAffiliation/' + %affiliation.id) then OrganizationAffiliation(act, patient, enc, affiliation, bundle)  "OrgAffiliation";
         }"retiPatologia";
+    }"entry";
+    src where src.entry.exists() then {
         src.code where code = '18776-5' then{
             src -> bundle.entry as e11, e11.request = create('BackboneElement') as request, request.method = 'POST', e11.resource = create('CarePlan') as careplan, careplan.id = uuid() as uuid11,  e11.fullUrl = append('https://example/CarePlan/', uuid11), request.url = 'CarePlan', tgt.entry = create('Reference') as reference, reference.reference = ('https://example/CarePlan/' + %careplan.id) then{    
                 src.entry as entry then CarePlanFunction(entry, careplan, patient, enc, bundle) "prestazioni";
             }"pianiCura";
         }"raccoglitore";
-    }"entry";
+    }"esiste";
    
     src where src.entry.exists().not() then {
         // Anmanesi Familiare narrativa
@@ -259,7 +261,7 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
         src.code where code = '18776-5' then{
             src.text as text -> bundle.entry as e11, e11.request = create('BackboneElement') as request, request.method = 'POST', e11.resource = create('CarePlan') as careplan, careplan.id = uuid() as uuid11,  e11.fullUrl = append('https://example/CarePlan/', uuid11), request.url = 'CarePlan', tgt.entry = create('Reference') as reference, reference.reference = ('https://example/CarePlan/' + %careplan.id) then{ 
                 src-> careplan.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";
-                src-> careplan.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference";    
+                //src-> careplan.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference";    
                 src -> careplan.status='active'"status";
                 src -> careplan.intent='order'"intent"; 
                 text -> careplan.note as note then{
@@ -271,7 +273,7 @@ group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Sectio
         src.code where (code = '30954-2') or (code = '29762-2') or (code = '8716-3') or (code = '47420-5') or (code = '42348-3') then{
         src.text as text -> bundle.entry as e13, e13.request = create('BackboneElement') as request, request.method = 'POST', e13.resource = create('Observation') as obs1,  obs1.id = uuid() as uuid13,  e13.fullUrl = append('https://example/Observation/', uuid13), request.url = 'Observation', tgt.entry = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %obs1.id) then {
             src -> obs1.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";    
-            src -> obs1.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference";  
+            //src -> obs1.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference";  
             src -> obs1.status = 'preliminary' "obsst";
             src.code -> obs1.code "obscde";
             src -> obs1.status = 'final' "statusS";
@@ -298,7 +300,7 @@ group Procedure(source src: cdaElement , target patient: Patient, target encount
     }"ref";
 
     src -> tgt.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";    
-    src -> tgt.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "reference";
+    //src -> tgt.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "reference";
     src.statusCode as s then {
         s.code as cos-> tgt.status = translate(cos, '#EventStatus', 'code') "codeS";
     }"status";
@@ -330,7 +332,7 @@ group Procedure(source src: cdaElement , target patient: Patient, target encount
 
 group Observation(source cda, target patient : Patient, target encounter : Encounter, target ob : Observation, target bundle : Bundle) {  
     cda-> ob.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";    
-    cda-> ob.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "reference"; 
+    //cda-> ob.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "reference"; 
     
     cda.id -> ob.identifier;
     cda.code -> ob.code;
@@ -431,7 +433,7 @@ group Observation(source cda, target patient : Patient, target encounter : Encou
 
 group ObservationOrganizer(source section: section, source cda:organizer, target patient : Patient, target encounter : Encounter, target ob : Observation, target bundle : Bundle) {  
     cda-> ob.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";    
-    cda-> ob.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "reference"; 
+    //cda-> ob.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "reference"; 
     
     cda.id -> ob.identifier;    
     section.code -> ob.code;
@@ -484,7 +486,7 @@ group Coverage(source src: act , target patient: Patient, target encounter: Enco
 
 group allergyFunction(source src: cdaElement, target tgt: AllergyIntolerance, target patient : Patient, target encounter : Encounter) {
     src -> tgt.patient=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";    
-    src -> tgt.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "reference"; 
+    //src -> tgt.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "reference"; 
 
     //toASK
     src.effectiveTime as effTime then{
@@ -589,7 +591,7 @@ group allergyFunction(source src: cdaElement, target tgt: AllergyIntolerance, ta
 group MedicationStatement(source src: subAdmin, target tgt: Medicationstatement, target patient: Patient, target encounter : Encounter, target bundle: Bundle){
     
     src -> tgt.subject = create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";  
-    src -> tgt.context = create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "reference";  
+    //src -> tgt.context = create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "reference";  
     src.statusCode -> tgt.status "status"; 
 
     
@@ -709,7 +711,7 @@ group Medication(source src:  , target tgt: Medication, target patient: Patient,
 group Immunization(source substance: substanceAdministration, target patient: Patient,target encounter : Encounter, target tgt: immunization, target bundle: Bundle) {
 
         substance -> tgt.patient  = create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "patientRef"; 
-        substance -> tgt.encounter  = create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "encounterRef"; 
+        //substance -> tgt.encounter  = create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "encounterRef"; 
 
         substance.id as id -> tgt.identifier as idf then{
             id.root as r -> idf.system = translate(r, 'http://hl7.org/fhir/ConceptMap/special-oid2uri', 'uri') "root1";
@@ -835,7 +837,7 @@ group ConditionFunction (source src: cdaElement, target tgt: Condition, target p
     
     src.id -> tgt.identifier;
     src -> tgt.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";    
-    src -> tgt.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "reference"; 
+    //src -> tgt.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "reference"; 
     src.statusCode as stscode -> tgt.verificationStatus as verifstatus then { 
         stscode as codeS -> verifstatus.coding = create('Coding') as coding then {
             codeS.code -> coding.code = 'confirmed' "code";
@@ -971,6 +973,9 @@ group Practitioner(source src : performer, target tgt: Encounter, target bundle:
             assignedEntity.id as id where (root='2.16.840.1.113883.2.9.4.3.2') then {
                 id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
               }"2.16.840.1.113883.2.9.4.3.2";
+              assignedEntity.id as id where (root!='2.16.840.1.113883.2.9.4.3.2') then {
+                id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
+              }"diverso";
             assignedEntity -> practitioner1.meta as meta then {
                 src-> meta.tag = create('Coding') as coding then {
                     src -> coding.system ='http://algoritmodiscoring'"system";
@@ -1009,7 +1014,7 @@ group CarePlanFunction(source src: entry, target tgt: CarePlan, target patient:P
             
             src.encounter as encounterCDA -> bundle.entry as e3, e3.request = create('BackboneElement') as request, request.method = 'POST',  e3.resource = create('Encounter') as encounterFHIR,  encounterFHIR.id = uuid() as uuid3,  e3.fullUrl = append('https://example/Encounter/', uuid3),request.url = 'Encounter', tgt.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounterFHIR.id) then{
                 
-                encounterCDA -> encounterFHIR.partOf = create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "encounterHeader";
+                //encounterCDA -> encounterFHIR.partOf = create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "encounterHeader";
                 encounterCDA -> encounterFHIR.subject = create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "refPatient";
 
                 encounterCDA.id -> encounterFHIR.identifier;
@@ -1049,7 +1054,7 @@ group CarePlanFunction(source src: entry, target tgt: CarePlan, target patient:P
 group MedicationRequest(source src : substanceAdministration, target patient : Patient, target encounter: Encounter, target tgt: MedicationRequest, target bundle: Bundle){
     //default  + mandatory
     src -> tgt.subject = create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference";    
-    src -> tgt.encounter = create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "reference";
+    //src -> tgt.encounter = create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %encounter.id) "reference";
     src -> tgt.intent = 'order' "intent";
     src where statusCode.exists().not() -> tgt.status = 'unknown' "st";
     src.statusCode as sc then {
@@ -1181,7 +1186,7 @@ group OrganizationAffiliation(source src: act, target patient: Patient, target e
 group DiagnosticReportFunction(source src: organizer, target patient: Patient, target enc: Encounter, target tgt: DiagnosticReport, target bundle: Bundle){
 
     src -> tgt.subject=create('Reference') as reference,  reference.reference = ('https://example/Patient/' + %patient.id) "reference"; 
-    src -> tgt.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference"; 
+    //src -> tgt.encounter=create('Reference') as reference,  reference.reference = ('https://example/Encounter/' + %enc.id) "reference"; 
 
     src.code -> tgt.code;
     src.statusCode where code = 'completed' -> tgt.status = 'final';
@@ -1229,11 +1234,41 @@ group EncounterFunction(source src: cdaElement , target patient: Patient, target
         performer -> part.period as period then{
             performer.time as time ->  period.start as start then TSDateTime(time,start) "val"; 
         }"period";
-
-
-
-        performer.assignedEntity as assentity -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',  e1.resource = create('PractitionerRole') as practitionerRole,  practitionerRole.id = uuid() as uuid1,  e1.fullUrl = append('https://example/PractitionerRole/', uuid1), request.url = 'PractitionerRole', tgt.participant = create('BackboneElement') as participant1, participant1.individual = create('Reference') as referencepart, referencepart.reference =  ('https://example/PractitionerRole/' + %practitionerRole.id) then{
+   performer.assignedEntity as assentity -> bundle.entry as e1, e1.request = create('BackboneElement') as request, request.method = 'POST',  e1.resource = create('PractitionerRole') as practitionerRole,  practitionerRole.id = uuid() as uuid1,  e1.fullUrl = append('https://example/PractitionerRole/', uuid1), request.url = 'PractitionerRole', tgt.participant = create('BackboneElement') as participant1, participant1.individual = create('Reference') as referencepart, referencepart.reference =  ('https://example/PractitionerRole/' + %practitionerRole.id) then{
             assentity.code -> practitionerRole.code;
+            assentity -> bundle.entry as e2,  e2.request = create('BackboneElement') as request, request.method = 'PUT', e2.resource = create('Practitioner') as practitioner then {
+                assentity->practitioner.meta as meta then {
+                    assentity->meta.tag = create('Coding') as coding then {
+                        assentity -> coding.system ='http://algoritmodiscoring'"system";
+                        assentity -> coding.code ='ClinicalDocument/body/encounter/performer'"code";
+                  }"coding";
+                }"meta";
+                assentity.id as id -> practitioner.identifier as identifier then {
+                  id.root as r ->identifier.system= translate(r, 'http://hl7.org/fhir/ConceptMap/special-oid2uri', 'uri') "root1";
+                  id.extension as ext->identifier.value = ext then {
+                    assentity-> request.url = append('Practitioner?identifier=',ext)"UUID";
+                  }"ext";
+                  id.assigningAuthorityName as s ->  identifier.assigner as a,  a.display = s;
+                  id.root as r then {
+                    id.extension as ext  -> practitioner.id = (r +'-'+ ext) as uuid2,  e2.fullUrl = append('https://example/Practitioner/', uuid2),  practitionerRole.practitioner = create('Reference') as reference,  reference.reference = ('https://example/Practitioner/' + %practitioner.id) "performer";
+                  }"r";
+                }"identifier";
+                assentity.id as id where (root='2.16.840.1.113883.2.9.4.3.2') then {
+                  id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
+                }"2.16.840.1.113883.2.9.4.3.2";
+                assentity.id as id where (root!='2.16.840.1.113883.2.9.4.3.2') then {
+                    id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
+                  }"2.16.840.1.113883.2.9.4.3.2";
+                assentity.addr -> practitioner.address;      
+                assentity.telecom -> practitioner.telecom;
+                assentity.assignedPerson as person then {
+                  person.name -> practitioner.name;
+                  person.birthTime as birthTime then{
+                    birthTime.value as date -> practitioner.birthDate= truncate(date, 10);
+                  }"birth";
+                }"name";
         }"assignedEntity";
     }"performer";    
+}"01";
+
 }

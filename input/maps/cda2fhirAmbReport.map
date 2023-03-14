@@ -835,6 +835,9 @@ group Practitioner(source src : participant, target tgt: MedicationRequest, targ
             practr.id as id where (root='2.16.840.1.113883.2.9.4.3.2') then {
                 id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
               }"2.16.840.1.113883.2.9.4.3.2";
+              practr.id as id where (root!='2.16.840.1.113883.2.9.4.3.2') then {
+                id.extension as ext-> request.url = append('Practitioner?identifier=',ext)"UUID";
+              }"diverso";
             practr -> practitioner1.meta as meta then {
                 practr-> meta.tag = create('Coding') as coding then {
                     practr -> coding.system ='http://algoritmodiscoring'"system";

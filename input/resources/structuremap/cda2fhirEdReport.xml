@@ -5,7 +5,6 @@
       <div xmlns="http://www.w3.org/1999/xhtml">
          <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirEdReport&quot; = &quot;cda2fhirEdReport&quot;
 
-
 conceptmap &quot;AdministrativeGender&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-AdministrativeGender&quot;
   prefix t = &quot;http://hl7.org/fhir/ValueSet/administrative-gender&quot;
@@ -75,7 +74,7 @@ imports &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader&quot;
 
 // --------------------------------------------------------------------------------------------
 group CdaToBundle(source cda : ClinicalDocument, target bundle : Bundle) {
-  cda -&gt;  bundle.entry as e,  e.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e.resource = create('Composition') as composition,  composition.id = uuid() as uuid1,  e.fullUrl = append('https://example/Composition/', uuid1),  request.url = 'Composition',  bundle.entry as e2,  e2.request = create('BackboneElement') as requestPAT,  requestPAT.method = 'PUT',  e2.resource = create('Patient') as patient,  patient.id = uuid() as uuid2,  e2.fullUrl = append('https://example/Patient/', uuid2),  bundle.entry as e3,  e3.request = create('BackboneElement') as request,  request.method = 'POST',  e3.resource = create('Encounter') as encounter,  encounter.id = uuid() as uuid3,  e3.fullUrl = append('https://example/Encounter/', uuid3),  request.url = 'Encounter',  bundle.entry as e6,  e6.request = create('BackboneElement') as request,  request.method = 'POST',  e6.resource = create('DocumentReference') as DocumentReference,  DocumentReference.id = uuid() as uuid6,  e6.fullUrl = append('https://example/DocumentReference/', uuid6),  request.url = 'DocumentReference' then {
+  cda -&gt;  bundle.entry as e,  e.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e.resource = create(&apos;Composition&apos;) as composition,  composition.id = uuid() as uuid1,  e.fullUrl = append('https://example/Composition/', uuid1),  request.url = 'Composition',  bundle.entry as e2,  e2.request = create('BackboneElement') as requestPAT,  requestPAT.method = 'PUT',  e2.resource = create('Patient') as patient,  patient.id = uuid() as uuid2,  e2.fullUrl = append('https://example/Patient/', uuid2),  bundle.entry as e3,  e3.request = create('BackboneElement') as request,  request.method = 'POST',  e3.resource = create('Encounter') as encounter,  encounter.id = uuid() as uuid3,  e3.fullUrl = append('https://example/Encounter/', uuid3),  request.url = 'Encounter',  bundle.entry as e6,  e6.request = create('BackboneElement') as request,  request.method = 'POST',  e6.resource = create('DocumentReference') as DocumentReference,  DocumentReference.id = uuid() as uuid6,  e6.fullUrl = append('https://example/DocumentReference/', uuid6),  request.url = 'DocumentReference' then {
     cda then ClinicalDocumentToBundle(cda, patient, composition, encounter, bundle, DocumentReference) &quot;cdatobundle&quot;;
     cda.recordTarget as recordTarget then {
       recordTarget.patientRole as patient then {
@@ -1867,7 +1866,7 @@ group MotivoDellaVisita(source cda : ClinicalDocument, source src : Section, tar
     cdaText -&gt; fhirText.status = &apos;generated&apos; &quot;narrativeStatus&quot;;
     cdaText as t -&gt; fhirText.div = t &quot;narrativeText&quot;;
   } &quot;cdaText&quot;;
-  src.entry as entry -&gt;  bundle.entry as e2,  e2.request = create('BackboneElement') as request,  request.method = 'POST',  e2.resource = create('Observation') as observation,  observation.id = uuid() as uuid2,  e2.fullUrl = append('https://example/Observation/', uuid2),  request.url = 'Observation',  tgt.entry = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %observation.id) then {
+  src.entry as entry -&gt;  bundle.entry as e2,  e2.request = create(&apos;BackboneElement') as request,  request.method = 'POST',  e2.resource = create('Observation') as observation,  observation.id = uuid() as uuid2,  e2.fullUrl = append('https://example/Observation/', uuid2),  request.url = 'Observation',  tgt.entry = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %observation.id) then {
     entry.observation as obs then Observation(obs, patient, enc, observation, bundle);
   };
 }
@@ -1879,7 +1878,7 @@ group Triage(source cda : ClinicalDocument, source src : Section, target patient
     cdaText -&gt; fhirText.status = &apos;generated&apos; &quot;narrativeStatus&quot;;
     cdaText as t -&gt; fhirText.div = t &quot;narrativeText&quot;;
   } &quot;cdaText&quot;;
-  src.entry as entry -&gt;  bundle.entry as e2,  e2.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e2.resource = create('Observation') as observation,  observation.id = uuid() as uuid2,  e2.fullUrl = append('https://example/Observation/', uuid2),  request.url = 'Observation',  tgt.entry = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %observation.id) then {
+  src.entry as entry -&gt;  bundle.entry as e2,  e2.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e2.resource = create(&apos;Observation&apos;) as observation,  observation.id = uuid() as uuid2,  e2.fullUrl = append('https://example/Observation/', uuid2),  request.url = 'Observation',  tgt.entry = create('Reference') as reference,  reference.reference = ('https://example/Observation/' + %observation.id) then {
     entry.observation as obs then Observation(obs, patient, enc, observation, bundle);
   };
 }
@@ -2740,6 +2739,7 @@ group periodTiming(source effectiveTime : PIVL_TS, target timing : Timing) {
    </contained>
    <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirEdReport"/>
    <name value="cda2fhirEdReport"/>
+   <status value="draft"/>
    <structure>
       <url value="http://hl7.org/fhir/cda/StructureDefinition/ClinicalDocument"/>
       <mode value="source"/>
