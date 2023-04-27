@@ -1,9 +1,9 @@
 <StructureMap xmlns="http://hl7.org/fhir">
-   <id value="cda2fhirLdo"/>
+   <id value="cda2fhirHeader"/>
    <text>
       <status value="generated"/>
       <div xmlns="http://www.w3.org/1999/xhtml">
-         <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirLdo&quot; = &quot;cda2fhirLdo&quot;
+         <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader&quot; = &quot;cda2fhirHeader&quot;
 
 conceptmap &quot;AllergyTypeMap&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-type&quot;
@@ -1674,8 +1674,8 @@ group ClinicalDocumentSectionTerapiaDimissione(source cda : ClinicalDocument, so
          </group>
       </ConceptMap>
    </contained>
-   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirLdo"/>
-   <name value="cda2fhirLdo"/>
+   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirHeader"/>
+   <name value="cda2fhirHeader"/>
    <status value="draft"/>
    <structure>
       <url value="http://hl7.org/fhir/cda/StructureDefinition/ClinicalDocument"/>
