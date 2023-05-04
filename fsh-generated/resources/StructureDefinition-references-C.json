@@ -1,0 +1,42 @@
+{
+  "resourceType": "StructureDefinition",
+  "id": "references-C",
+  "url": "http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C",
+  "version": "0.1.0",
+  "name": "ReferencesC",
+  "title": "reference",
+  "status": "active",
+  "fhirVersion": "4.0.1",
+  "mapping": [
+    {
+      "identity": "rim",
+      "uri": "http://hl7.org/v3",
+      "name": "RIM Mapping"
+    }
+  ],
+  "kind": "complex-type",
+  "abstract": false,
+  "context": [
+    {
+      "type": "element",
+      "expression": "Element"
+    }
+  ],
+  "type": "Extension",
+  "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Extension",
+  "derivation": "constraint",
+  "differential": {
+    "element": [
+      {
+        "id": "Extension",
+        "path": "Extension",
+        "short": "reference"
+      },
+      {
+        "id": "Extension.url",
+        "path": "Extension.url",
+        "fixedUri": "http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C"
+      }
+    ]
+  }
+}

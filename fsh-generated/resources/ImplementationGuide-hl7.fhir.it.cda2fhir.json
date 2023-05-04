@@ -58,6 +58,20 @@
     "resource": [
       {
         "reference": {
+          "reference": "StructureDefinition/StructureMapProfile"
+        },
+        "name": "StructureMapProfile",
+        "exampleBoolean": false
+      },
+      {
+        "reference": {
+          "reference": "StructureDefinition/references-C"
+        },
+        "name": "reference",
+        "exampleBoolean": false
+      },
+      {
+        "reference": {
           "reference": "StructureMap/cda2fhirDataTypes"
         },
         "name": "CDA to FHIR - Data Types",
