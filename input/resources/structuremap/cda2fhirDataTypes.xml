@@ -5,10 +5,6 @@
       <div xmlns="http://www.w3.org/1999/xhtml">
          <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes&quot; = &quot;cda2fhirDataTypes&quot;
 
-// Adapted from https://github.com/HL7/ccda-to-fhir/tree/master/mappings
-// CDA:  http://build.fhir.org/ig/ahdis/cda-core-2.0/branches/master/index.html
-// FHIR: http://hl7.org/fhir/r4/
-
 conceptmap &quot;addressUse&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-AddressUse&quot;
   prefix t = &quot;http://hl7.org/fhir/address-use&quot;
@@ -22,6 +18,122 @@ conceptmap &quot;addressUse&quot; {
   s:TMP == t:temp
   s:OLD == t:old
   s:BAD == t:old
+}
+
+conceptmap &quot;OBSstatus&quot; {
+  prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-statusCode&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/observation-status&quot;
+
+  s:completed == t:final
+  s:active == t:registered
+  s:aborted == t:cancelled
+}
+
+conceptmap &quot;EventStatus&quot; {
+  prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-statusCode&quot;
+  prefix t = &quot;http://hl7.org/fhir/event-status&quot;
+
+  s:completed == t:completed
+  s:active == t:&quot;in-progress&quot;
+  s:aborted == t:stopped
+  s:suspended == t:&quot;on-hold&quot;
+}
+
+conceptmap &quot;FinancialStatus&quot; {
+  prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-statusCode&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/fm-status&quot;
+
+  s:active == t:active
+  s:aborted == t:cancelled
+  s:suspended == t:draft
+}
+
+conceptmap &quot;MedicationStatusMap&quot; {
+  prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-statusCode&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/medicationrequest-status&quot;
+
+  s:completed == t:completed
+  s:active == t:active
+  s:aborted == t:cancelled
+  s:suspended == t:&quot;on-hold&quot;
+}
+
+conceptmap &quot;cm-v3-administrative-gender&quot; {
+  prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-AdministrativeGender&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/administrative-gender&quot;
+
+  s:M == t:male
+  s:F == t:female
+}
+
+conceptmap &quot;AllergyTypeMap&quot; {
+  prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-type&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/allergyintolerance-clinical&quot;
+
+  s:OINT == t:intolerance
+  s:ALG == t:allergy
+  s:DALG == t:allergy
+  s:EALG == t:allergy
+  s:FALG == t:allergy
+  s:NAINT == t:intolerance
+  s:FNAINT == t:intolerance
+  s:DNAINT == t:intolerance
+  s:ENAINT == t:intolerance
+  s:FINT == t:intolerance
+  s:DINT == t:intolerance
+  s:EINT == t:intolerance
+}
+
+conceptmap &quot;AllergyCategoryMap&quot; {
+  prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-type&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/allergyintolerance-clinical&quot;
+
+  s:DALG == t:medication
+  s:EALG == t:enviroment
+  s:FALG == t:food
+  s:FNAINT == t:intolerance
+  s:DNAINT == t:medication
+  s:ENAINT == t:enviroment
+  s:FINT == t:food
+  s:DINT == t:medication
+  s:EINT == t:enviroment
+}
+
+conceptmap &quot;CricalityMap&quot; {
+  prefix s = &quot;http://terminology.hl7.org/CodeSystem/v3-ObservationValue&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality&quot;
+
+  s:M == t:low
+  s:H == t:high
+  s:L == t:low
+}
+
+conceptmap &quot;ClinicalStatusMap&quot; {
+  prefix s = &quot;https://loinc.org/99493-9/&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/condition-clinical&quot;
+
+  s:&quot;LA16666-2&quot; == t:active
+  s:&quot;LA18632-2&quot; == t:inactive
+  s:&quot;LA9041-0&quot; == t:resolved
+}
+
+conceptmap &quot;priority&quot; {
+  prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-ActPriority&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/request-priority&quot;
+
+  s:R == t:routine
+  s:P == t:asap
+  s:UR == t:urgent
+  s:EM == t:stat
+}
+
+conceptmap &quot;AllergyCriticality&quot; {
+  prefix s = &quot;https://art-decor.org/art-decor/decor-valuesets--hl7it-?id=2.16.840.1.113883.2.9.77.22.11.6&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality&quot;
+
+  s:L == t:low
+  s:H == t:high
+  s:M == t:unable_to_assess
 }
 
 uses &quot;http://hl7.org/fhir/cda/StructureDefinition/ED&quot; alias ED as source
@@ -48,6 +160,7 @@ uses &quot;http://hl7.org/fhir/cda/StructureDefinition/IVL-TS&quot; as source
 uses &quot;http://hl7.org/fhir/StructureDefinition/Period&quot; as target
 
 group Any(source src, target tgt) {
+  src -&gt; tgt &quot;simple&quot;;
 }
 
 group II(source src : II, target tgt : Identifier) extends Any &lt;&lt;types&gt;&gt; {
@@ -93,6 +206,7 @@ group TSDateTime(source src : TS, target tgt : dateTime) extends TSInstant &lt;&
 }
 
 group TSDate(source src : TS, target tgt : date) extends TSInstant &lt;&lt;types&gt;&gt; {
+  src.value as v -&gt; tgt.value = cast(v, &apos;string&apos;);
 }
 
 group IVLTSPeriod(source src : IVL_TS, target tgt : Period) extends Any &lt;&lt;types&gt;&gt; {
@@ -108,13 +222,16 @@ group STstring(source src : ST, target tgt : string) extends Any &lt;&lt;types&g
   src as v -&gt; tgt.value = cast(v, &apos;string&apos;) &quot;value&quot;;
 }
 
-group EDstring(source src : ED, target tgt : string) extends STstring &lt;&lt;types&gt;&gt; {
+group EDstring(source src : ED, target tgt : string) {
+  src as v -&gt; tgt.value = cast(v, &apos;string&apos;) &quot;value&quot;;
 }
 
-group INTstring(source src : INT, target tgt : string) extends STstring &lt;&lt;types&gt;&gt; {
+group INTstring(source src : INT, target tgt : string) {
+  src as v -&gt; tgt.value = cast(v, &apos;string&apos;) &quot;value&quot;;
 }
 
-group ONstring(source src : ON, target tgt : string) extends STstring &lt;&lt;types&gt;&gt; {
+group ONstring(source src : ON, target tgt : string) {
+  src as v -&gt; tgt.value = cast(v, &apos;string&apos;) &quot;value&quot;;
 }
 
 group CSCode(source src : CS, target tgt : code) extends Any &lt;&lt;types&gt;&gt; {
@@ -122,9 +239,11 @@ group CSCode(source src : CS, target tgt : code) extends Any &lt;&lt;types&gt;&g
 }
 
 group CECode(source src : CE, target tgt : code) extends CSCode &lt;&lt;types&gt;&gt; {
+  src.code as c -&gt; tgt.value = cast(c, &apos;string&apos;);
 }
 
 group CDCode(source src : CD, target tgt : code) extends CSCode &lt;&lt;types&gt;&gt; {
+  src.code as c -&gt; tgt.value = cast(c, &apos;string&apos;);
 }
 
 group CECodeableConcept(source src : CE, target tgt : CodeableConcept) extends Any &lt;&lt;types&gt;&gt; {
@@ -153,10 +272,56 @@ group CECodeableConcept(source src : CE, target tgt : CodeableConcept) extends A
   };
 }
 
-group CSCodeableConcept(source src : CS, target tgt : CodeableConcept) extends CECodeableConcept &lt;&lt;types&gt;&gt; {
+group CSCodeableConcept(source src : CS, target tgt : CodeableConcept) {
+  src.originalText as originalText then {
+    originalText.reference as reference -&gt; tgt.text = (reference.value);
+  } &quot;originltext&quot;;
+  src -&gt; tgt.coding as coding then {
+    src.code as code -&gt; coding.code = cast(code, &apos;string&apos;);
+    src.codeSystem as system -&gt; coding.system = translate(system, &apos;http://hl7.org/fhir/ConceptMap/special-oid2uri&apos;, &apos;uri&apos;);
+    src.displayName as display -&gt; coding.display = cast(display, &apos;string&apos;);
+    src.codeSystemVersion as version -&gt; coding.version = cast(version, &apos;string&apos;);
+  } &quot;code&quot;;
+  src.translation as translation -&gt; tgt.coding as coding then {
+    translation.code as code -&gt; coding.code = cast(code, &apos;string&apos;);
+    translation.codeSystem as system -&gt; coding.system = translate(system, &apos;http://hl7.org/fhir/ConceptMap/special-oid2uri&apos;, &apos;uri&apos;);
+    translation.displayName as display -&gt; coding.display = cast(display, &apos;string&apos;);
+    translation.codeSystemVersion as version -&gt; coding.version = cast(version, &apos;string&apos;);
+    translation.qualifier as qualifier then {
+      qualifier.value as value -&gt; tgt.coding as coding then {
+        value.code as code -&gt; coding.code = cast(code, &apos;string&apos;);
+        value.codeSystem as system -&gt; coding.system = translate(system, &apos;http://hl7.org/fhir/ConceptMap/special-oid2uri&apos;, &apos;uri&apos;);
+        value.displayName as display -&gt; coding.display = cast(display, &apos;string&apos;);
+        value.codeSystemVersion as version -&gt; coding.version = cast(version, &apos;string&apos;);
+      };
+    };
+  };
 }
 
-group CDCodeableConcept(source src : CD, target tgt : CodeableConcept) extends CECodeableConcept &lt;&lt;types&gt;&gt; {
+group CDCodeableConcept(source src : CD, target tgt : CodeableConcept) {
+  src.originalText as originalText then {
+    originalText.reference as reference -&gt; tgt.text = (reference.value);
+  } &quot;originltext&quot;;
+  src -&gt; tgt.coding as coding then {
+    src.code as code -&gt; coding.code = cast(code, &apos;string&apos;);
+    src.codeSystem as system -&gt; coding.system = translate(system, &apos;http://hl7.org/fhir/ConceptMap/special-oid2uri&apos;, &apos;uri&apos;);
+    src.displayName as display -&gt; coding.display = cast(display, &apos;string&apos;);
+    src.codeSystemVersion as version -&gt; coding.version = cast(version, &apos;string&apos;);
+  } &quot;code&quot;;
+  src.translation as translation -&gt; tgt.coding as coding then {
+    translation.code as code -&gt; coding.code = cast(code, &apos;string&apos;);
+    translation.codeSystem as system -&gt; coding.system = translate(system, &apos;http://hl7.org/fhir/ConceptMap/special-oid2uri&apos;, &apos;uri&apos;);
+    translation.displayName as display -&gt; coding.display = cast(display, &apos;string&apos;);
+    translation.codeSystemVersion as version -&gt; coding.version = cast(version, &apos;string&apos;);
+    translation.qualifier as qualifier then {
+      qualifier.value as value -&gt; tgt.coding as coding then {
+        value.code as code -&gt; coding.code = cast(code, &apos;string&apos;);
+        value.codeSystem as system -&gt; coding.system = translate(system, &apos;http://hl7.org/fhir/ConceptMap/special-oid2uri&apos;, &apos;uri&apos;);
+        value.displayName as display -&gt; coding.display = cast(display, &apos;string&apos;);
+        value.codeSystemVersion as version -&gt; coding.version = cast(version, &apos;string&apos;);
+      };
+    };
+  };
 }
 
 group ENHumanName(source src : EN, target tgt : HumanName) extends Any &lt;&lt;types&gt;&gt; {
@@ -292,6 +457,526 @@ group CensusTract(source src : ST, target ext : Extension) {
          </group>
       </ConceptMap>
    </contained>
+   <contained>
+      <ConceptMap xmlns="http://hl7.org/fhir">
+         <id value="OBSstatus"/>
+         <status value="draft"/>
+         <group>
+            <source value="http://terminology.hl7.org/ValueSet/v3-statusCode"/>
+            <target value="http://hl7.org/fhir/ValueSet/observation-status"/>
+            <element>
+               <code value="completed"/>
+               <target>
+                  <code value="final"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="active"/>
+               <target>
+                  <code value="registered"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="aborted"/>
+               <target>
+                  <code value="cancelled"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+         </group>
+      </ConceptMap>
+   </contained>
+   <contained>
+      <ConceptMap xmlns="http://hl7.org/fhir">
+         <id value="EventStatus"/>
+         <status value="draft"/>
+         <group>
+            <source value="http://terminology.hl7.org/ValueSet/v3-statusCode"/>
+            <target value="http://hl7.org/fhir/ValueSet/event-status"/>
+            <element>
+               <code value="completed"/>
+               <target>
+                  <code value="completed"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="active"/>
+               <target>
+                  <code value="in-progress"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="aborted"/>
+               <target>
+                  <code value="stopped"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="suspended"/>
+               <target>
+                  <code value="on-hold"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+         </group>
+      </ConceptMap>
+   </contained>
+   <contained>
+      <ConceptMap xmlns="http://hl7.org/fhir">
+         <id value="FinancialStatus"/>
+         <status value="draft"/>
+         <group>
+            <source value="http://terminology.hl7.org/ValueSet/v3-statusCode"/>
+            <target value="http://hl7.org/fhir/ValueSet/fm-status"/>
+            <element>
+               <code value="active"/>
+               <target>
+                  <code value="active"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="aborted"/>
+               <target>
+                  <code value="cancelled"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="suspended"/>
+               <target>
+                  <code value="draft"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+         </group>
+      </ConceptMap>
+   </contained>
+   <contained>
+      <ConceptMap xmlns="http://hl7.org/fhir">
+         <id value="MedicationStatusMap"/>
+         <status value="draft"/>
+         <group>
+            <source value="http://terminology.hl7.org/ValueSet/v3-statusCode"/>
+            <target value="http://hl7.org/fhir/ValueSet/medicationrequest-status"/>
+            <element>
+               <code value="completed"/>
+               <target>
+                  <code value="completed"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="active"/>
+               <target>
+                  <code value="active"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="aborted"/>
+               <target>
+                  <code value="cancelled"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="suspended"/>
+               <target>
+                  <code value="on-hold"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+         </group>
+      </ConceptMap>
+   </contained>
+   <contained>
+      <ConceptMap xmlns="http://hl7.org/fhir">
+         <id value="cm-v3-administrative-gender"/>
+         <status value="draft"/>
+         <group>
+            <source value="http://terminology.hl7.org/ValueSet/v3-AdministrativeGender"/>
+            <target value="http://hl7.org/fhir/ValueSet/administrative-gender"/>
+            <element>
+               <code value="M"/>
+               <target>
+                  <code value="male"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="F"/>
+               <target>
+                  <code value="female"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+         </group>
+      </ConceptMap>
+   </contained>
+   <contained>
+      <ConceptMap xmlns="http://hl7.org/fhir">
+         <id value="AllergyTypeMap"/>
+         <status value="draft"/>
+         <group>
+            <source value="http://terminology.hl7.org/ValueSet/v3-type"/>
+            <target value="http://hl7.org/fhir/ValueSet/allergyintolerance-clinical"/>
+            <element>
+               <code value="OINT"/>
+               <target>
+                  <code value="intolerance"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="ALG"/>
+               <target>
+                  <code value="allergy"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="DALG"/>
+               <target>
+                  <code value="allergy"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="EALG"/>
+               <target>
+                  <code value="allergy"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="FALG"/>
+               <target>
+                  <code value="allergy"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="NAINT"/>
+               <target>
+                  <code value="intolerance"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="FNAINT"/>
+               <target>
+                  <code value="intolerance"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="DNAINT"/>
+               <target>
+                  <code value="intolerance"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="ENAINT"/>
+               <target>
+                  <code value="intolerance"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="FINT"/>
+               <target>
+                  <code value="intolerance"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="DINT"/>
+               <target>
+                  <code value="intolerance"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="EINT"/>
+               <target>
+                  <code value="intolerance"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+         </group>
+      </ConceptMap>
+   </contained>
+   <contained>
+      <ConceptMap xmlns="http://hl7.org/fhir">
+         <id value="AllergyCategoryMap"/>
+         <status value="draft"/>
+         <group>
+            <source value="http://terminology.hl7.org/ValueSet/v3-type"/>
+            <target value="http://hl7.org/fhir/ValueSet/allergyintolerance-clinical"/>
+            <element>
+               <code value="DALG"/>
+               <target>
+                  <code value="medication"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="EALG"/>
+               <target>
+                  <code value="enviroment"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="FALG"/>
+               <target>
+                  <code value="food"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="FNAINT"/>
+               <target>
+                  <code value="intolerance"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="DNAINT"/>
+               <target>
+                  <code value="medication"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="ENAINT"/>
+               <target>
+                  <code value="enviroment"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="FINT"/>
+               <target>
+                  <code value="food"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="DINT"/>
+               <target>
+                  <code value="medication"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="EINT"/>
+               <target>
+                  <code value="enviroment"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+         </group>
+      </ConceptMap>
+   </contained>
+   <contained>
+      <ConceptMap xmlns="http://hl7.org/fhir">
+         <id value="CricalityMap"/>
+         <status value="draft"/>
+         <group>
+            <source value="http://terminology.hl7.org/CodeSystem/v3-ObservationValue"/>
+            <target value="hhttp://hl7.org/fhir/ValueSet/allergy-intolerance-criticality"/>
+            <element>
+               <code value="M"/>
+               <target>
+                  <code value="low"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="H"/>
+               <target>
+                  <code value="high"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="L"/>
+               <target>
+                  <code value="low"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+         </group>
+      </ConceptMap>
+   </contained>
+   <contained>
+      <ConceptMap xmlns="http://hl7.org/fhir">
+         <id value="ClinicalStatusMap"/>
+         <status value="draft"/>
+         <group>
+            <source value="https://loinc.org/99493-9/"/>
+            <target value="http://hl7.org/fhir/ValueSet/condition-clinical"/>
+            <element>
+               <code value="LA16666-2"/>
+               <target>
+                  <code value="active"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="LA18632-2"/>
+               <target>
+                  <code value="inactive"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="LA9041-0"/>
+               <target>
+                  <code value="resolved"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+         </group>
+      </ConceptMap>
+   </contained>
+   <contained>
+      <ConceptMap xmlns="http://hl7.org/fhir">
+         <id value="priority"/>
+         <status value="draft"/>
+         <group>
+            <source value="http://terminology.hl7.org/ValueSet/v3-ActPriority"/>
+            <target value="http://hl7.org/fhir/ValueSet/request-priority"/>
+            <element>
+               <code value="R"/>
+               <target>
+                  <code value="routine"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="P"/>
+               <target>
+                  <code value="asap"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="UR"/>
+               <target>
+                  <code value="urgent"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="EM"/>
+               <target>
+                  <code value="stat"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+         </group>
+      </ConceptMap>
+   </contained>
+   <contained>
+      <ConceptMap xmlns="http://hl7.org/fhir">
+         <id value="AllergyCriticality"/>
+         <status value="draft"/>
+         <group>
+            <source value="https://art-decor.org/art-decor/decor-valuesets--hl7it-?id=2.16.840.1.113883.2.9.77.22.11.6"/>
+            <target value="http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality"/>
+            <element>
+               <code value="L"/>
+               <target>
+                  <code value="low"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="H"/>
+               <target>
+                  <code value="high"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="M"/>
+               <target>
+                  <code value="unable_to_assess"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+         </group>
+      </ConceptMap>
+   </contained>
+   <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
+    <valueReference>
+      <reference value="#addressUse"/>
+    </valueReference>
+  </extension>
+   <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
+    <valueReference>
+      <reference value="#AllergyCriticality"/>
+    </valueReference>
+  </extension>
+   <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
+    <valueReference>
+      <reference value="#priority"/>
+    </valueReference>
+  </extension>
+   <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
+    <valueReference>
+      <reference value="#ClinicalStatusMap"/>
+    </valueReference>
+  </extension>
+   <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
+    <valueReference>
+      <reference value="#CricalityMap"/>
+    </valueReference>
+  </extension>
+   <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
+    <valueReference>
+      <reference value="#AllergyCategoryMap"/>
+    </valueReference>
+  </extension>
+   <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
+    <valueReference>
+      <reference value="#AllergyTypeMap"/>
+    </valueReference>
+  </extension>
+  <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
+    <valueReference>
+      <reference value="#cm-v3-administrative-gender"/>
+    </valueReference>
+  </extension>
+  <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
+    <valueReference>
+      <reference value="#MedicationStatusMap"/>
+    </valueReference>
+  </extension>
+  <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
+    <valueReference>
+      <reference value="#FinancialStatus"/>
+    </valueReference>
+  </extension>
+  <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
+    <valueReference>
+      <reference value="#EventStatus"/>
+    </valueReference>
+  </extension>
+  <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
+    <valueReference>
+      <reference value="#OBSstatus"/>
+    </valueReference>
+  </extension>
    <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"/>
    <name value="cda2fhirDataTypes"/>
    <status value="draft"/>
@@ -397,6 +1082,19 @@ group CensusTract(source src : ST, target ext : Extension) {
          <name value="tgt"/>
          <mode value="target"/>
       </input>
+      <rule>
+         <name value="simple"/>
+         <source>
+            <context value="src"/>
+         </source>
+         <target>
+            <contextType value="variable"/>
+            <transform value="copy"/>
+            <parameter>
+               <valueId value="tgt"/>
+            </parameter>
+         </target>
+      </rule>
    </group>
    <group>
       <name value="II"/>
@@ -849,6 +1547,26 @@ group CensusTract(source src : ST, target ext : Extension) {
          <type value="date"/>
          <mode value="target"/>
       </input>
+      <rule>
+         <name value="value"/>
+         <source>
+            <context value="src"/>
+            <element value="value"/>
+            <variable value="v"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="value"/>
+            <transform value="cast"/>
+            <parameter>
+               <valueId value="v"/>
+            </parameter>
+            <parameter>
+               <valueString value="string"/>
+            </parameter>
+         </target>
+      </rule>
    </group>
    <group>
       <name value="IVLTSPeriod"/>
@@ -999,8 +1717,7 @@ group CensusTract(source src : ST, target ext : Extension) {
    </group>
    <group>
       <name value="EDstring"/>
-      <extends value="STstring"/>
-      <typeMode value="types"/>
+      <typeMode value="none"/>
       <input>
          <name value="src"/>
          <type value="ED"/>
@@ -1011,11 +1728,29 @@ group CensusTract(source src : ST, target ext : Extension) {
          <type value="string"/>
          <mode value="target"/>
       </input>
+      <rule>
+         <name value="value"/>
+         <source>
+            <context value="src"/>
+            <variable value="v"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="value"/>
+            <transform value="cast"/>
+            <parameter>
+               <valueId value="v"/>
+            </parameter>
+            <parameter>
+               <valueString value="string"/>
+            </parameter>
+         </target>
+      </rule>
    </group>
    <group>
       <name value="INTstring"/>
-      <extends value="STstring"/>
-      <typeMode value="types"/>
+      <typeMode value="none"/>
       <input>
          <name value="src"/>
          <type value="INT"/>
@@ -1026,11 +1761,29 @@ group CensusTract(source src : ST, target ext : Extension) {
          <type value="string"/>
          <mode value="target"/>
       </input>
+      <rule>
+         <name value="value"/>
+         <source>
+            <context value="src"/>
+            <variable value="v"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="value"/>
+            <transform value="cast"/>
+            <parameter>
+               <valueId value="v"/>
+            </parameter>
+            <parameter>
+               <valueString value="string"/>
+            </parameter>
+         </target>
+      </rule>
    </group>
    <group>
       <name value="ONstring"/>
-      <extends value="STstring"/>
-      <typeMode value="types"/>
+      <typeMode value="none"/>
       <input>
          <name value="src"/>
          <type value="ON"/>
@@ -1041,6 +1794,25 @@ group CensusTract(source src : ST, target ext : Extension) {
          <type value="string"/>
          <mode value="target"/>
       </input>
+      <rule>
+         <name value="value"/>
+         <source>
+            <context value="src"/>
+            <variable value="v"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="value"/>
+            <transform value="cast"/>
+            <parameter>
+               <valueId value="v"/>
+            </parameter>
+            <parameter>
+               <valueString value="string"/>
+            </parameter>
+         </target>
+      </rule>
    </group>
    <group>
       <name value="CSCode"/>
@@ -1091,6 +1863,26 @@ group CensusTract(source src : ST, target ext : Extension) {
          <type value="code"/>
          <mode value="target"/>
       </input>
+      <rule>
+         <name value="code"/>
+         <source>
+            <context value="src"/>
+            <element value="code"/>
+            <variable value="c"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="value"/>
+            <transform value="cast"/>
+            <parameter>
+               <valueId value="c"/>
+            </parameter>
+            <parameter>
+               <valueString value="string"/>
+            </parameter>
+         </target>
+      </rule>
    </group>
    <group>
       <name value="CDCode"/>
@@ -1106,6 +1898,26 @@ group CensusTract(source src : ST, target ext : Extension) {
          <type value="code"/>
          <mode value="target"/>
       </input>
+      <rule>
+         <name value="code"/>
+         <source>
+            <context value="src"/>
+            <element value="code"/>
+            <variable value="c"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="value"/>
+            <transform value="cast"/>
+            <parameter>
+               <valueId value="c"/>
+            </parameter>
+            <parameter>
+               <valueString value="string"/>
+            </parameter>
+         </target>
+      </rule>
    </group>
    <group>
       <name value="CECodeableConcept"/>
@@ -1446,8 +2258,7 @@ group CensusTract(source src : ST, target ext : Extension) {
    </group>
    <group>
       <name value="CSCodeableConcept"/>
-      <extends value="CECodeableConcept"/>
-      <typeMode value="types"/>
+      <typeMode value="none"/>
       <input>
          <name value="src"/>
          <type value="CS"/>
@@ -1458,11 +2269,332 @@ group CensusTract(source src : ST, target ext : Extension) {
          <type value="CodeableConcept"/>
          <mode value="target"/>
       </input>
+      <rule>
+         <name value="originltext"/>
+         <source>
+            <context value="src"/>
+            <element value="originalText"/>
+            <variable value="originalText"/>
+         </source>
+         <rule>
+            <name value="reference"/>
+            <source>
+               <context value="originalText"/>
+               <element value="reference"/>
+               <variable value="reference"/>
+            </source>
+            <target>
+               <context value="tgt"/>
+               <contextType value="variable"/>
+               <element value="text"/>
+               <transform value="evaluate"/>
+               <parameter>
+                  <valueString value="reference.value"/>
+               </parameter>
+            </target>
+         </rule>
+      </rule>
+      <rule>
+         <name value="code"/>
+         <source>
+            <context value="src"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="coding"/>
+            <variable value="coding"/>
+         </target>
+         <rule>
+            <name value="code"/>
+            <source>
+               <context value="src"/>
+               <element value="code"/>
+               <variable value="code"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="code"/>
+               <transform value="cast"/>
+               <parameter>
+                  <valueId value="code"/>
+               </parameter>
+               <parameter>
+                  <valueString value="string"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="codeSystem"/>
+            <source>
+               <context value="src"/>
+               <element value="codeSystem"/>
+               <variable value="system"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="system"/>
+               <transform value="translate"/>
+               <parameter>
+                  <valueId value="system"/>
+               </parameter>
+               <parameter>
+                  <valueString value="http://hl7.org/fhir/ConceptMap/special-oid2uri"/>
+               </parameter>
+               <parameter>
+                  <valueString value="uri"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="displayName"/>
+            <source>
+               <context value="src"/>
+               <element value="displayName"/>
+               <variable value="display"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="display"/>
+               <transform value="cast"/>
+               <parameter>
+                  <valueId value="display"/>
+               </parameter>
+               <parameter>
+                  <valueString value="string"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="codeSystemVersion"/>
+            <source>
+               <context value="src"/>
+               <element value="codeSystemVersion"/>
+               <variable value="version"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="version"/>
+               <transform value="cast"/>
+               <parameter>
+                  <valueId value="version"/>
+               </parameter>
+               <parameter>
+                  <valueString value="string"/>
+               </parameter>
+            </target>
+         </rule>
+      </rule>
+      <rule>
+         <name value="translation"/>
+         <source>
+            <context value="src"/>
+            <element value="translation"/>
+            <variable value="translation"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="coding"/>
+            <variable value="coding"/>
+         </target>
+         <rule>
+            <name value="code"/>
+            <source>
+               <context value="translation"/>
+               <element value="code"/>
+               <variable value="code"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="code"/>
+               <transform value="cast"/>
+               <parameter>
+                  <valueId value="code"/>
+               </parameter>
+               <parameter>
+                  <valueString value="string"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="codeSystem"/>
+            <source>
+               <context value="translation"/>
+               <element value="codeSystem"/>
+               <variable value="system"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="system"/>
+               <transform value="translate"/>
+               <parameter>
+                  <valueId value="system"/>
+               </parameter>
+               <parameter>
+                  <valueString value="http://hl7.org/fhir/ConceptMap/special-oid2uri"/>
+               </parameter>
+               <parameter>
+                  <valueString value="uri"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="displayName"/>
+            <source>
+               <context value="translation"/>
+               <element value="displayName"/>
+               <variable value="display"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="display"/>
+               <transform value="cast"/>
+               <parameter>
+                  <valueId value="display"/>
+               </parameter>
+               <parameter>
+                  <valueString value="string"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="codeSystemVersion"/>
+            <source>
+               <context value="translation"/>
+               <element value="codeSystemVersion"/>
+               <variable value="version"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="version"/>
+               <transform value="cast"/>
+               <parameter>
+                  <valueId value="version"/>
+               </parameter>
+               <parameter>
+                  <valueString value="string"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="qualifier"/>
+            <source>
+               <context value="translation"/>
+               <element value="qualifier"/>
+               <variable value="qualifier"/>
+            </source>
+            <rule>
+               <name value="value"/>
+               <source>
+                  <context value="qualifier"/>
+                  <element value="value"/>
+                  <variable value="value"/>
+               </source>
+               <target>
+                  <context value="tgt"/>
+                  <contextType value="variable"/>
+                  <element value="coding"/>
+                  <variable value="coding"/>
+               </target>
+               <rule>
+                  <name value="code"/>
+                  <source>
+                     <context value="value"/>
+                     <element value="code"/>
+                     <variable value="code"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="code"/>
+                     <transform value="cast"/>
+                     <parameter>
+                        <valueId value="code"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="string"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="codeSystem"/>
+                  <source>
+                     <context value="value"/>
+                     <element value="codeSystem"/>
+                     <variable value="system"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="system"/>
+                     <transform value="translate"/>
+                     <parameter>
+                        <valueId value="system"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="http://hl7.org/fhir/ConceptMap/special-oid2uri"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="uri"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="displayName"/>
+                  <source>
+                     <context value="value"/>
+                     <element value="displayName"/>
+                     <variable value="display"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="display"/>
+                     <transform value="cast"/>
+                     <parameter>
+                        <valueId value="display"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="string"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="codeSystemVersion"/>
+                  <source>
+                     <context value="value"/>
+                     <element value="codeSystemVersion"/>
+                     <variable value="version"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="version"/>
+                     <transform value="cast"/>
+                     <parameter>
+                        <valueId value="version"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="string"/>
+                     </parameter>
+                  </target>
+               </rule>
+            </rule>
+         </rule>
+      </rule>
    </group>
    <group>
       <name value="CDCodeableConcept"/>
-      <extends value="CECodeableConcept"/>
-      <typeMode value="types"/>
+      <typeMode value="none"/>
       <input>
          <name value="src"/>
          <type value="CD"/>
@@ -1473,6 +2605,328 @@ group CensusTract(source src : ST, target ext : Extension) {
          <type value="CodeableConcept"/>
          <mode value="target"/>
       </input>
+      <rule>
+         <name value="originltext"/>
+         <source>
+            <context value="src"/>
+            <element value="originalText"/>
+            <variable value="originalText"/>
+         </source>
+         <rule>
+            <name value="reference"/>
+            <source>
+               <context value="originalText"/>
+               <element value="reference"/>
+               <variable value="reference"/>
+            </source>
+            <target>
+               <context value="tgt"/>
+               <contextType value="variable"/>
+               <element value="text"/>
+               <transform value="evaluate"/>
+               <parameter>
+                  <valueString value="reference.value"/>
+               </parameter>
+            </target>
+         </rule>
+      </rule>
+      <rule>
+         <name value="code"/>
+         <source>
+            <context value="src"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="coding"/>
+            <variable value="coding"/>
+         </target>
+         <rule>
+            <name value="code"/>
+            <source>
+               <context value="src"/>
+               <element value="code"/>
+               <variable value="code"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="code"/>
+               <transform value="cast"/>
+               <parameter>
+                  <valueId value="code"/>
+               </parameter>
+               <parameter>
+                  <valueString value="string"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="codeSystem"/>
+            <source>
+               <context value="src"/>
+               <element value="codeSystem"/>
+               <variable value="system"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="system"/>
+               <transform value="translate"/>
+               <parameter>
+                  <valueId value="system"/>
+               </parameter>
+               <parameter>
+                  <valueString value="http://hl7.org/fhir/ConceptMap/special-oid2uri"/>
+               </parameter>
+               <parameter>
+                  <valueString value="uri"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="displayName"/>
+            <source>
+               <context value="src"/>
+               <element value="displayName"/>
+               <variable value="display"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="display"/>
+               <transform value="cast"/>
+               <parameter>
+                  <valueId value="display"/>
+               </parameter>
+               <parameter>
+                  <valueString value="string"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="codeSystemVersion"/>
+            <source>
+               <context value="src"/>
+               <element value="codeSystemVersion"/>
+               <variable value="version"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="version"/>
+               <transform value="cast"/>
+               <parameter>
+                  <valueId value="version"/>
+               </parameter>
+               <parameter>
+                  <valueString value="string"/>
+               </parameter>
+            </target>
+         </rule>
+      </rule>
+      <rule>
+         <name value="translation"/>
+         <source>
+            <context value="src"/>
+            <element value="translation"/>
+            <variable value="translation"/>
+         </source>
+         <target>
+            <context value="tgt"/>
+            <contextType value="variable"/>
+            <element value="coding"/>
+            <variable value="coding"/>
+         </target>
+         <rule>
+            <name value="code"/>
+            <source>
+               <context value="translation"/>
+               <element value="code"/>
+               <variable value="code"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="code"/>
+               <transform value="cast"/>
+               <parameter>
+                  <valueId value="code"/>
+               </parameter>
+               <parameter>
+                  <valueString value="string"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="codeSystem"/>
+            <source>
+               <context value="translation"/>
+               <element value="codeSystem"/>
+               <variable value="system"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="system"/>
+               <transform value="translate"/>
+               <parameter>
+                  <valueId value="system"/>
+               </parameter>
+               <parameter>
+                  <valueString value="http://hl7.org/fhir/ConceptMap/special-oid2uri"/>
+               </parameter>
+               <parameter>
+                  <valueString value="uri"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="displayName"/>
+            <source>
+               <context value="translation"/>
+               <element value="displayName"/>
+               <variable value="display"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="display"/>
+               <transform value="cast"/>
+               <parameter>
+                  <valueId value="display"/>
+               </parameter>
+               <parameter>
+                  <valueString value="string"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="codeSystemVersion"/>
+            <source>
+               <context value="translation"/>
+               <element value="codeSystemVersion"/>
+               <variable value="version"/>
+            </source>
+            <target>
+               <context value="coding"/>
+               <contextType value="variable"/>
+               <element value="version"/>
+               <transform value="cast"/>
+               <parameter>
+                  <valueId value="version"/>
+               </parameter>
+               <parameter>
+                  <valueString value="string"/>
+               </parameter>
+            </target>
+         </rule>
+         <rule>
+            <name value="qualifier"/>
+            <source>
+               <context value="translation"/>
+               <element value="qualifier"/>
+               <variable value="qualifier"/>
+            </source>
+            <rule>
+               <name value="value"/>
+               <source>
+                  <context value="qualifier"/>
+                  <element value="value"/>
+                  <variable value="value"/>
+               </source>
+               <target>
+                  <context value="tgt"/>
+                  <contextType value="variable"/>
+                  <element value="coding"/>
+                  <variable value="coding"/>
+               </target>
+               <rule>
+                  <name value="code"/>
+                  <source>
+                     <context value="value"/>
+                     <element value="code"/>
+                     <variable value="code"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="code"/>
+                     <transform value="cast"/>
+                     <parameter>
+                        <valueId value="code"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="string"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="codeSystem"/>
+                  <source>
+                     <context value="value"/>
+                     <element value="codeSystem"/>
+                     <variable value="system"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="system"/>
+                     <transform value="translate"/>
+                     <parameter>
+                        <valueId value="system"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="http://hl7.org/fhir/ConceptMap/special-oid2uri"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="uri"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="displayName"/>
+                  <source>
+                     <context value="value"/>
+                     <element value="displayName"/>
+                     <variable value="display"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="display"/>
+                     <transform value="cast"/>
+                     <parameter>
+                        <valueId value="display"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="string"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="codeSystemVersion"/>
+                  <source>
+                     <context value="value"/>
+                     <element value="codeSystemVersion"/>
+                     <variable value="version"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="version"/>
+                     <transform value="cast"/>
+                     <parameter>
+                        <valueId value="version"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="string"/>
+                     </parameter>
+                  </target>
+               </rule>
+            </rule>
+         </rule>
+      </rule>
    </group>
    <group>
       <name value="ENHumanName"/>
@@ -2203,5 +3657,5 @@ group CensusTract(source src : ST, target ext : Extension) {
             </parameter>
          </target>
       </rule>
-   </group>
+   </group>  
 </StructureMap>

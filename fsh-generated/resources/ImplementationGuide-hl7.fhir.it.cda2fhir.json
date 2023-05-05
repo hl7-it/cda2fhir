@@ -58,6 +58,20 @@
     "resource": [
       {
         "reference": {
+          "reference": "StructureDefinition/StructureMapProfile"
+        },
+        "name": "StructureMapProfile",
+        "exampleBoolean": false
+      },
+      {
+        "reference": {
+          "reference": "StructureDefinition/references-C"
+        },
+        "name": "reference",
+        "exampleBoolean": false
+      },
+      {
+        "reference": {
           "reference": "StructureMap/cda2fhirDataTypes"
         },
         "name": "CDA to FHIR - Data Types",
@@ -118,6 +132,14 @@
         },
         "name": "CDA to FHIR - VPS",
         "description": "Mappa di trasformazione del documento CDA2 Verbale di Pronto Soccorso in FHIR Bundle",
+        "groupingId": "IndMaps"
+      },
+      {
+        "reference": {
+          "reference": "StructureMap/cda2fhirMedPrescription"
+        },
+        "name": "CDA to FHIR - PRESCRIZIONE FARMACEUTICA",
+        "description": "Mappa di trasformazione del documento CDA2 di Prescrizione Farmaceutica in FHIR Bundle",
         "groupingId": "IndMaps"
       },
       {

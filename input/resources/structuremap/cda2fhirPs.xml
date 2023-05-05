@@ -5,104 +5,6 @@
       <div xmlns="http://www.w3.org/1999/xhtml">
          <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirPs&quot; = &quot;cda2fhirPs&quot;
 
-conceptmap &quot;OBSstatus&quot; {
-  prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-statusCode&quot;
-  prefix t = &quot;http://hl7.org/fhir/observation-status&quot;
-
-  s:completed == t:final
-  s:active == t:registered
-  s:aborted == t:cancelled
-  s:suspended == t:partial
-}
-
-conceptmap &quot;EventStatus&quot; {
-  prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-statusCode&quot;
-  prefix t = &quot;http://hl7.org/fhir/event-status&quot;
-
-  s:completed == t:completed
-  s:active == t:&quot;in-progress&quot;
-  s:aborted == t:stopped
-  s:suspended == t:&quot;on-hold&quot;
-}
-
-conceptmap &quot;FinancialStatus&quot; {
-  prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-statusCode&quot;
-  prefix t = &quot;http://hl7.org/fhir/fm-status&quot;
-
-  s:active == t:active
-  s:aborted == t:cancelled
-  s:suspended == t:draft
-}
-
-conceptmap &quot;MedicationStatusMap&quot; {
-  prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-statusCode&quot;
-  prefix t = &quot;http://hl7.org/fhir/CodeSystem/medicationrequest-status&quot;
-
-  s:completed == t:completed
-  s:active == t:active
-  s:aborted == t:cancelled
-  s:suspended == t:&quot;on-hold&quot;
-}
-
-conceptmap &quot;cm-v3-administrative-gender&quot; {
-  prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-AdministrativeGender&quot;
-  prefix t = &quot;http://hl7.org/fhir/ValueSet/administrative-gender&quot;
-
-  s:M == t:male
-  s:F == t:female
-}
-
-conceptmap &quot;AllergyTypeMap&quot; {
-  prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-type&quot;
-  prefix t = &quot;http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical&quot;
-
-  s:OINT == t:intolerance
-  s:ALG == t:allergy
-  s:DALG == t:allergy
-  s:EALG == t:allergy
-  s:FALG == t:allergy
-  s:NAINT == t:intolerance
-  s:FNAINT == t:intolerance
-  s:DNAINT == t:intolerance
-  s:ENAINT == t:intolerance
-  s:FINT == t:intolerance
-  s:DINT == t:intolerance
-  s:EINT == t:intolerance
-}
-
-conceptmap &quot;AllergyCategoryMap&quot; {
-  prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-type&quot;
-  prefix t = &quot;http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical&quot;
-
-  s:DALG == t:medication
-  s:EALG == t:enviroment
-  s:FALG == t:food
-  s:FNAINT == t:intolerance
-  s:DNAINT == t:medication
-  s:ENAINT == t:enviroment
-  s:FINT == t:food
-  s:DINT == t:medication
-  s:EINT == t:enviroment
-}
-
-conceptmap &quot;CricalityMap&quot; {
-  prefix s = &quot;http://terminology.hl7.org/CodeSystem/v3-ObservationValue&quot;
-  prefix t = &quot;http://hl7.org/fhir/allergy-intolerance-criticality&quot;
-
-  s:M == t:low
-  s:H == t:high
-  s:L == t:low
-}
-
-conceptmap &quot;ClinicalStatusMap&quot; {
-  prefix s = &quot;https://loinc.org/99493-9/&quot;
-  prefix t = &quot;http://terminology.hl7.org/CodeSystem/condition-clinical&quot;
-
-  s:&quot;LA16666-2&quot; == t:active
-  s:&quot;LA18632-2&quot; == t:inactive
-  s:&quot;LA9041-0&quot; == t:resolved
-}
-
 uses &quot;http://hl7.org/fhir/cda/StructureDefinition/ClinicalDocument&quot; alias ClinicalDocument as source
 uses &quot;http://hl7.org/fhir/cda/StructureDefinition/AssignedAuthor&quot; alias AssignedAuthor as queried
 uses &quot;http://hl7.org/fhir/cda/StructureDefinition/AssignedEntity&quot; alias AssignedEntity as queried
@@ -536,7 +438,7 @@ group allergyFunction(source src : cdaElement, target tgt : AllergyIntolerance, 
   } &quot;entryrelationship&quot;;
 }
 
-group MedicationStatement(source src : subAdmin, target tgt : Medicationstatement, target patient : Patient, target encounter : Encounter, target bundle : Bundle) {
+group MedicationStatement(source src : substanceAdministration, target tgt : MedicationStatement, target patient : Patient, target encounter : Encounter, target bundle : Bundle) {
   src -&gt;  tgt.subject = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;reference&quot;;
   // src -&gt; tgt.context = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Encounter/&apos; + %encounter.id) &quot;reference&quot;;
   src.statusCode -&gt; tgt.status &quot;status&quot;;
@@ -547,9 +449,7 @@ group MedicationStatement(source src : subAdmin, target tgt : Medicationstatemen
   src.effectiveTime as eff where (value.exists()) -&gt; tgt.effective = create(&apos;dateTime&apos;) as value then TSDateTime(eff, value) &quot;value1&quot;;
   src.effectiveTime : IVL_TS as eff -&gt; tgt.effective = create(&apos;Period&apos;) as value then IVLTSPeriod(eff, value) &quot;valuePeriod&quot;;
   src -&gt; tgt.dosage = create(&apos;Dosage&apos;) as dosage then {
-    src.effectiveTime : PIVL_TS as eff then {
-      eff -&gt; dosage.timing = create(&apos;Timing&apos;) as timing then periodTiming(eff, timing) &quot;cod&quot;;
-    } &quot;eff&quot;;
+    src.effectiveTime : PIVL_TS as eff &quot;eff&quot;;
     src where (src.doseQuantity.exists() or src.rateQuantity.exists() or src.routeCode.exists() or src.approachSiteCode.exists()) then {
       src.doseQuantity as doseQuant then {
         doseQuant.originalText as ot then {
@@ -602,7 +502,7 @@ group periodTiming(source effectiveTime : PIVL_TS, target timing : Timing) {
   } &quot;repeat&quot;;
 }
 
-group Medication(source src : ,, target tgt : Medication, target patient : Patient, target bundle : Bundle) {
+group Medication(source src : substanceAdministration, target tgt : Medication, target patient : Patient, target bundle : Bundle) {
   src.consumable as consumable then {
     consumable.manufacturedProduct as manufacturedProduct then {
       manufacturedProduct.manufacturedMaterial as manufacturedMaterial then {
@@ -644,7 +544,7 @@ group Medication(source src : ,, target tgt : Medication, target patient : Patie
   } &quot;entryR&quot;;
 }
 
-group Immunization(source substance : substanceAdministration, target patient : Patient, target encounter : Encounter, target tgt : immunization, target bundle : Bundle) {
+group Immunization(source substance : substanceAdministration, target patient : Patient, target encounter : Encounter, target tgt : Immunization, target bundle : Bundle) {
   substance -&gt;  tgt.patient = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;patientRef&quot;;
   // substance -&gt; tgt.encounter  = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Encounter/&apos; + %encounter.id) &quot;encounterRef&quot;;
   substance.id as id -&gt; tgt.identifier as idf then {
@@ -816,7 +716,7 @@ group ConditionFunction(source src : cdaElement, target tgt : Condition, target 
   } &quot;entryR&quot;;
 }
 
-group FamilyMemberFunction(source src : organizer, target tgt : familyMember, target patient : patient) {
+group FamilyMemberFunction(source src : organizer, target tgt : FamilyMemberHistory, target patient : patient) {
   src -&gt;  tgt.patient = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;patReference&quot;;
   src.id -&gt; tgt.identifier;
   src.statusCode -&gt; tgt.status;
@@ -902,7 +802,7 @@ group Practitioner(source src : performer, target tgt : Encounter, target bundle
   } &quot;resurceCreation&quot;;
 }
 
-group CarePlanFunction(source src : entry, target tgt : CarePlan, target patient : Patient, target encounter : enc, target bundle : Bundle) {
+group CarePlanFunction(source src : entry, target tgt : CarePlan, target patient : Patient, target encounter : Encounter, target bundle : Bundle) {
   src -&gt;  tgt.subject = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;reference&quot;;
   src -&gt; tgt.status = &apos;unknown&apos; &quot;status&quot;;
   src -&gt; tgt.intent = &apos;plan&apos; &quot;intent&quot;;
@@ -1037,7 +937,7 @@ group MedicationRequest(source src : substanceAdministration, target patient : P
   } &quot;Partecipant&quot;;
 }
 
-group OrganizationAffiliation(source src : act, target patient : Patient, target enc : Encounter, target tgt : OrgAffiliation, target bundle : Bundle) {
+group OrganizationAffiliation(source src : act, target patient : Patient, target enc : Encounter, target tgt : OrganizationAffiliation, target bundle : Bundle) {
   src.id -&gt; tgt.identifier;
   // src.code -&gt; tgt.specialty as specialty then{
   src.statusCode where code = &apos;active&apos; -&gt; tgt.active = true;
@@ -1101,7 +1001,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
     performer -&gt; part.period as period then {
       performer.time as time -&gt; period.start as start then TSDateTime(time, start) &quot;val&quot;;
     } &quot;period&quot;;
-    performer.assignedEntity as assentity -&gt;  bundle.entry as e1,  e1.request = create('BackboneElement') as request,  request.method = 'POST',  e1.resource = create('PractitionerRole') as practitionerRole,  practitionerRole.id = uuid() as uuid1,  e1.fullUrl = append('https://example/PractitionerRole/', uuid1),  request.url = 'PractitionerRole',  tgt.participant = create('BackboneElement') as participant1,  participant1.individual = create('Reference') as referencepart,  referencepart.reference = ('https://example/PractitionerRole/' + %practitionerRole.id) then {
+    performer.assignedEntity as assentity -&gt;  bundle.entry as e1,  e1.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;POST&apos;,  e1.resource = create(&apos;PractitionerRole&apos;) as practitionerRole,  practitionerRole.id = uuid() as uuid1,  e1.fullUrl = append(&apos;https://example/PractitionerRole/&apos;, uuid1),  request.url = &apos;PractitionerRole&apos;,  tgt.participant = create(&apos;BackboneElement&apos;) as participant1,  participant1.individual = create(&apos;Reference&apos;) as referencepart,  referencepart.reference = (&apos;https://example/PractitionerRole/&apos; + %practitionerRole.id) then {
       assentity.code -&gt; practitionerRole.code;
       assentity -&gt;  bundle.entry as e2,  e2.request = create(&apos;BackboneElement&apos;) as request,  request.method = &apos;PUT&apos;,  e2.resource = create(&apos;Practitioner&apos;) as practitioner then {
         assentity -&gt; practitioner.meta as meta then {
@@ -1142,404 +1042,6 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
 </pre>
       </div>
    </text>
-   <contained>
-      <ConceptMap xmlns="http://hl7.org/fhir">
-         <id value="OBSstatus"/>
-         <status value="draft"/>
-         <group>
-            <source value="http://terminology.hl7.org/ValueSet/v3-statusCode"/>
-            <target value="http://hl7.org/fhir/observation-status"/>
-            <element>
-               <code value="completed"/>
-               <target>
-                  <code value="final"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="active"/>
-               <target>
-                  <code value="registered"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="aborted"/>
-               <target>
-                  <code value="cancelled"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="suspended"/>
-               <target>
-                  <code value="partial"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-         </group>
-      </ConceptMap>
-   </contained>
-   <contained>
-      <ConceptMap xmlns="http://hl7.org/fhir">
-         <id value="EventStatus"/>
-         <status value="draft"/>
-         <group>
-            <source value="http://terminology.hl7.org/ValueSet/v3-statusCode"/>
-            <target value="http://hl7.org/fhir/event-status"/>
-            <element>
-               <code value="completed"/>
-               <target>
-                  <code value="completed"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="active"/>
-               <target>
-                  <code value="in-progress"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="aborted"/>
-               <target>
-                  <code value="stopped"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="suspended"/>
-               <target>
-                  <code value="on-hold"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-         </group>
-      </ConceptMap>
-   </contained>
-   <contained>
-      <ConceptMap xmlns="http://hl7.org/fhir">
-         <id value="FinancialStatus"/>
-         <status value="draft"/>
-         <group>
-            <source value="http://terminology.hl7.org/ValueSet/v3-statusCode"/>
-            <target value="http://hl7.org/fhir/fm-status"/>
-            <element>
-               <code value="active"/>
-               <target>
-                  <code value="active"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="aborted"/>
-               <target>
-                  <code value="cancelled"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="suspended"/>
-               <target>
-                  <code value="draft"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-         </group>
-      </ConceptMap>
-   </contained>
-   <contained>
-      <ConceptMap xmlns="http://hl7.org/fhir">
-         <id value="MedicationStatusMap"/>
-         <status value="draft"/>
-         <group>
-            <source value="http://terminology.hl7.org/ValueSet/v3-statusCode"/>
-            <target value="http://hl7.org/fhir/CodeSystem/medicationrequest-status"/>
-            <element>
-               <code value="completed"/>
-               <target>
-                  <code value="completed"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="active"/>
-               <target>
-                  <code value="active"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="aborted"/>
-               <target>
-                  <code value="cancelled"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="suspended"/>
-               <target>
-                  <code value="on-hold"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-         </group>
-      </ConceptMap>
-   </contained>
-   <contained>
-      <ConceptMap xmlns="http://hl7.org/fhir">
-         <id value="cm-v3-administrative-gender"/>
-         <status value="draft"/>
-         <group>
-            <source value="http://terminology.hl7.org/ValueSet/v3-AdministrativeGender"/>
-            <target value="http://hl7.org/fhir/ValueSet/administrative-gender"/>
-            <element>
-               <code value="M"/>
-               <target>
-                  <code value="male"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="F"/>
-               <target>
-                  <code value="female"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-         </group>
-      </ConceptMap>
-   </contained>
-   <contained>
-      <ConceptMap xmlns="http://hl7.org/fhir">
-         <id value="AllergyTypeMap"/>
-         <status value="draft"/>
-         <group>
-            <source value="http://terminology.hl7.org/ValueSet/v3-type"/>
-            <target value="http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical"/>
-            <element>
-               <code value="OINT"/>
-               <target>
-                  <code value="intolerance"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="ALG"/>
-               <target>
-                  <code value="allergy"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="DALG"/>
-               <target>
-                  <code value="allergy"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="EALG"/>
-               <target>
-                  <code value="allergy"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="FALG"/>
-               <target>
-                  <code value="allergy"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="NAINT"/>
-               <target>
-                  <code value="intolerance"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="FNAINT"/>
-               <target>
-                  <code value="intolerance"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="DNAINT"/>
-               <target>
-                  <code value="intolerance"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="ENAINT"/>
-               <target>
-                  <code value="intolerance"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="FINT"/>
-               <target>
-                  <code value="intolerance"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="DINT"/>
-               <target>
-                  <code value="intolerance"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="EINT"/>
-               <target>
-                  <code value="intolerance"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-         </group>
-      </ConceptMap>
-   </contained>
-   <contained>
-      <ConceptMap xmlns="http://hl7.org/fhir">
-         <id value="AllergyCategoryMap"/>
-         <status value="draft"/>
-         <group>
-            <source value="http://terminology.hl7.org/ValueSet/v3-type"/>
-            <target value="http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical"/>
-            <element>
-               <code value="DALG"/>
-               <target>
-                  <code value="medication"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="EALG"/>
-               <target>
-                  <code value="enviroment"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="FALG"/>
-               <target>
-                  <code value="food"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="FNAINT"/>
-               <target>
-                  <code value="intolerance"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="DNAINT"/>
-               <target>
-                  <code value="medication"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="ENAINT"/>
-               <target>
-                  <code value="enviroment"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="FINT"/>
-               <target>
-                  <code value="food"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="DINT"/>
-               <target>
-                  <code value="medication"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="EINT"/>
-               <target>
-                  <code value="enviroment"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-         </group>
-      </ConceptMap>
-   </contained>
-   <contained>
-      <ConceptMap xmlns="http://hl7.org/fhir">
-         <id value="CricalityMap"/>
-         <status value="draft"/>
-         <group>
-            <source value="http://terminology.hl7.org/CodeSystem/v3-ObservationValue"/>
-            <target value="http://hl7.org/fhir/allergy-intolerance-criticality"/>
-            <element>
-               <code value="M"/>
-               <target>
-                  <code value="low"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="H"/>
-               <target>
-                  <code value="high"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="L"/>
-               <target>
-                  <code value="low"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-         </group>
-      </ConceptMap>
-   </contained>
-   <contained>
-      <ConceptMap xmlns="http://hl7.org/fhir">
-         <id value="ClinicalStatusMap"/>
-         <status value="draft"/>
-         <group>
-            <source value="https://loinc.org/99493-9/"/>
-            <target value="http://terminology.hl7.org/CodeSystem/condition-clinical"/>
-            <element>
-               <code value="LA16666-2"/>
-               <target>
-                  <code value="active"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="LA18632-2"/>
-               <target>
-                  <code value="inactive"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-            <element>
-               <code value="LA9041-0"/>
-               <target>
-                  <code value="resolved"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
-         </group>
-      </ConceptMap>
-   </contained>
    <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirPs"/>
    <name value="cda2fhirPs"/>
    <status value="draft"/>
@@ -8316,12 +7818,12 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
       <typeMode value="none"/>
       <input>
          <name value="src"/>
-         <type value="subAdmin"/>
+         <type value="substanceAdministration"/>
          <mode value="source"/>
       </input>
       <input>
          <name value="tgt"/>
-         <type value="Medicationstatement"/>
+         <type value="MedicationStatement"/>
          <mode value="target"/>
       </input>
       <input>
@@ -8513,35 +8015,6 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                <element value="effectiveTime"/>
                <variable value="eff"/>
             </source>
-            <rule>
-               <name value="cod"/>
-               <source>
-                  <context value="eff"/>
-               </source>
-               <target>
-                  <context value="dosage"/>
-                  <contextType value="variable"/>
-                  <element value="timing"/>
-                  <variable value="timing"/>
-                  <transform value="create"/>
-                  <parameter>
-                     <valueString value="Timing"/>
-                  </parameter>
-               </target>
-               <dependent>
-                  <name value="periodTiming"/>
-                  <variable value="eff">
-                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
-                        <valueUrl value="id"/>
-                     </extension>
-                  </variable>
-                  <variable value="timing">
-                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
-                        <valueUrl value="id"/>
-                     </extension>
-                  </variable>
-               </dependent>
-            </rule>
          </rule>
          <rule>
             <name value="route"/>
@@ -9101,7 +8574,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
       <typeMode value="none"/>
       <input>
          <name value="src"/>
-         <type value=","/>
+         <type value="substanceAdministration"/>
          <mode value="source"/>
       </input>
       <input>
@@ -9423,7 +8896,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
       </input>
       <input>
          <name value="tgt"/>
-         <type value="immunization"/>
+         <type value="Immunization"/>
          <mode value="target"/>
       </input>
       <input>
@@ -11496,7 +10969,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
       </input>
       <input>
          <name value="tgt"/>
-         <type value="familyMember"/>
+         <type value="FamilyMemberHistory"/>
          <mode value="target"/>
       </input>
       <input>
@@ -12479,7 +11952,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
       </input>
       <input>
          <name value="encounter"/>
-         <type value="enc"/>
+         <type value="Encounter"/>
          <mode value="target"/>
       </input>
       <input>
@@ -14419,7 +13892,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
       </input>
       <input>
          <name value="tgt"/>
-         <type value="OrgAffiliation"/>
+         <type value="OrganizationAffiliation"/>
          <mode value="target"/>
       </input>
       <input>
