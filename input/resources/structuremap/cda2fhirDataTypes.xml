@@ -1,5 +1,6 @@
 <StructureMap xmlns="http://hl7.org/fhir">
    <id value="cda2fhirDataTypes"/>
+   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"/>
    <text>
       <status value="generated"/>
       <div xmlns="http://www.w3.org/1999/xhtml">
