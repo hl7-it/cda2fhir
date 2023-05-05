@@ -1,14 +1,9 @@
 <StructureMap xmlns="http://hl7.org/fhir">
    <id value="cda2fhirDataTypes"/>
-   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"/>
    <text>
       <status value="generated"/>
       <div xmlns="http://www.w3.org/1999/xhtml">
          <pre>map &quot;http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes&quot; = &quot;cda2fhirDataTypes&quot;
-
-// Adapted from https://github.com/HL7/ccda-to-fhir/tree/master/mappings
-// CDA:  http://build.fhir.org/ig/ahdis/cda-core-2.0/branches/master/index.html
-// FHIR: http://hl7.org/fhir/r4/
 
 conceptmap &quot;addressUse&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-AddressUse&quot;
@@ -27,12 +22,11 @@ conceptmap &quot;addressUse&quot; {
 
 conceptmap &quot;OBSstatus&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-statusCode&quot;
-  prefix t = &quot;http://hl7.org/fhir/observation-status&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/observation-status&quot;
 
   s:completed == t:final
   s:active == t:registered
   s:aborted == t:cancelled
-  s:suspended == t:partial
 }
 
 conceptmap &quot;EventStatus&quot; {
@@ -47,7 +41,7 @@ conceptmap &quot;EventStatus&quot; {
 
 conceptmap &quot;FinancialStatus&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-statusCode&quot;
-  prefix t = &quot;http://hl7.org/fhir/fm-status&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/fm-status&quot;
 
   s:active == t:active
   s:aborted == t:cancelled
@@ -56,7 +50,7 @@ conceptmap &quot;FinancialStatus&quot; {
 
 conceptmap &quot;MedicationStatusMap&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-statusCode&quot;
-  prefix t = &quot;http://hl7.org/fhir/CodeSystem/medicationrequest-status&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/medicationrequest-status&quot;
 
   s:completed == t:completed
   s:active == t:active
@@ -74,7 +68,7 @@ conceptmap &quot;cm-v3-administrative-gender&quot; {
 
 conceptmap &quot;AllergyTypeMap&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-type&quot;
-  prefix t = &quot;http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/allergyintolerance-clinical&quot;
 
   s:OINT == t:intolerance
   s:ALG == t:allergy
@@ -92,7 +86,7 @@ conceptmap &quot;AllergyTypeMap&quot; {
 
 conceptmap &quot;AllergyCategoryMap&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-type&quot;
-  prefix t = &quot;http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/allergyintolerance-clinical&quot;
 
   s:DALG == t:medication
   s:EALG == t:enviroment
@@ -107,7 +101,7 @@ conceptmap &quot;AllergyCategoryMap&quot; {
 
 conceptmap &quot;CricalityMap&quot; {
   prefix s = &quot;http://terminology.hl7.org/CodeSystem/v3-ObservationValue&quot;
-  prefix t = &quot;http://hl7.org/fhir/allergy-intolerance-criticality&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality&quot;
 
   s:M == t:low
   s:H == t:high
@@ -116,7 +110,7 @@ conceptmap &quot;CricalityMap&quot; {
 
 conceptmap &quot;ClinicalStatusMap&quot; {
   prefix s = &quot;https://loinc.org/99493-9/&quot;
-  prefix t = &quot;http://terminology.hl7.org/CodeSystem/condition-clinical&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/condition-clinical&quot;
 
   s:&quot;LA16666-2&quot; == t:active
   s:&quot;LA18632-2&quot; == t:inactive
@@ -135,7 +129,7 @@ conceptmap &quot;priority&quot; {
 
 conceptmap &quot;AllergyCriticality&quot; {
   prefix s = &quot;https://art-decor.org/art-decor/decor-valuesets--hl7it-?id=2.16.840.1.113883.2.9.77.22.11.6&quot;
-  prefix t = &quot;https://www.hl7.org/fhir/codesystem-allergy-intolerance-criticality.html&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality&quot;
 
   s:L == t:low
   s:H == t:high
@@ -469,7 +463,7 @@ group CensusTract(source src : ST, target ext : Extension) {
          <status value="draft"/>
          <group>
             <source value="http://terminology.hl7.org/ValueSet/v3-statusCode"/>
-            <target value="http://hl7.org/fhir/observation-status"/>
+            <target value="http://hl7.org/fhir/ValueSet/observation-status"/>
             <element>
                <code value="completed"/>
                <target>
@@ -491,13 +485,6 @@ group CensusTract(source src : ST, target ext : Extension) {
                   <equivalence value="equivalent"/>
                </target>
             </element>
-            <element>
-               <code value="suspended"/>
-               <target>
-                  <code value="partial"/>
-                  <equivalence value="equivalent"/>
-               </target>
-            </element>
          </group>
       </ConceptMap>
    </contained>
@@ -507,7 +494,7 @@ group CensusTract(source src : ST, target ext : Extension) {
          <status value="draft"/>
          <group>
             <source value="http://terminology.hl7.org/ValueSet/v3-statusCode"/>
-            <target value="http://hl7.org/fhir/event-status"/>
+            <target value="http://hl7.org/fhir/ValueSet/event-status"/>
             <element>
                <code value="completed"/>
                <target>
@@ -545,7 +532,7 @@ group CensusTract(source src : ST, target ext : Extension) {
          <status value="draft"/>
          <group>
             <source value="http://terminology.hl7.org/ValueSet/v3-statusCode"/>
-            <target value="http://hl7.org/fhir/fm-status"/>
+            <target value="http://hl7.org/fhir/ValueSet/fm-status"/>
             <element>
                <code value="active"/>
                <target>
@@ -576,7 +563,7 @@ group CensusTract(source src : ST, target ext : Extension) {
          <status value="draft"/>
          <group>
             <source value="http://terminology.hl7.org/ValueSet/v3-statusCode"/>
-            <target value="http://hl7.org/fhir/CodeSystem/medicationrequest-status"/>
+            <target value="http://hl7.org/fhir/ValueSet/medicationrequest-status"/>
             <element>
                <code value="completed"/>
                <target>
@@ -638,7 +625,7 @@ group CensusTract(source src : ST, target ext : Extension) {
          <status value="draft"/>
          <group>
             <source value="http://terminology.hl7.org/ValueSet/v3-type"/>
-            <target value="http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical"/>
+            <target value="http://hl7.org/fhir/ValueSet/allergyintolerance-clinical"/>
             <element>
                <code value="OINT"/>
                <target>
@@ -732,7 +719,7 @@ group CensusTract(source src : ST, target ext : Extension) {
          <status value="draft"/>
          <group>
             <source value="http://terminology.hl7.org/ValueSet/v3-type"/>
-            <target value="http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical"/>
+            <target value="http://hl7.org/fhir/ValueSet/allergyintolerance-clinical"/>
             <element>
                <code value="DALG"/>
                <target>
@@ -805,7 +792,7 @@ group CensusTract(source src : ST, target ext : Extension) {
          <status value="draft"/>
          <group>
             <source value="http://terminology.hl7.org/CodeSystem/v3-ObservationValue"/>
-            <target value="http://hl7.org/fhir/allergy-intolerance-criticality"/>
+            <target value="hhttp://hl7.org/fhir/ValueSet/allergy-intolerance-criticality"/>
             <element>
                <code value="M"/>
                <target>
@@ -836,7 +823,7 @@ group CensusTract(source src : ST, target ext : Extension) {
          <status value="draft"/>
          <group>
             <source value="https://loinc.org/99493-9/"/>
-            <target value="http://terminology.hl7.org/CodeSystem/condition-clinical"/>
+            <target value="http://hl7.org/fhir/ValueSet/condition-clinical"/>
             <element>
                <code value="LA16666-2"/>
                <target>
@@ -905,7 +892,7 @@ group CensusTract(source src : ST, target ext : Extension) {
          <status value="draft"/>
          <group>
             <source value="https://art-decor.org/art-decor/decor-valuesets--hl7it-?id=2.16.840.1.113883.2.9.77.22.11.6"/>
-            <target value="https://www.hl7.org/fhir/codesystem-allergy-intolerance-criticality.html"/>
+            <target value="http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality"/>
             <element>
                <code value="L"/>
                <target>

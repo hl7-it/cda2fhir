@@ -1,6 +1,5 @@
 <StructureMap xmlns="http://hl7.org/fhir">
    <id value="cda2fhirPs"/>
-   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirPs"/>
    <text>
       <status value="generated"/>
       <div xmlns="http://www.w3.org/1999/xhtml">
@@ -439,7 +438,7 @@ group allergyFunction(source src : cdaElement, target tgt : AllergyIntolerance, 
   } &quot;entryrelationship&quot;;
 }
 
-group MedicationStatement(source src : subAdmin, target tgt : Medicationstatement, target patient : Patient, target encounter : Encounter, target bundle : Bundle) {
+group MedicationStatement(source src : substanceAdministration, target tgt : MedicationStatement, target patient : Patient, target encounter : Encounter, target bundle : Bundle) {
   src -&gt;  tgt.subject = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;reference&quot;;
   // src -&gt; tgt.context = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Encounter/&apos; + %encounter.id) &quot;reference&quot;;
   src.statusCode -&gt; tgt.status &quot;status&quot;;
@@ -450,9 +449,7 @@ group MedicationStatement(source src : subAdmin, target tgt : Medicationstatemen
   src.effectiveTime as eff where (value.exists()) -&gt; tgt.effective = create(&apos;dateTime&apos;) as value then TSDateTime(eff, value) &quot;value1&quot;;
   src.effectiveTime : IVL_TS as eff -&gt; tgt.effective = create(&apos;Period&apos;) as value then IVLTSPeriod(eff, value) &quot;valuePeriod&quot;;
   src -&gt; tgt.dosage = create(&apos;Dosage&apos;) as dosage then {
-    src.effectiveTime : PIVL_TS as eff then {
-      eff -&gt; dosage.timing = create(&apos;Timing&apos;) as timing then periodTiming(eff, timing) &quot;cod&quot;;
-    } &quot;eff&quot;;
+    src.effectiveTime : PIVL_TS as eff &quot;eff&quot;;
     src where (src.doseQuantity.exists() or src.rateQuantity.exists() or src.routeCode.exists() or src.approachSiteCode.exists()) then {
       src.doseQuantity as doseQuant then {
         doseQuant.originalText as ot then {
@@ -505,7 +502,7 @@ group periodTiming(source effectiveTime : PIVL_TS, target timing : Timing) {
   } &quot;repeat&quot;;
 }
 
-group Medication(source src : ,, target tgt : Medication, target patient : Patient, target bundle : Bundle) {
+group Medication(source src : substanceAdministration, target tgt : Medication, target patient : Patient, target bundle : Bundle) {
   src.consumable as consumable then {
     consumable.manufacturedProduct as manufacturedProduct then {
       manufacturedProduct.manufacturedMaterial as manufacturedMaterial then {
@@ -547,7 +544,7 @@ group Medication(source src : ,, target tgt : Medication, target patient : Patie
   } &quot;entryR&quot;;
 }
 
-group Immunization(source substance : substanceAdministration, target patient : Patient, target encounter : Encounter, target tgt : immunization, target bundle : Bundle) {
+group Immunization(source substance : substanceAdministration, target patient : Patient, target encounter : Encounter, target tgt : Immunization, target bundle : Bundle) {
   substance -&gt;  tgt.patient = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;patientRef&quot;;
   // substance -&gt; tgt.encounter  = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Encounter/&apos; + %encounter.id) &quot;encounterRef&quot;;
   substance.id as id -&gt; tgt.identifier as idf then {
@@ -719,7 +716,7 @@ group ConditionFunction(source src : cdaElement, target tgt : Condition, target 
   } &quot;entryR&quot;;
 }
 
-group FamilyMemberFunction(source src : organizer, target tgt : familyMember, target patient : patient) {
+group FamilyMemberFunction(source src : organizer, target tgt : FamilyMemberHistory, target patient : patient) {
   src -&gt;  tgt.patient = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;patReference&quot;;
   src.id -&gt; tgt.identifier;
   src.statusCode -&gt; tgt.status;
@@ -805,7 +802,7 @@ group Practitioner(source src : performer, target tgt : Encounter, target bundle
   } &quot;resurceCreation&quot;;
 }
 
-group CarePlanFunction(source src : entry, target tgt : CarePlan, target patient : Patient, target encounter : enc, target bundle : Bundle) {
+group CarePlanFunction(source src : entry, target tgt : CarePlan, target patient : Patient, target encounter : Encounter, target bundle : Bundle) {
   src -&gt;  tgt.subject = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;reference&quot;;
   src -&gt; tgt.status = &apos;unknown&apos; &quot;status&quot;;
   src -&gt; tgt.intent = &apos;plan&apos; &quot;intent&quot;;
@@ -940,7 +937,7 @@ group MedicationRequest(source src : substanceAdministration, target patient : P
   } &quot;Partecipant&quot;;
 }
 
-group OrganizationAffiliation(source src : act, target patient : Patient, target enc : Encounter, target tgt : OrgAffiliation, target bundle : Bundle) {
+group OrganizationAffiliation(source src : act, target patient : Patient, target enc : Encounter, target tgt : OrganizationAffiliation, target bundle : Bundle) {
   src.id -&gt; tgt.identifier;
   // src.code -&gt; tgt.specialty as specialty then{
   src.statusCode where code = &apos;active&apos; -&gt; tgt.active = true;
@@ -7821,12 +7818,12 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
       <typeMode value="none"/>
       <input>
          <name value="src"/>
-         <type value="subAdmin"/>
+         <type value="substanceAdministration"/>
          <mode value="source"/>
       </input>
       <input>
          <name value="tgt"/>
-         <type value="Medicationstatement"/>
+         <type value="MedicationStatement"/>
          <mode value="target"/>
       </input>
       <input>
@@ -8018,35 +8015,6 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                <element value="effectiveTime"/>
                <variable value="eff"/>
             </source>
-            <rule>
-               <name value="cod"/>
-               <source>
-                  <context value="eff"/>
-               </source>
-               <target>
-                  <context value="dosage"/>
-                  <contextType value="variable"/>
-                  <element value="timing"/>
-                  <variable value="timing"/>
-                  <transform value="create"/>
-                  <parameter>
-                     <valueString value="Timing"/>
-                  </parameter>
-               </target>
-               <dependent>
-                  <name value="periodTiming"/>
-                  <variable value="eff">
-                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
-                        <valueUrl value="id"/>
-                     </extension>
-                  </variable>
-                  <variable value="timing">
-                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
-                        <valueUrl value="id"/>
-                     </extension>
-                  </variable>
-               </dependent>
-            </rule>
          </rule>
          <rule>
             <name value="route"/>
@@ -8606,7 +8574,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
       <typeMode value="none"/>
       <input>
          <name value="src"/>
-         <type value=","/>
+         <type value="substanceAdministration"/>
          <mode value="source"/>
       </input>
       <input>
@@ -8928,7 +8896,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
       </input>
       <input>
          <name value="tgt"/>
-         <type value="immunization"/>
+         <type value="Immunization"/>
          <mode value="target"/>
       </input>
       <input>
@@ -11001,7 +10969,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
       </input>
       <input>
          <name value="tgt"/>
-         <type value="familyMember"/>
+         <type value="FamilyMemberHistory"/>
          <mode value="target"/>
       </input>
       <input>
@@ -11984,7 +11952,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
       </input>
       <input>
          <name value="encounter"/>
-         <type value="enc"/>
+         <type value="Encounter"/>
          <mode value="target"/>
       </input>
       <input>
@@ -13924,7 +13892,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
       </input>
       <input>
          <name value="tgt"/>
-         <type value="OrgAffiliation"/>
+         <type value="OrganizationAffiliation"/>
          <mode value="target"/>
       </input>
       <input>

@@ -1,6 +1,5 @@
 <StructureMap xmlns="http://hl7.org/fhir">
    <id value="cda2fhirRadReport"/>
-   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirRadReport"/>
    <text>
       <status value="generated"/>
       <div xmlns="http://www.w3.org/1999/xhtml">
@@ -256,7 +255,7 @@ group Observation(source cda : observation, target patient : Patient, target enc
   } &quot;status&quot;;
 }
 
-group ImagingStudy(source src : act, source section : section, target tgt : ImagingStudy, target patient : patient, target encounter : encounter) {
+group ImagingStudy(source src : act, source section : section, target tgt : ImagingStudy, target patient : Patient, target encounter : Encounter) {
   src.id -&gt; tgt.identifier;
   src -&gt;  tgt.subject = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;reference&quot;;
   src -&gt;  tgt.encounter = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Encounter/&apos; + %encounter.id) &quot;reference&quot;;
@@ -283,7 +282,7 @@ group ImagingStudy(source src : act, source section : section, target tgt : Imag
   };
 }
 
-group ConditionFunction(source src : cdaElement, target tgt : Condition, target patient : patient, target encounter : encounter, target bundle : Bundle) {
+group ConditionFunction(source src : cdaElement, target tgt : Condition, target patient : Patient, target encounter : Encounter, target bundle : Bundle) {
   src.code -&gt; tgt.category;
   src -&gt;  tgt.subject = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;reference&quot;;
   src -&gt;  tgt.encounter = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Encounter/&apos; + %encounter.id) &quot;reference&quot;;
@@ -322,7 +321,7 @@ group ConditionFunction(source src : cdaElement, target tgt : Condition, target 
   } &quot;entryR&quot;;
 }
 
-group allergyFunction(source src : cdaElement, target tgt : AllergyIntolerance, target patient : patient, target encounter : encounter) {
+group allergyFunction(source src : cdaElement, target tgt : AllergyIntolerance, target patient : Patient, target encounter : Encounter) {
   src -&gt;  tgt.patient = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;reference&quot;;
   src -&gt;  tgt.encounter = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Encounter/&apos; + %encounter.id) &quot;reference&quot;;
   src.entryRelationship as entryRelationship1 then {
@@ -389,7 +388,7 @@ group allergyFunction(source src : cdaElement, target tgt : AllergyIntolerance, 
   } &quot;entryrelationship&quot;;
 }
 
-group FamilyMemberFunction(source src : organizer, target tgt : familyMember, target patient : patient) {
+group FamilyMemberFunction(source src : organizer, target tgt : FamilyMemberHistory, target patient : Patient) {
   src -&gt;  tgt.patient = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;patReference&quot;;
   src.statusCode -&gt; tgt.status;
   src.effectiveTime as effectiveTime -&gt; tgt.date = create(&apos;dateTime&apos;) as value then TSDateTime(effectiveTime, value) &quot;date&quot;;
@@ -5137,12 +5136,12 @@ group FamilyMemberFunction(source src : organizer, target tgt : familyMember, ta
       </input>
       <input>
          <name value="patient"/>
-         <type value="patient"/>
+         <type value="Patient"/>
          <mode value="target"/>
       </input>
       <input>
          <name value="encounter"/>
-         <type value="encounter"/>
+         <type value="Encounter"/>
          <mode value="target"/>
       </input>
       <rule>
@@ -5481,12 +5480,12 @@ group FamilyMemberFunction(source src : organizer, target tgt : familyMember, ta
       </input>
       <input>
          <name value="patient"/>
-         <type value="patient"/>
+         <type value="Patient"/>
          <mode value="target"/>
       </input>
       <input>
          <name value="encounter"/>
-         <type value="encounter"/>
+         <type value="Encounter"/>
          <mode value="target"/>
       </input>
       <input>
@@ -6032,12 +6031,12 @@ group FamilyMemberFunction(source src : organizer, target tgt : familyMember, ta
       </input>
       <input>
          <name value="patient"/>
-         <type value="patient"/>
+         <type value="Patient"/>
          <mode value="target"/>
       </input>
       <input>
          <name value="encounter"/>
-         <type value="encounter"/>
+         <type value="Encounter"/>
          <mode value="target"/>
       </input>
       <rule>
@@ -6654,12 +6653,12 @@ group FamilyMemberFunction(source src : organizer, target tgt : familyMember, ta
       </input>
       <input>
          <name value="tgt"/>
-         <type value="familyMember"/>
+         <type value="FamilyMemberHistory"/>
          <mode value="target"/>
       </input>
       <input>
          <name value="patient"/>
-         <type value="patient"/>
+         <type value="Patient"/>
          <mode value="target"/>
       </input>
       <rule>

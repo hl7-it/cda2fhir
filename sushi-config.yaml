@@ -139,12 +139,6 @@ menu:
 # look like:
 
 resources:
-#  Patient/my-example-patient:
-#    name: My Example Patient
-#    description: An example Patient
-#    exampleBoolean: true
-#  Patient/bad-example: omit
-
   StructureMap/cda2fhirDataTypes:
     name: CDA to FHIR - Data Types
     description: Mappa di trasformazione dei dataTypes di CDA a FHIR
@@ -176,6 +170,10 @@ resources:
   StructureMap/cda2fhirEdReport:
     name: CDA to FHIR - VPS
     description: Mappa di trasformazione del documento CDA2 Verbale di Pronto Soccorso in FHIR Bundle
+    
+  StructureMap/cda2fhirMedPrescription:
+    name: CDA to FHIR - PRESCRIZIONE FARMACEUTICA
+    description: Mappa di trasformazione del documento CDA2 di Prescrizione Farmaceutica in FHIR Bundle
     
   StructureMap/cda2fhirPs:
     name: CDA to FHIR - PSS
@@ -236,6 +234,8 @@ resources:
 # resource entries with the corresponding groupIds. If a resource
 # is specified by id or name, SUSHI will replace it with the correct
 # URL when generating the IG JSON.
+
+#scommentare
 groups:
   CommonMaps:
     name:  StructureMaps Condivise
@@ -255,6 +255,7 @@ groups:
       - StructureMap/cda2fhirVaccination
       - StructureMap/cda2fhirEdReport
       - StructureMap/cda2fhirPs
+      - StructureMap/cda2fhirMedPrescription
 
   # ConMaps:
   #   name:  ConceptMaps

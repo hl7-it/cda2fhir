@@ -1,6 +1,5 @@
 <StructureMap xmlns="http://hl7.org/fhir">
    <id value="cda2fhirAmbReport"/>
-   <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirAmbReport"/>
    <text>
       <status value="generated"/>
       <div xmlns="http://www.w3.org/1999/xhtml">
@@ -579,7 +578,7 @@ group MedicationStatement(source src : subAdmin, target tgt : MedicationStatemen
   };
 }
 
-group FamilyMemberFunction(source src : organizer, target tgt : familyMember, target patient : patient) {
+group FamilyMemberFunction(source src : organizer, target tgt : FamilyMemberHistory, target patient : patient) {
   src -&gt;  tgt.patient = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;patReference&quot;;
   src.statusCode -&gt; tgt.status;
   src.effectiveTime as effectiveTime -&gt; tgt.date = create(&apos;date&apos;) as value then TSDateTime(effectiveTime, value) &quot;date&quot;;
@@ -10242,7 +10241,7 @@ group Practitioner(source src : participant, target tgt : MedicationRequest, tar
       </input>
       <input>
          <name value="tgt"/>
-         <type value="familyMember"/>
+         <type value="FamilyMemberHistory"/>
          <mode value="target"/>
       </input>
       <input>
