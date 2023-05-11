@@ -49,9 +49,9 @@ Le mappe rappresentano lo strumento tramite il quale il Gateway può generare un
 
 
 
-<!-- ### Autori e contributori -->
+### Autori e contributori
 
-<!-- 
+
 <table>
     <thead>
         <tr class="header">
@@ -62,6 +62,18 @@ Le mappe rappresentano lo strumento tramite il quale il Gateway può generare un
         </tr>
     </thead>
     <tbody>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Ilenia Centonze</td>
+            <td>EY Advisory spa</td>
+            <td>ilenia.centonze@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Maria Teresa De Pippo</td>
+            <td>EY Advisory spa</td>
+            <td>maria.teresa.de.pippo@it.ey.com</td>
+        </tr>
         <tr class="odd">
             <td>Autore</td>
             <td>Xhuliana Haxhi</td>
@@ -76,39 +88,21 @@ Le mappe rappresentano lo strumento tramite il quale il Gateway può generare un
         </tr>
         <tr class="odd">
             <td>Autore</td>
-            <td>Davide Spanu</td>
-            <td>EY Advisory spa</td>
-            <td>davide.spanu@it.ey.com</td>
-        </tr>
-        <tr class="odd">
-            <td>Autore</td>
-            <td>Ilenia Centonze</td>
-            <td>EY Advisory spa</td>
-            <td>ilenia.centonze@it.ey.com</td>
-        </tr>
-        <tr class="odd">
-            <td>Autore</td>
-            <td>Eleny Mulugeta Teklehaimanot</td>
-            <td>EY Advisory spa</td>
-            <td>eleny.mulugeta.teklehaimanot@it.ey.com</td>
-        </tr>
-        <tr class="odd">
-            <td>Autore</td>
-            <td>Ludovica Luciani</td>
-            <td>EY Advisory spa</td>
-            <td>ludovica.luciani@it.ey.com</td>
-        </tr>
-        <tr class="odd">
-            <td>Autore</td>
             <td>Marta Oliverio</td>
             <td>EY Advisory spa</td>
             <td>marta.oliverio@it.ey.com</td>
         </tr>
         <tr class="odd">
             <td>Autore</td>
-            <td>Maria Teresa De Pippo</td>
+            <td>Davide Spanu</td>
             <td>EY Advisory spa</td>
-            <td>maria.teresa.de.pippo@it.ey.com</td>
+            <td>davide.spanu@it.ey.com</td>
+        </tr>
+        <tr class="odd">
+            <td>Autore</td>
+            <td>Eleny Mulugeta Teklehaimanot</td>
+            <td>EY Advisory spa</td>
+            <td>eleny.mulugeta.teklehaimanot@it.ey.com</td>
         </tr>
         <tr class="odd">
             <td>Autore</td>
@@ -131,14 +125,8 @@ Le mappe rappresentano lo strumento tramite il quale il Gateway può generare un
         <tr class="odd">
             <td>Contributore</td>
             <td>Mario Sicuranza</td>
-            <td>CNR ICAR</td>
+            <td>HL7 Italia</td>
             <td>mario.sicuranza@icar.cnr.it</td>
         </tr>
-        <tr class="odd">
-            <td>Contributore</td>
-            <td>Mario Ciampi</td>
-            <td>CNR ICAR</td>
-            <td>mario.ciampi@icar.cnr.it</td>
-        </tr>
     </tbody>
-</table> -->
+</table>
