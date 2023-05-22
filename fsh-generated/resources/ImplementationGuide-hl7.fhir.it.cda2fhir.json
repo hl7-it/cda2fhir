@@ -144,6 +144,14 @@
       },
       {
         "reference": {
+          "reference": "StructureMap/cda2fhirSpecPrescription"
+        },
+        "name": "CDA to FHIR - PRESCRIZIONE SPECIALISTICA",
+        "description": "Mappa di trasformazione del documento CDA2 di Prescrizione Farmaceutica in FHIR Bundle",
+        "groupingId": "IndMaps"
+      },
+      {
+        "reference": {
           "reference": "StructureMap/cda2fhirPs"
         },
         "name": "CDA to FHIR - PSS",

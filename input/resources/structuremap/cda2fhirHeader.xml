@@ -49,7 +49,7 @@ group ClinicalDocumentToBundle(source cda : ClinicalDocument, target patient : P
 }
 
 group ClinicalDocumentComposition(source src : ClinicalDocument, target tgt : Composition, target patientResource : Patient, target encounter : Encounter, target bundle : Bundle, target DocumentReference : DocumentReference) {
-  src.languageCode -&gt; tgt.language &quot;language&quot;;
+  src.languageCode -&gt; tgt.language;
   src -&gt; DocumentReference.status = &apos;current&apos; &quot;status&quot;;
   src -&gt; DocumentReference.content = create(&apos;BackboneElement&apos;) as content then {
     src -&gt;  content.attachment = create(&apos;Attachment&apos;) as attachment,  attachment.title = &apos;string&apos; &quot;comp&quot;;
@@ -1045,7 +1045,7 @@ group ClinicalDocumentComposition(source src : ClinicalDocument, target tgt : Co
         } &quot;meta&quot;;
         associetedentity.code -&gt; organization.type;
         associetedentity.scopingOrganization as scopingOrganization then {
-          scopingOrganization.id as id -&gt; organization.identifier as identifier then {
+          associetedentity.id as id -&gt; organization.identifier as identifier then {
             participant.time as time then {
               time.high as high -&gt; identifier.period as period then {
                 high -&gt; period.end = (high.value) &quot;periodend&quot;;
@@ -1053,7 +1053,7 @@ group ClinicalDocumentComposition(source src : ClinicalDocument, target tgt : Co
             };
             id.root as r -&gt; identifier.system = translate(r, &apos;http://hl7.org/fhir/ConceptMap/special-oid2uri&apos;, &apos;uri&apos;) &quot;root1&quot;;
             id.extension as ext -&gt; identifier.value = ext then {
-              scopingOrganization -&gt; request.url = append(&apos;Organization?identifier=&apos;, ext) &quot;UUID&quot;;
+              associetedentity -&gt; request.url = append(&apos;Organization?identifier=&apos;, ext) &quot;UUID&quot;;
             } &quot;ext&quot;;
             id.assigningAuthorityName as s -&gt;  identifier.assigner as a,  a.display = s;
             id.root as r then {
@@ -2470,7 +2470,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
          <mode value="target"/>
       </input>
       <rule>
-         <name value="language"/>
+         <name value="languageCode"/>
          <source>
             <context value="src"/>
             <element value="languageCode"/>
@@ -16245,7 +16245,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                   <rule>
                      <name value="identifier"/>
                      <source>
-                        <context value="scopingOrganization"/>
+                        <context value="associetedentity"/>
                         <element value="id"/>
                         <variable value="id"/>
                      </source>
@@ -16334,7 +16334,7 @@ group ClinicalDocumentOrganization(source src : CustodianOrganization, target tg
                         <rule>
                            <name value="UUID"/>
                            <source>
-                              <context value="scopingOrganization"/>
+                              <context value="associetedentity"/>
                            </source>
                            <target>
                               <context value="request"/>

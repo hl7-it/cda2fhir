@@ -22,7 +22,7 @@ conceptmap &quot;addressUse&quot; {
 
 conceptmap &quot;OBSstatus&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-statusCode&quot;
-  prefix t = &quot;http://hl7.org/fhir/ValueSet/observation-status&quot;
+  prefix t = &quot;http://hl7.org/fhir/event-status&quot;
 
   s:completed == t:final
   s:active == t:registered
@@ -31,7 +31,7 @@ conceptmap &quot;OBSstatus&quot; {
 
 conceptmap &quot;EventStatus&quot; {
   prefix s = &quot;http://terminology.hl7.org/ValueSet/v3-statusCode&quot;
-  prefix t = &quot;http://hl7.org/fhir/event-status&quot;
+  prefix t = &quot;http://hl7.org/fhir/ValueSet/fm-status&quot;
 
   s:completed == t:completed
   s:active == t:&quot;in-progress&quot;
@@ -125,6 +125,15 @@ conceptmap &quot;priority&quot; {
   s:P == t:asap
   s:UR == t:urgent
   s:EM == t:stat
+  s:S == t:stat
+  s:A == t:asap
+  s:CR == t:routine
+  s:EL == t:routine
+  s:p == t:stat
+  s:PRN == t:routine
+  s:RR == t:asap
+  s:T == t:urgent
+  s:UD == t:routine
 }
 
 conceptmap &quot;AllergyCriticality&quot; {
@@ -206,7 +215,7 @@ group TSDateTime(source src : TS, target tgt : dateTime) extends TSInstant &lt;&
 }
 
 group TSDate(source src : TS, target tgt : date) extends TSInstant &lt;&lt;types&gt;&gt; {
-  src.value as v -&gt; tgt.value = cast(v, &apos;string&apos;);
+  src.value as v -&gt; tgt.value = cast(v, &apos;string&apos;) &quot;date&quot;;
 }
 
 group IVLTSPeriod(source src : IVL_TS, target tgt : Period) extends Any &lt;&lt;types&gt;&gt; {
@@ -222,15 +231,15 @@ group STstring(source src : ST, target tgt : string) extends Any &lt;&lt;types&g
   src as v -&gt; tgt.value = cast(v, &apos;string&apos;) &quot;value&quot;;
 }
 
-group EDstring(source src : ED, target tgt : string) {
+group EDstring(source src : ED, target tgt : string) extends STstring &lt;&lt;types&gt;&gt; {
   src as v -&gt; tgt.value = cast(v, &apos;string&apos;) &quot;value&quot;;
 }
 
-group INTstring(source src : INT, target tgt : string) {
+group INTstring(source src : INT, target tgt : string) extends STstring &lt;&lt;types&gt;&gt; {
   src as v -&gt; tgt.value = cast(v, &apos;string&apos;) &quot;value&quot;;
 }
 
-group ONstring(source src : ON, target tgt : string) {
+group ONstring(source src : ON, target tgt : string) extends STstring &lt;&lt;types&gt;&gt; {
   src as v -&gt; tgt.value = cast(v, &apos;string&apos;) &quot;value&quot;;
 }
 
@@ -262,6 +271,12 @@ group CECodeableConcept(source src : CE, target tgt : CodeableConcept) extends A
     translation.displayName as display -&gt; coding.display = cast(display, &apos;string&apos;);
     translation.codeSystemVersion as version -&gt; coding.version = cast(version, &apos;string&apos;);
     translation.qualifier as qualifier then {
+      qualifier.name as name -&gt; tgt.coding as coding then {
+        name.code as code -&gt; coding.code = cast(code, &apos;string&apos;);
+        name.codeSystem as system -&gt; coding.system = translate(system, &apos;http://hl7.org/fhir/ConceptMap/special-oid2uri&apos;, &apos;uri&apos;);
+        name.displayName as display -&gt; coding.display = cast(display, &apos;string&apos;);
+        name.codeSystemVersion as version -&gt; coding.version = cast(version, &apos;string&apos;);
+      };
       qualifier.value as value -&gt; tgt.coding as coding then {
         value.code as code -&gt; coding.code = cast(code, &apos;string&apos;);
         value.codeSystem as system -&gt; coding.system = translate(system, &apos;http://hl7.org/fhir/ConceptMap/special-oid2uri&apos;, &apos;uri&apos;);
@@ -272,7 +287,7 @@ group CECodeableConcept(source src : CE, target tgt : CodeableConcept) extends A
   };
 }
 
-group CSCodeableConcept(source src : CS, target tgt : CodeableConcept) {
+group CSCodeableConcept(source src : CS, target tgt : CodeableConcept) extends CECodeableConcept &lt;&lt;types&gt;&gt; {
   src.originalText as originalText then {
     originalText.reference as reference -&gt; tgt.text = (reference.value);
   } &quot;originltext&quot;;
@@ -288,6 +303,12 @@ group CSCodeableConcept(source src : CS, target tgt : CodeableConcept) {
     translation.displayName as display -&gt; coding.display = cast(display, &apos;string&apos;);
     translation.codeSystemVersion as version -&gt; coding.version = cast(version, &apos;string&apos;);
     translation.qualifier as qualifier then {
+      qualifier.name as name -&gt; tgt.coding as coding then {
+        name.code as code -&gt; coding.code = cast(code, &apos;string&apos;);
+        name.codeSystem as system -&gt; coding.system = translate(system, &apos;http://hl7.org/fhir/ConceptMap/special-oid2uri&apos;, &apos;uri&apos;);
+        name.displayName as display -&gt; coding.display = cast(display, &apos;string&apos;);
+        name.codeSystemVersion as version -&gt; coding.version = cast(version, &apos;string&apos;);
+      };
       qualifier.value as value -&gt; tgt.coding as coding then {
         value.code as code -&gt; coding.code = cast(code, &apos;string&apos;);
         value.codeSystem as system -&gt; coding.system = translate(system, &apos;http://hl7.org/fhir/ConceptMap/special-oid2uri&apos;, &apos;uri&apos;);
@@ -298,7 +319,7 @@ group CSCodeableConcept(source src : CS, target tgt : CodeableConcept) {
   };
 }
 
-group CDCodeableConcept(source src : CD, target tgt : CodeableConcept) {
+group CDCodeableConcept(source src : CD, target tgt : CodeableConcept) extends CECodeableConcept &lt;&lt;types&gt;&gt; {
   src.originalText as originalText then {
     originalText.reference as reference -&gt; tgt.text = (reference.value);
   } &quot;originltext&quot;;
@@ -314,6 +335,12 @@ group CDCodeableConcept(source src : CD, target tgt : CodeableConcept) {
     translation.displayName as display -&gt; coding.display = cast(display, &apos;string&apos;);
     translation.codeSystemVersion as version -&gt; coding.version = cast(version, &apos;string&apos;);
     translation.qualifier as qualifier then {
+      qualifier.name as name -&gt; tgt.coding as coding then {
+        name.code as code -&gt; coding.code = cast(code, &apos;string&apos;);
+        name.codeSystem as system -&gt; coding.system = translate(system, &apos;http://hl7.org/fhir/ConceptMap/special-oid2uri&apos;, &apos;uri&apos;);
+        name.displayName as display -&gt; coding.display = cast(display, &apos;string&apos;);
+        name.codeSystemVersion as version -&gt; coding.version = cast(version, &apos;string&apos;);
+      };
       qualifier.value as value -&gt; tgt.coding as coding then {
         value.code as code -&gt; coding.code = cast(code, &apos;string&apos;);
         value.codeSystem as system -&gt; coding.system = translate(system, &apos;http://hl7.org/fhir/ConceptMap/special-oid2uri&apos;, &apos;uri&apos;);
@@ -463,7 +490,7 @@ group CensusTract(source src : ST, target ext : Extension) {
          <status value="draft"/>
          <group>
             <source value="http://terminology.hl7.org/ValueSet/v3-statusCode"/>
-            <target value="http://hl7.org/fhir/ValueSet/observation-status"/>
+            <target value="http://hl7.org/fhir/event-status"/>
             <element>
                <code value="completed"/>
                <target>
@@ -494,7 +521,7 @@ group CensusTract(source src : ST, target ext : Extension) {
          <status value="draft"/>
          <group>
             <source value="http://terminology.hl7.org/ValueSet/v3-statusCode"/>
-            <target value="http://hl7.org/fhir/ValueSet/event-status"/>
+            <target value="http://hl7.org/fhir/ValueSet/fm-status"/>
             <element>
                <code value="completed"/>
                <target>
@@ -792,7 +819,7 @@ group CensusTract(source src : ST, target ext : Extension) {
          <status value="draft"/>
          <group>
             <source value="http://terminology.hl7.org/CodeSystem/v3-ObservationValue"/>
-            <target value="hhttp://hl7.org/fhir/ValueSet/allergy-intolerance-criticality"/>
+            <target value="http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality"/>
             <element>
                <code value="M"/>
                <target>
@@ -883,6 +910,69 @@ group CensusTract(source src : ST, target ext : Extension) {
                   <equivalence value="equivalent"/>
                </target>
             </element>
+            <element>
+               <code value="S"/>
+               <target>
+                  <code value="stat"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="A"/>
+               <target>
+                  <code value="asap"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="CR"/>
+               <target>
+                  <code value="routine"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="EL"/>
+               <target>
+                  <code value="routine"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="p"/>
+               <target>
+                  <code value="stat"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="PRN"/>
+               <target>
+                  <code value="routine"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="RR"/>
+               <target>
+                  <code value="asap"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="T"/>
+               <target>
+                  <code value="urgent"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
+            <element>
+               <code value="UD"/>
+               <target>
+                  <code value="routine"/>
+                  <equivalence value="equivalent"/>
+               </target>
+            </element>
          </group>
       </ConceptMap>
    </contained>
@@ -917,70 +1007,9 @@ group CensusTract(source src : ST, target ext : Extension) {
          </group>
       </ConceptMap>
    </contained>
-   <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
-    <valueReference>
-      <reference value="#addressUse"/>
-    </valueReference>
-  </extension>
-   <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
-    <valueReference>
-      <reference value="#AllergyCriticality"/>
-    </valueReference>
-  </extension>
-   <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
-    <valueReference>
-      <reference value="#priority"/>
-    </valueReference>
-  </extension>
-   <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
-    <valueReference>
-      <reference value="#ClinicalStatusMap"/>
-    </valueReference>
-  </extension>
-   <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
-    <valueReference>
-      <reference value="#CricalityMap"/>
-    </valueReference>
-  </extension>
-   <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
-    <valueReference>
-      <reference value="#AllergyCategoryMap"/>
-    </valueReference>
-  </extension>
-   <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
-    <valueReference>
-      <reference value="#AllergyTypeMap"/>
-    </valueReference>
-  </extension>
-  <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
-    <valueReference>
-      <reference value="#cm-v3-administrative-gender"/>
-    </valueReference>
-  </extension>
-  <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
-    <valueReference>
-      <reference value="#MedicationStatusMap"/>
-    </valueReference>
-  </extension>
-  <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
-    <valueReference>
-      <reference value="#FinancialStatus"/>
-    </valueReference>
-  </extension>
-  <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
-    <valueReference>
-      <reference value="#EventStatus"/>
-    </valueReference>
-  </extension>
-  <extension url="http://hl7.it/fhir/cda2fhir/StructureDefinition/references-C">
-    <valueReference>
-      <reference value="#OBSstatus"/>
-    </valueReference>
-  </extension>
    <url value="http://hl7.it/fhir/cda2fhir/StructureMap/cda2fhirDataTypes"/>
    <name value="cda2fhirDataTypes"/>
    <status value="draft"/>
-   <description value="Adapted from https://github.com/HL7/ccda-to-fhir/tree/master/mappings&#xd;&#xa;CDA:  http://build.fhir.org/ig/ahdis/cda-core-2.0/branches/master/index.html&#xd;&#xa;FHIR: http://hl7.org/fhir/r4/"/>
    <structure>
       <url value="http://hl7.org/fhir/cda/StructureDefinition/ED"/>
       <mode value="source"/>
@@ -1548,7 +1577,7 @@ group CensusTract(source src : ST, target ext : Extension) {
          <mode value="target"/>
       </input>
       <rule>
-         <name value="value"/>
+         <name value="date"/>
          <source>
             <context value="src"/>
             <element value="value"/>
@@ -1717,7 +1746,8 @@ group CensusTract(source src : ST, target ext : Extension) {
    </group>
    <group>
       <name value="EDstring"/>
-      <typeMode value="none"/>
+      <extends value="STstring"/>
+      <typeMode value="types"/>
       <input>
          <name value="src"/>
          <type value="ED"/>
@@ -1750,7 +1780,8 @@ group CensusTract(source src : ST, target ext : Extension) {
    </group>
    <group>
       <name value="INTstring"/>
-      <typeMode value="none"/>
+      <extends value="STstring"/>
+      <typeMode value="types"/>
       <input>
          <name value="src"/>
          <type value="INT"/>
@@ -1783,7 +1814,8 @@ group CensusTract(source src : ST, target ext : Extension) {
    </group>
    <group>
       <name value="ONstring"/>
-      <typeMode value="none"/>
+      <extends value="STstring"/>
+      <typeMode value="types"/>
       <input>
          <name value="src"/>
          <type value="ON"/>
@@ -2157,6 +2189,103 @@ group CensusTract(source src : ST, target ext : Extension) {
                <variable value="qualifier"/>
             </source>
             <rule>
+               <name value="name"/>
+               <source>
+                  <context value="qualifier"/>
+                  <element value="name"/>
+                  <variable value="name"/>
+               </source>
+               <target>
+                  <context value="tgt"/>
+                  <contextType value="variable"/>
+                  <element value="coding"/>
+                  <variable value="coding"/>
+               </target>
+               <rule>
+                  <name value="code"/>
+                  <source>
+                     <context value="name"/>
+                     <element value="code"/>
+                     <variable value="code"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="code"/>
+                     <transform value="cast"/>
+                     <parameter>
+                        <valueId value="code"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="string"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="codeSystem"/>
+                  <source>
+                     <context value="name"/>
+                     <element value="codeSystem"/>
+                     <variable value="system"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="system"/>
+                     <transform value="translate"/>
+                     <parameter>
+                        <valueId value="system"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="http://hl7.org/fhir/ConceptMap/special-oid2uri"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="uri"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="displayName"/>
+                  <source>
+                     <context value="name"/>
+                     <element value="displayName"/>
+                     <variable value="display"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="display"/>
+                     <transform value="cast"/>
+                     <parameter>
+                        <valueId value="display"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="string"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="codeSystemVersion"/>
+                  <source>
+                     <context value="name"/>
+                     <element value="codeSystemVersion"/>
+                     <variable value="version"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="version"/>
+                     <transform value="cast"/>
+                     <parameter>
+                        <valueId value="version"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="string"/>
+                     </parameter>
+                  </target>
+               </rule>
+            </rule>
+            <rule>
                <name value="value"/>
                <source>
                   <context value="qualifier"/>
@@ -2258,7 +2387,8 @@ group CensusTract(source src : ST, target ext : Extension) {
    </group>
    <group>
       <name value="CSCodeableConcept"/>
-      <typeMode value="none"/>
+      <extends value="CECodeableConcept"/>
+      <typeMode value="types"/>
       <input>
          <name value="src"/>
          <type value="CS"/>
@@ -2493,6 +2623,103 @@ group CensusTract(source src : ST, target ext : Extension) {
                <variable value="qualifier"/>
             </source>
             <rule>
+               <name value="name"/>
+               <source>
+                  <context value="qualifier"/>
+                  <element value="name"/>
+                  <variable value="name"/>
+               </source>
+               <target>
+                  <context value="tgt"/>
+                  <contextType value="variable"/>
+                  <element value="coding"/>
+                  <variable value="coding"/>
+               </target>
+               <rule>
+                  <name value="code"/>
+                  <source>
+                     <context value="name"/>
+                     <element value="code"/>
+                     <variable value="code"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="code"/>
+                     <transform value="cast"/>
+                     <parameter>
+                        <valueId value="code"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="string"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="codeSystem"/>
+                  <source>
+                     <context value="name"/>
+                     <element value="codeSystem"/>
+                     <variable value="system"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="system"/>
+                     <transform value="translate"/>
+                     <parameter>
+                        <valueId value="system"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="http://hl7.org/fhir/ConceptMap/special-oid2uri"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="uri"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="displayName"/>
+                  <source>
+                     <context value="name"/>
+                     <element value="displayName"/>
+                     <variable value="display"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="display"/>
+                     <transform value="cast"/>
+                     <parameter>
+                        <valueId value="display"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="string"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="codeSystemVersion"/>
+                  <source>
+                     <context value="name"/>
+                     <element value="codeSystemVersion"/>
+                     <variable value="version"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="version"/>
+                     <transform value="cast"/>
+                     <parameter>
+                        <valueId value="version"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="string"/>
+                     </parameter>
+                  </target>
+               </rule>
+            </rule>
+            <rule>
                <name value="value"/>
                <source>
                   <context value="qualifier"/>
@@ -2594,7 +2821,8 @@ group CensusTract(source src : ST, target ext : Extension) {
    </group>
    <group>
       <name value="CDCodeableConcept"/>
-      <typeMode value="none"/>
+      <extends value="CECodeableConcept"/>
+      <typeMode value="types"/>
       <input>
          <name value="src"/>
          <type value="CD"/>
@@ -2828,6 +3056,103 @@ group CensusTract(source src : ST, target ext : Extension) {
                <element value="qualifier"/>
                <variable value="qualifier"/>
             </source>
+            <rule>
+               <name value="name"/>
+               <source>
+                  <context value="qualifier"/>
+                  <element value="name"/>
+                  <variable value="name"/>
+               </source>
+               <target>
+                  <context value="tgt"/>
+                  <contextType value="variable"/>
+                  <element value="coding"/>
+                  <variable value="coding"/>
+               </target>
+               <rule>
+                  <name value="code"/>
+                  <source>
+                     <context value="name"/>
+                     <element value="code"/>
+                     <variable value="code"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="code"/>
+                     <transform value="cast"/>
+                     <parameter>
+                        <valueId value="code"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="string"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="codeSystem"/>
+                  <source>
+                     <context value="name"/>
+                     <element value="codeSystem"/>
+                     <variable value="system"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="system"/>
+                     <transform value="translate"/>
+                     <parameter>
+                        <valueId value="system"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="http://hl7.org/fhir/ConceptMap/special-oid2uri"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="uri"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="displayName"/>
+                  <source>
+                     <context value="name"/>
+                     <element value="displayName"/>
+                     <variable value="display"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="display"/>
+                     <transform value="cast"/>
+                     <parameter>
+                        <valueId value="display"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="string"/>
+                     </parameter>
+                  </target>
+               </rule>
+               <rule>
+                  <name value="codeSystemVersion"/>
+                  <source>
+                     <context value="name"/>
+                     <element value="codeSystemVersion"/>
+                     <variable value="version"/>
+                  </source>
+                  <target>
+                     <context value="coding"/>
+                     <contextType value="variable"/>
+                     <element value="version"/>
+                     <transform value="cast"/>
+                     <parameter>
+                        <valueId value="version"/>
+                     </parameter>
+                     <parameter>
+                        <valueString value="string"/>
+                     </parameter>
+                  </target>
+               </rule>
+            </rule>
             <rule>
                <name value="value"/>
                <source>
@@ -3657,5 +3982,5 @@ group CensusTract(source src : ST, target ext : Extension) {
             </parameter>
          </target>
       </rule>
-   </group>  
+   </group>
 </StructureMap>
