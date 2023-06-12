@@ -41,9 +41,9 @@ group CdaToBundle(source cda : ClinicalDocument, target bundle : Bundle) {
           id.extension as ext1 -&gt; identifier.value = ext1 &quot;value&quot;;
           id.assigningAuthorityName as s -&gt;  identifier.assigner as a,  a.display = s;
         } &quot;idfr&quot;;
-        patient.id as id where (root = &apos;2.16.840.1.113883.2.9.4.3.2&apos;) or (root = &apos;2.16.840.1.113883.2.9.4.3.7&apos;) or (root = &apos;2.16.840.1.113883.2.9.4.3.3&apos;) or (root = &apos;2.16.840.1.113883.2.9.4.3.17&apos;) or (root = &apos;2.16.840.1.113883.2.9.4.3.15&apos;) then {
+        patient.id as id where (root = &apos;2.16.840.1.113883.2.9.4.3.2&apos;) or (root = &apos;2.16.840.1.113883.2.9.4.3.7&apos;) or (root = &apos;2.16.840.1.113883.2.9.4.3.3&apos;) or (root = &apos;2.16.840.1.113883.2.9.4.3.17') or (root = '2.16.840.1.113883.2.9.4.3.18') or (root = '2.16.840.1.113883.2.9.2.10.4.1.1') or (root = '2.16.840.1.113883.2.9.2.20.4.1.1') or (root = '2.16.840.1.113883.2.9.2.30.4.1.1') or (root = '2.16.840.1.113883.2.9.2.41.4.1.1') or (root = '2.16.840.1.113883.2.9.2.42.4.1.1') or (root = '2.16.840.1.113883.2.9.2.50.4.1.1') or (root = '2.16.840.1.113883.2.9.2.60.4.1.1') or (root = '2.16.840.1.113883.2.9.2.70.4.1.1') or (root = '2.16.840.1.113883.2.9.2.80.4.1.1') or (root = '2.16.840.1.113883.2.9.2.90.4.1.1') or (root = '2.16.840.1.113883.2.9.2.100.4.1.1') or (root = '2.16.840.1.113883.2.9.2.110.4.1.1') or (root = '2.16.840.1.113883.2.9.2.120.4.1.1') or (root = '2.16.840.1.113883.2.9.2.130.4.1.1') or (root = '2.16.840.1.113883.2.9.2.140.4.1.1') or (root = '2.16.840.1.113883.2.9.2.150.4.1.1') or (root = '2.16.840.1.113883.2.9.2.160.4.1.1') or (root = '2.16.840.1.113883.2.9.2.170.4.1.1') or (root = '2.16.840.1.113883.2.9.2.180.4.1.1') or (root = '2.16.840.1.113883.2.9.2.190.4.1.1') or (root = '2.16.840.1.113883.2.9.2.200.4.1.1') or (root = '2.16.840.1.113883.2.9.2.10.4.1') or (root = '2.16.840.1.113883.2.9.2.20.4.1') or (root = '2.16.840.1.113883.2.9.2.30.4.1') or (root = '2.16.840.1.113883.2.9.2.41.4.1') or (root = '2.16.840.1.113883.2.9.2.42.4.1') or (root = '2.16.840.1.113883.2.9.2.50.4.1') or (root = '2.16.840.1.113883.2.9.2.60.4.1') or (root = '2.16.840.1.113883.2.9.2.70.4.1') or (root = '2.16.840.1.113883.2.9.2.80.4.1') or (root = '2.16.840.1.113883.2.9.2.90.4.1') or (root = '2.16.840.1.113883.2.9.2.100.4.1') or (root = '2.16.840.1.113883.2.9.2.110.4.1') or (root = '2.16.840.1.113883.2.9.2.120.4.1') or (root = '2.16.840.1.113883.2.9.2.130.4.1') or (root = '2.16.840.1.113883.2.9.2.140.4.1') or (root = '2.16.840.1.113883.2.9.2.150.4.1') or (root = '2.16.840.1.113883.2.9.2.160.4.1') or (root = '2.16.840.1.113883.2.9.2.170.4.1') or (root = '2.16.840.1.113883.2.9.2.180.4.1') or (root = '2.16.840.1.113883.2.9.2.190.4.1') or (root = '2.16.840.1.113883.2.9.2.200.4.1') or (root = '2.16.840.1.113883.2.9.4.3.15&apos;) then {
           id.extension as ext -&gt; requestPAT.url = append(&apos;Patient?identifier=&apos;, ext) &quot;UUID&quot;;
-        } &quot;record&quot;;
+        } &quot;ext&quot;;
       } &quot;recPat&quot;;
     } &quot;patient&quot;;
   } &quot;ClinicalDocumentToBody&quot;;
@@ -449,7 +449,9 @@ group MedicationStatement(source src : substanceAdministration, target tgt : Med
   src.effectiveTime as eff where (value.exists()) -&gt; tgt.effective = create(&apos;dateTime&apos;) as value then TSDateTime(eff, value) &quot;value1&quot;;
   src.effectiveTime : IVL_TS as eff -&gt; tgt.effective = create(&apos;Period&apos;) as value then IVLTSPeriod(eff, value) &quot;valuePeriod&quot;;
   src -&gt; tgt.dosage = create(&apos;Dosage&apos;) as dosage then {
-    src.effectiveTime : PIVL_TS as eff &quot;eff&quot;;
+    src.effectiveTime : PIVL_TS as eff then {
+      eff -&gt; dosage.timing = create(&apos;Timing&apos;) as timing then periodTiming(eff, timing) &quot;cod&quot;;
+    } &quot;eff&quot;;
     src where (src.doseQuantity.exists() or src.rateQuantity.exists() or src.routeCode.exists() or src.approachSiteCode.exists()) then {
       src.doseQuantity as doseQuant then {
         doseQuant.originalText as ot then {
@@ -1549,12 +1551,12 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                   </rule>
                </rule>
                <rule>
-                  <name value="record"/>
+                  <name value="ext"/>
                   <source>
                      <context value="patient"/>
                      <element value="id"/>
                      <variable value="id"/>
-                     <condition value="(root = '2.16.840.1.113883.2.9.4.3.2') or (root = '2.16.840.1.113883.2.9.4.3.7') or (root = '2.16.840.1.113883.2.9.4.3.3') or (root = '2.16.840.1.113883.2.9.4.3.17') or (root = '2.16.840.1.113883.2.9.4.3.15')"/>
+                     <condition value="(root = '2.16.840.1.113883.2.9.4.3.2') or (root = '2.16.840.1.113883.2.9.4.3.7') or (root = '2.16.840.1.113883.2.9.4.3.3') or (root = '2.16.840.1.113883.2.9.4.3.17') or (root = '2.16.840.1.113883.2.9.4.3.18') or (root = '2.16.840.1.113883.2.9.2.10.4.1.1') or (root = '2.16.840.1.113883.2.9.2.20.4.1.1') or (root = '2.16.840.1.113883.2.9.2.30.4.1.1') or (root = '2.16.840.1.113883.2.9.2.41.4.1.1') or (root = '2.16.840.1.113883.2.9.2.42.4.1.1') or (root = '2.16.840.1.113883.2.9.2.50.4.1.1') or (root = '2.16.840.1.113883.2.9.2.60.4.1.1') or (root = '2.16.840.1.113883.2.9.2.70.4.1.1') or (root = '2.16.840.1.113883.2.9.2.80.4.1.1') or (root = '2.16.840.1.113883.2.9.2.90.4.1.1') or (root = '2.16.840.1.113883.2.9.2.100.4.1.1') or (root = '2.16.840.1.113883.2.9.2.110.4.1.1') or (root = '2.16.840.1.113883.2.9.2.120.4.1.1') or (root = '2.16.840.1.113883.2.9.2.130.4.1.1') or (root = '2.16.840.1.113883.2.9.2.140.4.1.1') or (root = '2.16.840.1.113883.2.9.2.150.4.1.1') or (root = '2.16.840.1.113883.2.9.2.160.4.1.1') or (root = '2.16.840.1.113883.2.9.2.170.4.1.1') or (root = '2.16.840.1.113883.2.9.2.180.4.1.1') or (root = '2.16.840.1.113883.2.9.2.190.4.1.1') or (root = '2.16.840.1.113883.2.9.2.200.4.1.1') or (root = '2.16.840.1.113883.2.9.2.10.4.1') or (root = '2.16.840.1.113883.2.9.2.20.4.1') or (root = '2.16.840.1.113883.2.9.2.30.4.1') or (root = '2.16.840.1.113883.2.9.2.41.4.1') or (root = '2.16.840.1.113883.2.9.2.42.4.1') or (root = '2.16.840.1.113883.2.9.2.50.4.1') or (root = '2.16.840.1.113883.2.9.2.60.4.1') or (root = '2.16.840.1.113883.2.9.2.70.4.1') or (root = '2.16.840.1.113883.2.9.2.80.4.1') or (root = '2.16.840.1.113883.2.9.2.90.4.1') or (root = '2.16.840.1.113883.2.9.2.100.4.1') or (root = '2.16.840.1.113883.2.9.2.110.4.1') or (root = '2.16.840.1.113883.2.9.2.120.4.1') or (root = '2.16.840.1.113883.2.9.2.130.4.1') or (root = '2.16.840.1.113883.2.9.2.140.4.1') or (root = '2.16.840.1.113883.2.9.2.150.4.1') or (root = '2.16.840.1.113883.2.9.2.160.4.1') or (root = '2.16.840.1.113883.2.9.2.170.4.1') or (root = '2.16.840.1.113883.2.9.2.180.4.1') or (root = '2.16.840.1.113883.2.9.2.190.4.1') or (root = '2.16.840.1.113883.2.9.2.200.4.1') or (root = '2.16.840.1.113883.2.9.4.3.15')"/>
                   </source>
                   <rule>
                      <name value="UUID"/>
@@ -8016,6 +8018,34 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                <variable value="eff"/>
             </source>
             <rule>
+               <name value="cod"/>
+               <source>
+                  <context value="eff"/>
+               </source>
+               <target>
+                  <context value="dosage"/>
+                  <contextType value="variable"/>
+                  <element value="timing"/>
+                  <variable value="timing"/>
+                  <transform value="create"/>
+                  <parameter>
+                     <valueString value="Timing"/>
+                  </parameter>
+               </target>
+               <dependent>
+                  <name value="periodTiming"/>
+                  <variable value="eff">
+                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                        <valueUrl value="id"/>
+                     </extension>
+                  </variable>
+                  <variable value="timing">
+                     <extension url="http://hl7.org/fhir/tools/StructureDefinition/original-item-type">
+                        <valueUrl value="id"/>
+                     </extension>
+                  </variable>
+               </dependent>
+            </rule>
          </rule>
          <rule>
             <name value="route"/>
