@@ -8015,6 +8015,7 @@ group EncounterFunction(source src : cdaElement, target patient : Patient, targe
                <element value="effectiveTime"/>
                <variable value="eff"/>
             </source>
+            <rule>
          </rule>
          <rule>
             <name value="route"/>
