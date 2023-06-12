@@ -40,7 +40,7 @@ group CdaToBundle(source cda : ClinicalDocument, target bundle : Bundle) {
           id.extension as ext -&gt; identifier.value = ext;
           id.assigningAuthorityName as s -&gt;  identifier.assigner as a,  a.display = s;
         } &quot;record&quot;;
-        patient.id as id where (root = &apos;2.16.840.1.113883.2.9.4.3.2&apos;) or (root = &apos;2.16.840.1.113883.2.9.4.3.7&apos;) or (root = &apos;2.16.840.1.113883.2.9.4.3.3&apos;) or (root = &apos;2.16.840.1.113883.2.9.4.3.17&apos;) or (root = &apos;2.16.840.1.113883.2.9.4.3.15&apos;) then {
+        patient.id as id where (root = &apos;2.16.840.1.113883.2.9.4.3.2&apos;) or (root = &apos;2.16.840.1.113883.2.9.4.3.7&apos;) or (root = &apos;2.16.840.1.113883.2.9.4.3.3&apos;) or (root = &apos;2.16.840.1.113883.2.9.4.3.17&apos;) or (root = &apos;2.16.840.1.113883.2.9.4.3.18') or (root = '2.16.840.1.113883.2.9.2.10.4.1.1') or (root = '2.16.840.1.113883.2.9.2.20.4.1.1') or (root = '2.16.840.1.113883.2.9.2.30.4.1.1') or (root = '2.16.840.1.113883.2.9.2.41.4.1.1') or (root = '2.16.840.1.113883.2.9.2.42.4.1.1') or (root = '2.16.840.1.113883.2.9.2.50.4.1.1') or (root = '2.16.840.1.113883.2.9.2.60.4.1.1') or (root = '2.16.840.1.113883.2.9.2.70.4.1.1') or (root = '2.16.840.1.113883.2.9.2.80.4.1.1') or (root = '2.16.840.1.113883.2.9.2.90.4.1.1') or (root = '2.16.840.1.113883.2.9.2.100.4.1.1') or (root = '2.16.840.1.113883.2.9.2.110.4.1.1') or (root = '2.16.840.1.113883.2.9.2.120.4.1.1') or (root = '2.16.840.1.113883.2.9.2.130.4.1.1') or (root = '2.16.840.1.113883.2.9.2.140.4.1.1') or (root = '2.16.840.1.113883.2.9.2.150.4.1.1') or (root = '2.16.840.1.113883.2.9.2.160.4.1.1') or (root = '2.16.840.1.113883.2.9.2.170.4.1.1') or (root = '2.16.840.1.113883.2.9.2.180.4.1.1') or (root = '2.16.840.1.113883.2.9.2.190.4.1.1') or (root = '2.16.840.1.113883.2.9.2.200.4.1.1') or (root = '2.16.840.1.113883.2.9.2.10.4.1') or (root = '2.16.840.1.113883.2.9.2.20.4.1') or (root = '2.16.840.1.113883.2.9.2.30.4.1') or (root = '2.16.840.1.113883.2.9.2.41.4.1') or (root = '2.16.840.1.113883.2.9.2.42.4.1') or (root = '2.16.840.1.113883.2.9.2.50.4.1') or (root = '2.16.840.1.113883.2.9.2.60.4.1') or (root = '2.16.840.1.113883.2.9.2.70.4.1') or (root = '2.16.840.1.113883.2.9.2.80.4.1') or (root = '2.16.840.1.113883.2.9.2.90.4.1') or (root = '2.16.840.1.113883.2.9.2.100.4.1') or (root = '2.16.840.1.113883.2.9.2.110.4.1') or (root = '2.16.840.1.113883.2.9.2.120.4.1') or (root = '2.16.840.1.113883.2.9.2.130.4.1') or (root = '2.16.840.1.113883.2.9.2.140.4.1') or (root = '2.16.840.1.113883.2.9.2.150.4.1') or (root = '2.16.840.1.113883.2.9.2.160.4.1') or (root = '2.16.840.1.113883.2.9.2.170.4.1') or (root = '2.16.840.1.113883.2.9.2.180.4.1') or (root = '2.16.840.1.113883.2.9.2.190.4.1') or (root = '2.16.840.1.113883.2.9.2.200.4.1') or (root = '2.16.840.1.113883.2.9.4.3.15') then {
           id.extension as ext -&gt; requestPAT.url = append(&apos;Patient?identifier=&apos;, ext) &quot;UUID&quot;;
         } &quot;ext&quot;;
       } &quot;recPat&quot;;
@@ -108,6 +108,7 @@ group ClinicalDocumentSectionPrescrizioneFarmaceutica(source cda : ClinicalDocum
   src.title as t -&gt; tgt.title = (t.dataString);
   src.code -&gt; tgt.code;
   src.text as cdaText -&gt;  tgt.entry = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/MedicationRequest/&apos; + %medRq.id),  tgt.text as fhirText then {
+    src.id -&gt; medRq.identifier;
     cdaText -&gt; fhirText.status = &apos;generated&apos; &quot;narrativeStatus&quot;;
     cdaText as t -&gt; fhirText.div = t &quot;narrativeText&quot;;
     cdaText -&gt;  medRq.subject = create(&apos;Reference&apos;) as reference,  reference.reference = (&apos;https://example/Patient/&apos; + %patient.id) &quot;reference&quot;;
@@ -373,7 +374,7 @@ group EmedPQQuantity(source src : PQ, target tgt : Quantity) {
   src.value as value -&gt; tgt.value = value;
   src.unit as unit -&gt; tgt.code = unit;
   src.unit as unit -&gt; tgt.system = (&apos;http://fhir.ch/ig/ch-emed/ValueSet/UnitCode&apos;.resolve().compose.include.where(concept.where(code = %unit)).system);
-  src.unit as unit -&gt; tgt.unit = ('http://fhir.ch/ig/ch-emed/ValueSet/UnitCode'.resolve().compose.include.concept.where(code = %unit).display);
+  src.unit as unit -&gt; tgt.unit = (&apos;http://fhir.ch/ig/ch-emed/ValueSet/UnitCode'.resolve().compose.include.concept.where(code = %unit).display);
 }
 
 </pre>
@@ -886,7 +887,7 @@ group EmedPQQuantity(source src : PQ, target tgt : Quantity) {
                      <context value="patient"/>
                      <element value="id"/>
                      <variable value="id"/>
-                     <condition value="(root = '2.16.840.1.113883.2.9.4.3.2') or (root = '2.16.840.1.113883.2.9.4.3.7') or (root = '2.16.840.1.113883.2.9.4.3.3') or (root = '2.16.840.1.113883.2.9.4.3.17') or (root = '2.16.840.1.113883.2.9.4.3.15')"/>
+                     <condition value="(root = '2.16.840.1.113883.2.9.4.3.2') or (root = '2.16.840.1.113883.2.9.4.3.7') or (root = '2.16.840.1.113883.2.9.4.3.3') or (root = '2.16.840.1.113883.2.9.4.3.17') or (root = '2.16.840.1.113883.2.9.4.3.18') or (root = '2.16.840.1.113883.2.9.2.10.4.1.1') or (root = '2.16.840.1.113883.2.9.2.20.4.1.1') or (root = '2.16.840.1.113883.2.9.2.30.4.1.1') or (root = '2.16.840.1.113883.2.9.2.41.4.1.1') or (root = '2.16.840.1.113883.2.9.2.42.4.1.1') or (root = '2.16.840.1.113883.2.9.2.50.4.1.1') or (root = '2.16.840.1.113883.2.9.2.60.4.1.1') or (root = '2.16.840.1.113883.2.9.2.70.4.1.1') or (root = '2.16.840.1.113883.2.9.2.80.4.1.1') or (root = '2.16.840.1.113883.2.9.2.90.4.1.1') or (root = '2.16.840.1.113883.2.9.2.100.4.1.1') or (root = '2.16.840.1.113883.2.9.2.110.4.1.1') or (root = '2.16.840.1.113883.2.9.2.120.4.1.1') or (root = '2.16.840.1.113883.2.9.2.130.4.1.1') or (root = '2.16.840.1.113883.2.9.2.140.4.1.1') or (root = '2.16.840.1.113883.2.9.2.150.4.1.1') or (root = '2.16.840.1.113883.2.9.2.160.4.1.1') or (root = '2.16.840.1.113883.2.9.2.170.4.1.1') or (root = '2.16.840.1.113883.2.9.2.180.4.1.1') or (root = '2.16.840.1.113883.2.9.2.190.4.1.1') or (root = '2.16.840.1.113883.2.9.2.200.4.1.1') or (root = '2.16.840.1.113883.2.9.2.10.4.1') or (root = '2.16.840.1.113883.2.9.2.20.4.1') or (root = '2.16.840.1.113883.2.9.2.30.4.1') or (root = '2.16.840.1.113883.2.9.2.41.4.1') or (root = '2.16.840.1.113883.2.9.2.42.4.1') or (root = '2.16.840.1.113883.2.9.2.50.4.1') or (root = '2.16.840.1.113883.2.9.2.60.4.1') or (root = '2.16.840.1.113883.2.9.2.70.4.1') or (root = '2.16.840.1.113883.2.9.2.80.4.1') or (root = '2.16.840.1.113883.2.9.2.90.4.1') or (root = '2.16.840.1.113883.2.9.2.100.4.1') or (root = '2.16.840.1.113883.2.9.2.110.4.1') or (root = '2.16.840.1.113883.2.9.2.120.4.1') or (root = '2.16.840.1.113883.2.9.2.130.4.1') or (root = '2.16.840.1.113883.2.9.2.140.4.1') or (root = '2.16.840.1.113883.2.9.2.150.4.1') or (root = '2.16.840.1.113883.2.9.2.160.4.1') or (root = '2.16.840.1.113883.2.9.2.170.4.1') or (root = '2.16.840.1.113883.2.9.2.180.4.1') or (root = '2.16.840.1.113883.2.9.2.190.4.1') or (root = '2.16.840.1.113883.2.9.2.200.4.1') or (root = '2.16.840.1.113883.2.9.4.3.15')"/>
                   </source>
                   <rule>
                      <name value="UUID"/>
@@ -1964,6 +1965,21 @@ group EmedPQQuantity(source src : PQ, target tgt : Quantity) {
             <element value="text"/>
             <variable value="fhirText"/>
          </target>
+         <rule>
+            <name value="id"/>
+            <source>
+               <context value="src"/>
+               <element value="id"/>
+               <variable value="vvv"/>
+            </source>
+            <target>
+               <context value="medRq"/>
+               <contextType value="variable"/>
+               <element value="identifier"/>
+               <variable value="vvv"/>
+               <transform value="create"/>
+            </target>
+         </rule>
          <rule>
             <name value="narrativeStatus"/>
             <source>
